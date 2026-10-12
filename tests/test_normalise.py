@@ -3,6 +3,7 @@ from pathlib import Path
 
 from career_radar.normalise import classify_role, deduplication_key, extract_skills, load_taxonomy
 from career_radar.greenhouse import html_to_text, normalise_greenhouse_job
+from career_radar.adzuna import normalise_adzuna_job
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,6 +38,20 @@ class NormalisationTests(unittest.TestCase):
         normalised = normalise_greenhouse_job(job, "Example Company")
         self.assertEqual(normalised["description_text"], "Use SQL & Power BI.")
         self.assertEqual(normalised["location_text"], "Dublin, Ireland")
+
+    def test_adzuna_job_retains_source_url_and_description(self):
+        job = {
+            "id": "az-123",
+            "redirect_url": "https://www.adzuna.ie/details/az-123",
+            "title": "Business Analyst",
+            "company": {"display_name": "Example Company"},
+            "location": {"display_name": "Dublin"},
+            "description": "Gather requirements and use SQL.",
+            "created": "2026-10-12T00:00:00Z",
+        }
+        normalised = normalise_adzuna_job(job)
+        self.assertEqual(normalised["source_job_id"], "az-123")
+        self.assertEqual(normalised["canonical_url"], "https://www.adzuna.ie/details/az-123")
 
 
 if __name__ == "__main__":

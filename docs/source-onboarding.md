@@ -44,6 +44,21 @@ PYTHONPATH=src python -m career_radar.ingest \
   --source-name "Approved Greenhouse sources"
 ```
 
+## Adzuna Ireland API
+
+The project also supports the official Adzuna Ireland API. Create an Adzuna developer application, review the current API terms for your intended portfolio use, then save the application values as secure environment variables—not in a file or Git history:
+
+```bash
+export ADZUNA_APP_ID="..."
+export ADZUNA_APP_KEY="..."
+PYTHONPATH=src python -m career_radar.adzuna --terms-checked-on 2026-10-12
+PYTHONPATH=src python -m career_radar.ingest \
+  --input data/raw/adzuna_dublin_jobs.csv \
+  --source-name "Adzuna Ireland API"
+```
+
+The connector targets Dublin and the four MVP role queries, deduplicates repeated results across queries, and writes the original source URL and collection timestamp into downstream outputs.
+
 ## Validation before publishing insights
 
 - Verify source reuse permission and log the check date.
