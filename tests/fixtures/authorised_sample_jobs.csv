@@ -1,0 +1,5 @@
+source_job_id,canonical_url,title,employer_name,location_text,description_text,posted_at
+job-001,https://careers.example.test/job-001,Data Analyst,Example Analytics,Dublin hybrid,"Use SQL, Python and Power BI to deliver data visualisation for stakeholders in an Agile team.",2026-10-12
+job-002,https://careers.example.test/job-002,Business Analyst,Example Finance,Dublin,"Gather requirements, manage stakeholders and create process maps. Experience with Jira and GDPR is required.",2026-10-12
+job-003,https://careers.example.test/job-003,BI Analyst,Example Software,Dublin remote,"Build Tableau and SQL reporting. Apply data quality checks and communicate insights to product teams.",2026-10-12
+job-003-copy,https://careers.example.test/job-003-copy,BI Analyst,Example Software,Dublin remote,"Build Tableau and SQL reporting. Apply data quality checks and communicate insights to product teams.",2026-10-12

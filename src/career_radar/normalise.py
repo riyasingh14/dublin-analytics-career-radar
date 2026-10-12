@@ -1,0 +1,96 @@
+"""Controlled, explainable normalisation for Career Radar job postings."""
+
+from __future__ import annotations
+
+import csv
+import hashlib
+import re
+from dataclasses import dataclass
+from pathlib import Path
+
+
+@dataclass(frozen=True)
+class Skill:
+    skill_id: str
+    skill_name: str
+    category: str
+    aliases: tuple[str, ...]
+
+
+def load_taxonomy(path: Path) -> list[Skill]:
+    with path.open(newline="", encoding="utf-8") as file:
+        rows = csv.DictReader(file)
+        return [
+            Skill(
+                skill_id=row["skill_id"],
+                skill_name=row["skill_name"],
+                category=row["category"],
+                aliases=tuple(alias.strip() for alias in row["aliases"].split("|") if alias.strip()),
+            )
+            for row in rows
+        ]
+
+
+def extract_skills(description: str, taxonomy: list[Skill]) -> list[dict[str, str | float]]:
+    """Return one evidence record per skill, retaining the exact matched phrase.
+
+    This deterministic baseline is intentionally auditable. A future LLM extractor can
+    add records with extraction_method='llm', rather than replacing this evidence.
+    """
+    evidence: list[dict[str, str | float]] = []
+    text = description or ""
+    for skill in taxonomy:
+        matches: list[tuple[int, str]] = []
+        for alias in skill.aliases:
+            match = re.search(r"(?<!\w)" + re.escape(alias) + r"(?!\w)", text, flags=re.IGNORECASE)
+            if match:
+                matches.append((match.start(), match.group(0)))
+        if matches:
+            _, phrase = min(matches, key=lambda item: item[0])
+            evidence.append(
+                {
+                    "skill_id": skill.skill_id,
+                    "skill_name": skill.skill_name,
+                    "category": skill.category,
+                    "source_phrase": phrase,
+                    "extraction_method": "rule",
+                    "extraction_version": "taxonomy-v1",
+                    "confidence": 0.98,
+                }
+            )
+    return evidence
+
+
+ROLE_RULES = {
+    "Data Analyst": ("data analyst", "analytics analyst"),
+    "Business Analyst": ("business analyst",),
+    "BI Analyst": ("bi analyst", "business intelligence analyst", "reporting analyst"),
+    "Product Analyst": ("product analyst",),
+}
+
+
+def classify_role(title: str) -> tuple[str | None, float]:
+    lower_title = (title or "").lower()
+    for role, terms in ROLE_RULES.items():
+        if any(term in lower_title for term in terms):
+            return role, 0.99
+    return None, 0.0
+
+
+def classify_work_pattern(text: str) -> str:
+    lower_text = (text or "").lower()
+    if "hybrid" in lower_text:
+        return "hybrid"
+    if "remote" in lower_text or "work from home" in lower_text:
+        return "remote"
+    if "on-site" in lower_text or "onsite" in lower_text or "on site" in lower_text:
+        return "onsite"
+    return "unknown"
+
+
+def deduplication_key(title: str, employer_name: str, location_text: str, description: str) -> str:
+    normalised = "|".join(
+        re.sub(r"\s+", " ", value.lower()).strip()
+        for value in (title or "", employer_name or "", location_text or "", description or "")
+    )
+    return hashlib.sha256(normalised.encode("utf-8")).hexdigest()
