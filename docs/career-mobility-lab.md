@@ -1,5 +1,8 @@
 # Career Mobility Lab — planned portfolio module
 
+The [master project specification](../PROJECT_DESCRIPTION.md#6-feature-3--career-mobility-lab)
+defines the selected scope and acceptance criteria. This document supplies supporting design rationale.
+
 Status: design brief, not implemented. All career-history and compensation data in
 this module will be synthetic. It is independent of the observed job-posting sample.
 

@@ -1,60 +1,52 @@
-> Scope update: the next pilot covers technology careers across the Republic of
-> Ireland, with Dublin shown separately, and targets approximately 200 unique
-> postings. The original analytics use case below remains supported. See
-> [Ireland tech collection](ireland-tech-collection.md) for the current sampling plan.
-
 # Product strategy
 
-## Product thesis
+The authoritative feature specification is [PROJECT_DESCRIPTION.md](../PROJECT_DESCRIPTION.md).
+This document summarises the product rationale rather than duplicating its requirements.
 
-The primary project outcome is an interview-ready demonstration of data and business
-analysis: framing useful questions, building reliable models, writing SQL, validating
-metrics and communicating decisions. Product usability matters; commercial adoption
-and superiority over competitors require separate evidence. Technological depth
-should serve these outcomes rather than maximise the feature count.
+## Primary objective
 
-**Dublin Analytics Career Radar** translates fragmented job descriptions into transparent, current labour-market signals and practical proof-of-work recommendations for analytics candidates.
+Demonstrate data and business analyst capability to recruiters, hiring managers and
+senior executives through a coherent decision workflow. The project should make
+problem framing, reliable data modelling, SQL, evaluation and stakeholder
+communication visible. Commercial adoption and competitor superiority are
+hypotheses requiring separate evidence.
 
-The distinctive feature is the **proof-of-work planner**. A generic skill-gap product may say “learn SQL.” This product links the gap to Dublin demand and recommends a credible artefact to demonstrate it, such as a SQL cohort-retention analysis, a Power BI executive decision page, or a requirements-to-dashboard case study.
+## Product and users
 
-## Primary users
+Dublin Analytics Career Radar explores technology-career requirements across the
+Republic of Ireland, with Dublin shown separately. Students and career changers
+inspect skills and evidence gaps; recruiters and hiring managers inspect job
+requirements; portfolio reviewers inspect the quality of the analytical work.
 
-| User | Need | Product value |
+## Four flagship experiences
+
+| Feature | Decision question | Analytical contribution |
 |---|---|---|
-| Analytics candidate | Decide what to learn and show next | Evidence-backed priority and project recommendation |
-| Career adviser / training provider | Explain skills demand to a cohort | Transparent local skills trends |
-| Talent / workforce team | Monitor public demand signals | Aggregated, documented market view |
+| Skill Constellation | Which skills appear together in a selected role sample? | Co-occurrence, association measures and source drill-down |
+| Opportunity Readiness Studio | Which requirements can a candidate evidence, and what is unknown? | Explainable requirement matching and sensitivity |
+| Career Mobility Lab | How do simulated transition outcomes differ under disclosed assumptions? | Longitudinal SQL, cohort analysis and salary scenarios |
+| Job Description Diagnostic | What is clear, missing or inconsistent in a description? | Text evidence, deterministic rules and requirements quality |
 
-## Initial scope
+The market dashboard, coverage panel and methodology are shared foundations.
+A basic proof-of-work planner exists but is not a separate fifth flagship.
 
-- Geography: Dublin; roles explicitly mentioning Dublin or a Dublin/hybrid location.
-- Roles: Data Analyst, Business Analyst, BI Analyst, Product Analyst.
-- Data interval: weekly collection snapshots.
-- Initial skill taxonomy: 40–60 skills across data, BI, business analysis, delivery, cloud, and AI.
-- Industries: a filter derived from employer/advert metadata, not an initial collection restriction.
+## Product principles
 
-## Deliberate non-goals for the MVP
+- Lead with a decision question and expose detail progressively.
+- Keep observed job evidence, self-reported candidate evidence and synthetic career
+  outcomes separate and clearly labelled.
+- Prefer inspectable calculations and readable visuals over unsupported scores.
+- Keep source data replaceable and show collection uncertainty and sampling limits.
+- Validate the expanded taxonomy and each feature before public claims.
+- Avoid callback probabilities without suitable outcomes and real-world salary
+  claims from synthetic data.
+- Introduce new technology only to satisfy an actual analytical or interaction need.
 
-- No general-purpose job search.
-- No automated CV rejection, ranking, or adverse decision-making.
-- No claims of complete coverage of the Dublin job market.
-- No generic chatbot without source citations.
+## Delivery and success
 
-## Planned synthetic career analysis
-
-The [Career Mobility Lab](career-mobility-lab.md) will explore employer, occupation,
-industry and level transitions through simulated histories and salary trajectories.
-It will pair a distinctive radial network with readable analytical views and SQL
-cohort models. Every output remains visibly synthetic; it does not establish real
-salary returns or predict an individual's career outcome. This is a planned
-portfolio extension, separate from the observed market radar.
-
-## Success measures
-
-- At least 90% precision on a manually reviewed sample of 100 AI-extracted skills.
-- Every published skill insight has source coverage, collection date, and denominator.
-- A candidate can complete a role/skills assessment and leave with one concrete proof-of-work recommendation in under three minutes.
-
-## Example decision output
-
-> For Dublin Business Analyst roles in the current sample, SQL, stakeholder management, Power BI, Agile, and requirements gathering are the highest-frequency skill cluster. Your strongest high-demand gap is requirements traceability. Build a short case study containing stakeholder questions, acceptance criteria, a KPI definition sheet, and a Power BI decision page.
+Use the milestone sequence in [PROJECT_PLAN.md](../PROJECT_PLAN.md): broader data
+and SQL foundation, Skill Constellation, Diagnostic, Readiness, Mobility, then
+presentation/operation. The full feature acceptance criteria are in the master
+specification. A successful portfolio demo lets a reviewer trace a finding to its
+evidence, reproduce a calculation, understand its limitations and see a useful
+next action within a short walkthrough.

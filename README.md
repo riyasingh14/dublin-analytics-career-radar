@@ -14,7 +14,22 @@ Job boards list vacancies. Enterprise labour-market platforms are expensive and 
 - a skill-gap view that turns a missing skill into a concrete portfolio or interview-proof action;
 - published data freshness, coverage, and limitations.
 
-## MVP features
+## Selected product scope
+
+The complete specification is in **[PROJECT_DESCRIPTION.md](PROJECT_DESCRIPTION.md)**.
+It defines four flagship experiences, their calculations, user journeys, visual
+requirements, data controls and acceptance criteria. The existing market dashboard
+is their shared analytical foundation.
+
+1. **Skill Constellation** — inspect skill co-mentions and associations with source evidence.
+2. **Opportunity Readiness Studio** — compare candidate evidence with explicit job requirements; no callback probabilities.
+3. **Career Mobility Lab** — explore clearly labelled synthetic career transitions and salary scenarios.
+4. **Job Description Diagnostic** — inspect clarity, completeness and consistency with traceable findings.
+
+These complete flagship experiences are planned. The baseline features below
+provide reusable components; they are not claims that the four modules are finished.
+
+## Existing baseline features
 
 1. **Market signal dashboard** — role counts, top skills, industries, work patterns, and skill trends.
 2. **Role comparison** — Data Analyst, Business Analyst, BI Analyst, and Product Analyst requirements side by side.
@@ -42,7 +57,8 @@ Streamlit web app: signals, evidence, and proof-of-work plans
 
 See [product strategy](docs/product-strategy.md) and [data governance](docs/data-governance.md).
 
-The implementation roadmap and completion criteria are tracked in [PROJECT_PLAN.md](PROJECT_PLAN.md).
+The [master project description](PROJECT_DESCRIPTION.md) defines the scope and
+acceptance criteria; [PROJECT_PLAN.md](PROJECT_PLAN.md) tracks delivery milestones.
 
 ## Current engine
 
