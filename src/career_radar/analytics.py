@@ -6,7 +6,7 @@ import csv
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from career_radar.normalise import ROLE_RULES
+from career_radar.normalise import ROLE_RULES, geography_group
 
 
 def read_csv(path: Path) -> list[dict[str, str]]:
@@ -78,6 +78,7 @@ def build_market_summary(
         "work_pattern_counts": dict(sorted(work_pattern_counts.items())),
         "top_skills": top_skills,
         "role_skills": role_skills,
+        "geography_counts": dict(Counter(geography_group(job.get("location_text", "")) for job in jobs)),
     }
 
 
@@ -133,5 +134,6 @@ def build_evidence_records(
             **{key: str(job.get(key, "")) for key in (
                 "title", "employer_name", "role_name", "source_name", "posted_at",
             )},
+            "geography": geography_group(job.get("location_text", "")),
         })
     return records

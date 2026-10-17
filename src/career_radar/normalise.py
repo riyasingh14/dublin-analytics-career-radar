@@ -8,6 +8,8 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+TAXONOMY_VERSION = "taxonomy-v2-tech"
+ROLE_CLASSIFICATION_VERSION = "roles-v2-tech"
 
 @dataclass(frozen=True)
 class Skill:
@@ -54,7 +56,7 @@ def extract_skills(description: str, taxonomy: list[Skill]) -> list[dict[str, st
                     "category": skill.category,
                     "source_phrase": phrase,
                     "extraction_method": "rule",
-                    "extraction_version": "taxonomy-v1",
+                    "extraction_version": TAXONOMY_VERSION,
                     "confidence": 0.98,
                 }
             )
@@ -62,11 +64,45 @@ def extract_skills(description: str, taxonomy: list[Skill]) -> list[dict[str, st
 
 
 ROLE_RULES = {
+    # Specific titles precede broad software terms to resolve overlapping titles.
+    "Machine Learning Engineer": ("machine learning engineer", "ml engineer", "ai engineer"),
+    "Data Engineer": ("data engineer", "analytics engineer"),
+    "Data Scientist": ("data scientist", "research scientist"),
+    "Frontend Developer": ("frontend developer", "front end developer", "front-end developer", "frontend engineer", "front end engineer", "front-end engineer"),
+    "Backend Developer": ("backend developer", "back end developer", "back-end developer", "backend engineer", "back end engineer", "back-end engineer"),
+    "Full Stack Developer": ("full stack developer", "full-stack developer", "fullstack developer", "full stack engineer", "full-stack engineer", "full stack software engineer"),
+    "Mobile Developer": ("mobile developer", "mobile engineer", "ios developer", "ios engineer", "android developer", "android engineer"),
+    "Embedded Engineer": ("embedded engineer", "embedded software engineer", "firmware engineer"),
+    "QA Engineer": ("qa engineer", "qa analyst", "test engineer", "automation test engineer", "software tester", "quality assurance engineer", "sdet"),
+    "DevOps / SRE": ("devops engineer", "site reliability engineer", "platform engineer"),
+    "Cloud Engineer": ("cloud engineer", "cloud infrastructure engineer"),
+    "Security Engineer": ("security engineer", "cybersecurity analyst", "cyber security analyst", "security analyst", "soc analyst"),
+    "Network Engineer": ("network engineer", "network administrator"),
+    "IT Support": ("it support", "technical support engineer", "service desk analyst", "desktop support"),
+    "Solutions Architect": ("solutions architect", "solution architect", "cloud architect", "software architect", "technical architect"),
+    "Software Engineer": ("software engineer", "software developer", "application developer"),
+    "Product Manager": ("product manager", "technical product manager", "product owner"),
     "Data Analyst": ("data analyst", "analytics analyst"),
     "Business Analyst": ("business analyst", "business systems analyst"),
     "BI Analyst": ("bi analyst", "business intelligence analyst", "reporting analyst", "power bi consultant"),
     "Product Analyst": ("product analyst",),
 }
+
+
+def geography_group(location: str) -> str:
+    """Conservative Republic of Ireland grouping from explicit location text."""
+    text = (location or "").lower()
+    if "northern ireland" in text or "united kingdom" in text or re.search(r"\b(uk|belfast)\b", text):
+        return "Outside scope / unknown"
+    if not re.search(r"\bireland\b", text):
+        return "Outside scope / unknown"
+    if re.search(r"\bdublin\b", text):
+        return "Dublin"
+    # Country-only or remote listings cannot be assigned to the rest of Ireland.
+    place = re.sub(r"\b(ireland|remote|hybrid|onsite|on-site|on site)\b", "", text)
+    if not re.search(r"\w", place):
+        return "Ireland — location unspecified"
+    return "Rest of Ireland"
 
 
 def classify_role(title: str) -> tuple[str | None, float]:

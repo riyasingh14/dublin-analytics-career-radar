@@ -18,7 +18,7 @@ class DashboardTests(unittest.TestCase):
         jobs = [
             {"canonical_url": "https://example.test/1", "title": "Data Analyst",
              "employer_name": "Example", "role_name": "Data Analyst", "work_pattern": "hybrid",
-             "description_text": "Use SQL", "source_name": "Fixture", "location_text": "Dublin, Ireland"},
+             "description_text": "Use SQL", "source_name": "Fixture", "location_text": "Cork, Ireland"},
             {"canonical_url": "https://example.test/2", "title": "Operations Manager",
              "employer_name": "Example", "role_name": "Unclassified", "work_pattern": "unknown",
              "description_text": "Use SQL", "source_name": "Fixture", "location_text": "Dublin, Ireland"},
@@ -61,3 +61,18 @@ class DashboardTests(unittest.TestCase):
                 app = AppTest.from_file(str(ROOT / "app.py")).run(timeout=30)
                 self.assertFalse(app.exception)
                 self.assertTrue(any("Rebuild this snapshot" in item.value for item in app.info))
+
+    def test_geography_filter_changes_market_denominator_and_role_options(self):
+        with tempfile.TemporaryDirectory() as directory:
+            snapshot = Path(directory) / "snapshot.json"
+            snapshot.write_text(json.dumps(self.payload()))
+            with patch.dict(os.environ, {"CAREER_RADAR_SNAPSHOT": str(snapshot)}):
+                app = AppTest.from_file(str(ROOT / "app.py")).run(timeout=30)
+                geography = next(item for item in app.selectbox if item.label == "Market geography")
+                geography.select("Rest of Ireland").run()
+                self.assertFalse(app.exception)
+                self.assertEqual(app.metric[0].value, "1")
+                self.assertEqual(app.metric[1].value, "1")
+                table = next(item.value for item in app.dataframe if "source_phrase" in item.value.columns)
+                self.assertEqual(len(table), 1)
+                self.assertEqual(table.iloc[0]["role_name"], "Data Analyst")

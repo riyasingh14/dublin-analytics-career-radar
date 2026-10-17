@@ -2,15 +2,15 @@
 
 ## Product statement
 
-Dublin Analytics Career Radar is an AI-assisted career intelligence product that analyses current Dublin analytics-role demand and converts a candidate's most important skill gaps into concrete, evidence-backed portfolio actions.
+Dublin Analytics Career Radar is an AI-assisted career intelligence product that analyses observed technology-role requirements across Ireland, with Dublin shown separately and converts a candidate's most important skill gaps into concrete, evidence-backed portfolio actions.
 
 It is a separate repository, application, data pipeline, and deployment from the Telco Churn Analysis project.
 
 ## MVP audience and scope
 
-- Primary user: early- and mid-career analytics candidates in Dublin.
-- Target roles: Data Analyst, Business Analyst, BI Analyst, and Product Analyst.
-- Geography: roles explicitly located in Dublin or advertised as Dublin-hybrid.
+- Primary user: early- and mid-career technology candidates in Ireland.
+- Target roles: 21 technology role families spanning software, data, cloud, infrastructure, security, QA, support and product; analytics remains supported.
+- Geography: Republic of Ireland; Dublin, rest of Ireland and country-only/unspecified postings remain separate.
 - Industry: a comparison/filter dimension, not a collection restriction.
 - Initial data sources: authorised APIs, approved public company careers feeds, and documented user-provided exports.
 
@@ -37,7 +37,7 @@ Every published market claim must expose its collection window, sample size, sou
 ### Phase 1 — Foundation (complete)
 
 - Product strategy and responsible-data policy.
-- Controlled taxonomy of 35 skills across 11 categories.
+- Original controlled taxonomy of 35 skills; expanded to 64 skills across 19 categories for the Ireland tech pilot.
 - PostgreSQL source, posting, snapshot, and skill-evidence model.
 - Authorised CSV, Greenhouse, and Adzuna connectors.
 - Deterministic evidence-preserving extraction baseline.
@@ -46,7 +46,7 @@ Every published market claim must expose its collection window, sample size, sou
 ### Phase 2 — Real-data validation
 
 - Connect at least one authorised live source.
-- Collect the first dated Dublin snapshot.
+- [Next collection] Approximately 200 unique Ireland tech postings using a capped, documented role sample; see docs/ireland-tech-collection.md.
 - [Implemented] Profile role coverage, duplicate rate, missingness, and employer concentration.
 - [Implemented] Generate a reproducible, category-balanced queue for at least 100 reviews.
 - [Implemented] Publish overall/category precision and a 95% confidence interval.
@@ -95,7 +95,7 @@ Exit criterion: a candidate can select a target role and current skills, then re
 
 - Building another general job-search site.
 - Direct scraping of LinkedIn or Indeed pages. A user-approved Apify export may be imported for private validation with recorded provenance.
-- Claiming comprehensive coverage of the Dublin labour market.
+- Claiming comprehensive coverage or occupation prevalence from the Ireland tech convenience sample.
 - Automatically rejecting, ranking, or making adverse decisions about candidates.
 - Adding a chatbot before the evidence and evaluation layers work.
 

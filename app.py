@@ -36,7 +36,7 @@ def main() -> None:
     )
     st.title("Dublin Analytics Career Radar")
     st.caption(
-        "AI-assisted, evidence-backed skills intelligence for Dublin analytics careers."
+        "Evidence-backed tech career intelligence for Ireland, with Dublin shown separately."
     )
 
     snapshot_path = Path(os.getenv("CAREER_RADAR_SNAPSHOT", str(DEFAULT_SNAPSHOT)))
@@ -77,6 +77,13 @@ def main() -> None:
         f"Source count: {len(quality.get('source_counts', {}))} · "
         "Rule-based extraction; generated time is not source collection time."
     )
+    selected_market_geography = "All locations"
+    if snapshot.get("geography_markets"):
+        selected_market_geography = st.selectbox(
+            "Market geography", ["All locations", *sorted(snapshot["geography_markets"])]
+        )
+        if selected_market_geography != "All locations":
+            market = snapshot["geography_markets"][selected_market_geography]
 
     overview_tab, role_tab, evidence_tab, planner_tab, method_tab = st.tabs(
         ["Market overview", "Role comparison", "Skills evidence", "Proof-of-work planner", "Methodology"]
@@ -116,6 +123,13 @@ def main() -> None:
         chart_cols[0].bar_chart(pd.Series(roles, name="Postings"))
         chart_cols[1].subheader("Work pattern")
         chart_cols[1].bar_chart(pd.Series(patterns, name="Postings"))
+        if market.get("geography_counts"):
+            st.subheader("Geographic coverage")
+            st.bar_chart(pd.Series(market["geography_counts"], name="Postings"))
+        st.caption(
+            "Search caps and selected titles shape this sample. Role counts are not estimates "
+            "of each role's share of Ireland's tech job market."
+        )
 
     with role_tab:
         available_roles = sorted(role for role in market["role_skills"] if role in ROLE_RULES)
@@ -142,6 +156,8 @@ def main() -> None:
         evidence_records = snapshot.get("evidence", [])
         if evidence_records:
             evidence_df = pd.DataFrame(evidence_records)
+            if selected_market_geography != "All locations" and "geography" in evidence_df.columns:
+                evidence_df = evidence_df[evidence_df["geography"] == selected_market_geography]
             selected_skill = st.selectbox("Skill evidence", sorted(evidence_df["skill_name"].unique()))
             selected_evidence_role = st.selectbox(
                 "Evidence role", ["All roles", *sorted(evidence_df["role_name"].unique())]
@@ -149,6 +165,12 @@ def main() -> None:
             filtered = evidence_df[evidence_df["skill_name"] == selected_skill]
             if selected_evidence_role != "All roles":
                 filtered = filtered[filtered["role_name"] == selected_evidence_role]
+            if "geography" in evidence_df.columns:
+                selected_geography = st.selectbox(
+                    "Evidence geography", ["All locations", *sorted(evidence_df["geography"].unique())]
+                )
+                if selected_geography != "All locations":
+                    filtered = filtered[filtered["geography"] == selected_geography]
             st.write(f"{filtered['canonical_url'].nunique()} source postings in this selection")
             st.dataframe(
                 filtered[["skill_name", "source_phrase", "title", "employer_name", "role_name",
@@ -195,6 +217,7 @@ def main() -> None:
 
     with method_tab:
         st.subheader("Data quality and extraction evaluation")
+        st.caption("Quality and review statistics below cover the full imported dataset.")
         if quality.get("source_counts"):
             st.write("Source coverage", quality["source_counts"])
         if provenance.get("extraction_versions"):
@@ -235,7 +258,7 @@ def main() -> None:
         st.subheader("How to interpret this product")
         st.markdown(
             """
-            - This is sample-based career intelligence, not a complete census of Dublin jobs.
+            - This is sample-based career intelligence, not a complete census of Irish tech jobs.
             - Every skill is linked to source evidence, extraction method, version, and confidence.
             - Public claims require a manually reviewed, validated snapshot.
             - The MVP stores no candidate account or CV.

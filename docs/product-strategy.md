@@ -1,3 +1,8 @@
+> Scope update: the next pilot covers technology careers across the Republic of
+> Ireland, with Dublin shown separately, and targets approximately 200 unique
+> postings. The original analytics use case below remains supported. See
+> [Ireland tech collection](ireland-tech-collection.md) for the current sampling plan.
+
 # Product strategy
 
 ## Product thesis

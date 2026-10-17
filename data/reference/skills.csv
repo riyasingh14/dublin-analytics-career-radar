@@ -34,3 +34,32 @@ communication,Communication,Business Analysis,"communication|presentation|storyt
 financial_analysis,Financial analysis,Domain,"financial analysis|financial modelling|finance|p&l|pnl","Analyse a revenue, cost, or profitability dataset and explain the operational decision."
 customer_analytics,Customer analytics,Domain,"customer analytics|customer insights|customer experience|cx","Create a segmented customer analysis linked to retention, service, or product actions."
 r,R,Data,"r programming|r language|r studio|rstudio","Publish a reproducible R analysis with documented methodology and visualisations."
+javascript,JavaScript,Software,javascript|ecmascript,Build an accessible interactive application with tests and documented error handling.
+typescript,TypeScript,Software,typescript,Build a typed application with API validation and tests for failure cases.
+java,Java,Software,java,Build a Java service with API tests and documented concurrency and persistence choices.
+csharp,C# / .NET,Software,c#|csharp|.net|asp.net,Build a .NET API with authentication boundaries and integration tests.
+cpp,C++,Software,c++|cpp,Build a C++ component with tests and explain memory and performance trade-offs.
+golang,Go,Software,golang|go programming,Build a concurrent Go service with cancellation and API tests.
+react,React,Frontend,react|react.js|reactjs,Build an accessible React interface with tested loading and error states.
+angular,Angular,Frontend,angular|angularjs,"Build an Angular application with forms, routing and component tests."
+nodejs,Node.js,Backend,node.js|nodejs,"Build a Node.js API with validation, rate limiting and integration tests."
+spring,Spring Boot,Backend,spring boot|spring framework,Build a Spring Boot service with validation and database integration tests.
+docker,Docker,Infrastructure,docker|containerisation|containerization,Containerise an application with a small image and reproducible local startup.
+kubernetes,Kubernetes,Infrastructure,kubernetes|k8s,"Deploy a service with readiness checks, resource limits and rollback instructions."
+terraform,Terraform,Infrastructure,terraform|infrastructure as code,Define reproducible infrastructure with reviewed changes and a cost estimate.
+cicd,CI / CD,Engineering Practice,ci/cd|ci cd|continuous integration|continuous delivery|continuous deployment,Build a pipeline that runs tests and produces versioned deployment artifacts.
+linux,Linux,Infrastructure,linux|unix,"Document a Linux service with permissions, logging and recovery procedures."
+networking,Networking,Infrastructure,tcp/ip|dns|routing|network troubleshooting,Build a lab with routing and DNS checks and explain how to diagnose failures.
+cybersecurity,Cybersecurity,Security,cybersecurity|cyber security|information security,Create a threat model and validate practical mitigations in a controlled lab.
+siem,SIEM,Security,siem|splunk|microsoft sentinel,Build detection rules against synthetic logs and evaluate false positives.
+iam,Identity and access management,Security,identity and access management|iam|oauth|openid connect,Implement least-privilege access and test authentication and authorisation failure cases.
+test_automation,Test automation,Quality,test automation|automated testing|selenium|playwright|cypress,Build a test suite covering critical user journeys and document failure diagnostics.
+pytorch,PyTorch,AI,pytorch,Train and evaluate a reproducible model with a holdout set and model limitations.
+tensorflow,TensorFlow,AI,tensorflow,Build a reproducible model training pipeline with evaluation and inference tests.
+spark,Apache Spark,Data Engineering,apache spark|pyspark,Build a distributed transformation with partitioning and data quality checks.
+kafka,Apache Kafka,Data Engineering,apache kafka|kafka,"Build an event pipeline with schemas, replay and failure recovery."
+product_discovery,Product discovery,Product,product discovery|product strategy|product roadmap,"Create an evidence-backed product brief with hypotheses, priorities and success measures."
+user_research,User research,Product,user research|usability testing|customer interviews,Run a small consented usability study and connect findings to product decisions.
+itil,ITIL / service management,IT Support,itil|incident management|service desk,"Document an incident workflow with triage, escalation and measurable resolution targets."
+mobile,Mobile development,Software,swift|kotlin|react native|flutter,"Build a small mobile app with offline handling, accessibility and tested state transitions."
+embedded,Embedded systems,Software,embedded systems|firmware|rtos,Build a simulated device workflow with timing constraints and repeatable tests.

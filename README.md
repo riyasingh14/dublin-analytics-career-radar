@@ -1,6 +1,6 @@
 # Dublin Analytics Career Radar
 
-An AI-assisted labour-market intelligence tool for Dublin Data Analyst, Business Analyst, BI Analyst, and Product Analyst roles.
+An evidence-backed labour-market intelligence tool for technology careers across Ireland, with Dublin shown separately. The expanded scope covers 21 role families and retains the original analytics workflow.
 
 It does not try to replace a job board. It answers a different question: **which skills are in demand now, what evidence supports that conclusion, and what is the most valuable proof-of-work a candidate should build next?**
 
@@ -8,7 +8,7 @@ It does not try to replace a job board. It answers a different question: **which
 
 Job boards list vacancies. Enterprise labour-market platforms are expensive and opaque. This project focuses on a transparent, candidate-facing middle ground:
 
-- Dublin-specific analytics-role demand and trends;
+- Ireland-wide technology skill evidence, with Dublin shown separately;
 - AI-normalised skills with source evidence and confidence;
 - comparison of target role, seniority, industry, and work pattern;
 - a skill-gap view that turns a missing skill into a concrete portfolio or interview-proof action;
@@ -46,7 +46,7 @@ The implementation roadmap and completion criteria are tracked in [PROJECT_PLAN.
 
 ## Current engine
 
-The current implementation can ingest authorised job exports, deduplicate postings, classify the four target roles, preserve exact skill evidence, calculate sample-based demand metrics, and convert missing role skills into proof-of-work recommendations. Public publishing remains disabled until a real source snapshot has been manually reviewed and marked `validated`.
+The current implementation can ingest authorised job exports, deduplicate postings, classify 21 technology role families, preserve exact skill evidence, calculate sample-based demand metrics, and convert missing role skills into proof-of-work recommendations. Public publishing remains disabled until a real source snapshot has been manually reviewed and marked `validated`.
 
 The validation workbench profiles missingness, duplicate rate, role coverage,
 skill-evidence coverage, and employer concentration. It creates a reproducible
@@ -80,6 +80,13 @@ Use `validated` only after completing and documenting the manual extraction revi
 
 See the source-onboarding guide for the `career_radar.validation prepare` and
 `career_radar.validation score` workflow used to create and evaluate the review sample.
+
+### Collect a broader Ireland tech sample
+
+The next dataset targets approximately 200 unique postings across 21 tech role
+families. Use the [bounded collection plan](docs/ireland-tech-collection.md) and
+[Apify JSON input](config/apify-ireland-tech-pilot.json). No paid run is automatic.
+Role-capped samples support skills comparisons, not estimates of occupation prevalence.
 
 ### Import a saved Apify pilot
 

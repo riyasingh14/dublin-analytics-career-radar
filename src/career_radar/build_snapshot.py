@@ -9,6 +9,7 @@ from pathlib import Path
 
 from career_radar.analytics import build_evidence_records, build_market_summary, read_csv
 from career_radar.validation import build_quality_profile
+from career_radar.normalise import geography_group
 
 
 def build_snapshot_payload(
@@ -37,13 +38,22 @@ def build_snapshot_payload(
         "quality": quality,
         "evaluation": evaluation,
         "market": summary,
+        "geography_markets": {
+            geography: build_market_summary(
+                [job for job in jobs if geography_group(job.get("location_text", "")) == geography],
+                evidence,
+            )
+            for geography in sorted({geography_group(job.get("location_text", "")) for job in jobs})
+        },
         "evidence": build_evidence_records(jobs, evidence),
         "provenance": {
+            "geographic_scope": (provenance or {}).get("geographic_scope", "not supplied"),
             "collection_timestamp": (provenance or {}).get("collection_timestamp"),
             "actor": (provenance or {}).get("actor"),
             "export_sha256": (provenance or {}).get("export_sha256"),
             "source_counts": quality["source_counts"],
             "extraction_versions": sorted({row.get("extraction_version", "unknown") for row in evidence}),
+            "role_classification_versions": sorted({row.get("role_classification_version", "unknown") for row in jobs}),
         },
     }
 

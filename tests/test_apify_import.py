@@ -49,3 +49,12 @@ class ApifyImportTests(unittest.TestCase):
     def test_timezone_required_for_collection_time(self):
         with self.assertRaises(ValueError):
             import_export(Path("unused.json"), Path("unused"), "2026-10-18T12:00:00")
+
+    def test_ireland_scope_accepts_cork_but_keeps_dublin_default_and_excludes_uk(self):
+        cork = {**sample_job(), "location": "Cork, County Cork, Ireland"}
+        self.assertEqual(normalise_export([cork], scope="ireland")[0]["location_text"], cork["location"])
+        with self.assertRaises(ValueError):
+            normalise_export([cork])
+        for location in ("Belfast, Northern Ireland, United Kingdom", "Dublin, Ohio, United States"):
+            with self.subTest(location=location), self.assertRaises(ValueError):
+                normalise_export([{**sample_job(), "location": location}], scope="ireland")

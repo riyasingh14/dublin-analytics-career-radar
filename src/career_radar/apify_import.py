@@ -13,6 +13,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 from career_radar.ingest import write_csv
+from career_radar.normalise import geography_group
 
 
 FIELDS = {
@@ -26,8 +27,10 @@ FIELDS = {
 }
 
 
-def normalise_export(items: object) -> list[dict[str, str]]:
-    """Validate Dublin records and allowlist job fields, excluding recruiter profiles."""
+def normalise_export(items: object, scope: str = "dublin") -> list[dict[str, str]]:
+    """Validate the selected geography and allowlist job fields, excluding profiles."""
+    if scope not in {"dublin", "ireland"}:
+        raise ValueError("Scope must be dublin or ireland.")
     if not isinstance(items, list) or not items:
         raise ValueError("Expected a nonempty JSON array of job records.")
     rows = []
@@ -48,9 +51,9 @@ def normalise_export(items: object) -> list[dict[str, str]]:
         url = urlsplit(row["canonical_url"])
         if url.scheme != "https" or url.hostname not in {"linkedin.com", "www.linkedin.com", "ie.linkedin.com"} or not url.path.startswith("/jobs/view/") or url.username or url.password:
             raise ValueError(f"Record {index}: expected an HTTPS LinkedIn job URL.")
-        location = row["location_text"].lower()
-        if "dublin" not in location or "ireland" not in location:
-            raise ValueError(f"Record {index}: location needs Dublin/Ireland review.")
+        geography = geography_group(row["location_text"])
+        if geography == "Outside scope / unknown" or (scope == "dublin" and geography != "Dublin"):
+            raise ValueError(f"Record {index}: location needs {scope} scope review.")
         # Queries and fragments are unnecessary for source evidence and may carry tracking.
         row["canonical_url"] = f"https://www.linkedin.com{url.path.rstrip('/')}"
         rows.append(row)
@@ -62,6 +65,7 @@ def import_export(
     output_dir: Path,
     collected_at: str | None = None,
     run_id: str | None = None,
+    scope: str = "dublin",
 ) -> Path:
     if collected_at:
         timestamp = datetime.fromisoformat(collected_at.replace("Z", "+00:00"))
@@ -69,7 +73,7 @@ def import_export(
             raise ValueError("Collection timestamp must include a timezone.")
     raw = input_path.read_bytes()
     items = json.loads(raw)
-    rows = normalise_export(items)
+    rows = normalise_export(items, scope)
     # A fresh directory prevents accidental replacement of a previous dataset.
     output_dir.mkdir(parents=True, exist_ok=False)
     output = output_dir / "jobs.csv"
@@ -83,6 +87,7 @@ def import_export(
         "source_row_count": len(rows),
         "distinct_source_ids": len({row["source_job_id"] for row in rows}),
         "data_status": "unreviewed",
+        "geographic_scope": scope,
         "job_searches": [
             {
                 "source_job_id": row["source_job_id"],
@@ -108,9 +113,10 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path, required=True, help="A new directory under data/raw/")
     parser.add_argument("--collected-at", help="Actual Actor collection timestamp, with timezone; omit if unknown")
     parser.add_argument("--run-id", help="Optional non-secret Apify run ID")
+    parser.add_argument("--scope", choices=("dublin", "ireland"), default="dublin")
     args = parser.parse_args()
     try:
-        output = import_export(args.input, args.output_dir, args.collected_at, args.run_id)
+        output = import_export(args.input, args.output_dir, args.collected_at, args.run_id, args.scope)
     except (ValueError, OSError) as error:
         parser.exit(1, f"Import failed: {error}\n")
     print(f"Wrote minimal job CSV: {output}")

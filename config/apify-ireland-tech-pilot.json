@@ -1,0 +1,32 @@
+{
+  "titles": [
+    "Software Engineer",
+    "Frontend Developer",
+    "Backend Developer",
+    "Full Stack Developer",
+    "Mobile Developer",
+    "Embedded Software Engineer",
+    "QA Engineer",
+    "DevOps Engineer",
+    "Cloud Engineer",
+    "Security Engineer",
+    "Network Engineer",
+    "IT Support Engineer",
+    "Solutions Architect",
+    "Data Engineer",
+    "Data Scientist",
+    "Machine Learning Engineer",
+    "Data Analyst",
+    "Business Analyst",
+    "BI Analyst",
+    "Product Manager",
+    "Product Analyst"
+  ],
+  "locations": [
+    "Ireland"
+  ],
+  "rows": 15,
+  "publishedAt": "r2592000",
+  "companyProfile": false,
+  "enrichCompany": false
+}

@@ -14,6 +14,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from career_radar.normalise import (
+    ROLE_CLASSIFICATION_VERSION,
+    TAXONOMY_VERSION,
     classify_role,
     classify_work_pattern,
     deduplication_key,
@@ -63,13 +65,15 @@ def main() -> None:
     normalised_jobs: list[dict[str, object]] = []
     evidence_rows: list[dict[str, object]] = []
     seen_keys: set[str] = set()
+    seen_urls: set[str] = set()
 
     for row in jobs:
         description = row["description_text"]
         key = deduplication_key(row["title"], row["employer_name"], row["location_text"], description)
-        if key in seen_keys:
+        if key in seen_keys or row["canonical_url"] in seen_urls:
             continue
         seen_keys.add(key)
+        seen_urls.add(row["canonical_url"])
         role_name, role_confidence = classify_role(row["title"])
         job = {
             "source_name": args.source_name,
@@ -82,6 +86,7 @@ def main() -> None:
             "work_pattern": classify_work_pattern(" ".join([row["location_text"], description])),
             "role_name": role_name or "Unclassified",
             "role_confidence": role_confidence,
+            "role_classification_version": ROLE_CLASSIFICATION_VERSION,
             "collection_timestamp": collection_time,
             "deduplication_key": key,
             "description_text": description,
@@ -115,13 +120,14 @@ def main() -> None:
         "unique_job_count": len(normalised_jobs),
         "duplicates_removed": len(jobs) - len(normalised_jobs),
         "skill_evidence_count": len(evidence_rows),
-        "extraction_version": "taxonomy-v1",
+        "extraction_version": TAXONOMY_VERSION,
+        "role_classification_version": ROLE_CLASSIFICATION_VERSION,
     }
     (args.output_dir / f"ingestion_manifest_{stamp}.json").write_text(
         json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
     )
     print(f"Imported {len(normalised_jobs)} unique jobs from {len(jobs)} source rows.")
-    print(f"Extracted {len(evidence_rows)} skill-evidence records using taxonomy-v1.")
+    print(f"Extracted {len(evidence_rows)} skill-evidence records using {TAXONOMY_VERSION}.")
     print(f"Wrote ingestion manifest for run {stamp}.")
 
 

@@ -74,6 +74,11 @@ may be collected. Do not broaden source collection merely to increase volume.
 
 ## User-provided Apify JSON exports
 
+For the broader Ireland tech pilot use [this collection plan](ireland-tech-collection.md)
+and pass `--scope ireland` when importing. The default remains Dublin for backward
+compatibility. Northern Ireland/UK listings are excluded.
+
+
 The current pilot contains 32 job records provided by the user from
 `bebity/linkedin-jobs-scraper`. Source review was confirmed by the user; this project
 has not independently verified LinkedIn permission. Keep the dataset unreviewed and
@@ -93,7 +98,7 @@ PYTHONPATH=src python -m career_radar.ingest \
 ```
 
 Use a new output directory for each import. The importer checks required fields,
-Dublin/Ireland location text, and HTTPS LinkedIn job links. It writes only the seven
+the selected geographic scope, and HTTPS LinkedIn job links. It writes only the seven
 CSV job fields and a provenance sidecar with the export hash and search terms.
 Recruiter profile fields are omitted; descriptions may still contain personal data
 and require review. Search terms do not determine job-role classification.
