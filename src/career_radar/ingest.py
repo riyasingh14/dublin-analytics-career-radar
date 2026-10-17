@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -107,8 +108,21 @@ def main() -> None:
         evidence_rows,
         list(evidence_rows[0]) if evidence_rows else ["source_job_id", "skill_id"],
     )
+    manifest = {
+        "source_name": args.source_name,
+        "collection_timestamp": collection_time,
+        "source_row_count": len(jobs),
+        "unique_job_count": len(normalised_jobs),
+        "duplicates_removed": len(jobs) - len(normalised_jobs),
+        "skill_evidence_count": len(evidence_rows),
+        "extraction_version": "taxonomy-v1",
+    }
+    (args.output_dir / f"ingestion_manifest_{stamp}.json").write_text(
+        json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+    )
     print(f"Imported {len(normalised_jobs)} unique jobs from {len(jobs)} source rows.")
     print(f"Extracted {len(evidence_rows)} skill-evidence records using taxonomy-v1.")
+    print(f"Wrote ingestion manifest for run {stamp}.")
 
 
 if __name__ == "__main__":

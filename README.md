@@ -48,6 +48,12 @@ The implementation roadmap and completion criteria are tracked in [PROJECT_PLAN.
 
 The current implementation can ingest authorised job exports, deduplicate postings, classify the four target roles, preserve exact skill evidence, calculate sample-based demand metrics, and convert missing role skills into proof-of-work recommendations. Public publishing remains disabled until a real source snapshot has been manually reviewed and marked `validated`.
 
+The validation workbench profiles missingness, duplicate rate, role coverage,
+skill-evidence coverage, and employer concentration. It creates a reproducible
+100-record human-review queue and reports extraction precision with a 95% confidence
+interval. A `validated` label alone cannot unlock publication; the documented review
+threshold must also pass.
+
 ### Run the automated checks
 
 ```bash
@@ -67,6 +73,9 @@ PYTHONPATH=src python -m career_radar.build_snapshot \
 ```
 
 Use `validated` only after completing and documenting the manual extraction review described in [source onboarding](docs/source-onboarding.md).
+
+See the source-onboarding guide for the `career_radar.validation prepare` and
+`career_radar.validation score` workflow used to create and evaluate the review sample.
 
 ### Run the web app
 

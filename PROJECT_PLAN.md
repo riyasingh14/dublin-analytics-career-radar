@@ -47,9 +47,10 @@ Every published market claim must expose its collection window, sample size, sou
 
 - Connect at least one authorised live source.
 - Collect the first dated Dublin snapshot.
-- Profile role coverage, duplicate rate, missingness, and employer concentration.
-- Manually review at least 100 skill extractions.
-- Publish precision and known taxonomy gaps before showing AI insights.
+- [Implemented] Profile role coverage, duplicate rate, missingness, and employer concentration.
+- [Implemented] Generate a reproducible, category-balanced queue for at least 100 reviews.
+- [Implemented] Publish overall/category precision and a 95% confidence interval.
+- [Pending real data] Complete the review and document taxonomy gaps before showing AI insights.
 
 Exit criterion: a documented, reproducible dataset with enough coverage to support labelled sample-based insights.
 

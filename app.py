@@ -53,6 +53,8 @@ def main() -> None:
     snapshot = load_snapshot(str(snapshot_path))
     metadata = snapshot["metadata"]
     market = snapshot["market"]
+    quality = snapshot.get("quality", {})
+    evaluation = snapshot.get("evaluation") or {}
     if not metadata["publish_allowed"]:
         st.warning(
             f"{str(metadata['data_status']).upper()} DATA — not approved for public market claims. "
@@ -155,6 +157,35 @@ def main() -> None:
                 st.success("No uncovered skills were found for this role in the current sample.")
 
     with method_tab:
+        st.subheader("Data quality and extraction evaluation")
+        if quality:
+            quality_cols = st.columns(4)
+            quality_cols[0].metric("Sample jobs", int(quality.get("sample_size", 0)))
+            quality_cols[1].metric(
+                "Classified roles", f"{float(quality.get('classified_role_pct', 0)):.1f}%"
+            )
+            quality_cols[2].metric(
+                "Jobs with skill evidence",
+                f"{float(quality.get('jobs_with_skill_evidence_pct', 0)):.1f}%",
+            )
+            quality_cols[3].metric(
+                "Largest employer share",
+                f"{float(quality.get('top_employer_share_pct', 0)):.1f}%",
+            )
+        if evaluation:
+            interval = evaluation.get("precision_95_ci_pct", ["—", "—"])
+            st.write(
+                f"Human review: **{evaluation.get('reviewed_count', 0)} records** · "
+                f"precision **{float(evaluation.get('precision_pct', 0)):.1f}%** · "
+                f"95% interval **{interval[0]}–{interval[1]}%**"
+            )
+            if evaluation.get("publication_threshold_met"):
+                st.success("The documented human-review threshold has been met.")
+            else:
+                st.warning("The documented human-review threshold has not been met.")
+        else:
+            st.info("No completed human extraction evaluation is attached to this snapshot.")
+
         st.subheader("How to interpret this product")
         st.markdown(
             """

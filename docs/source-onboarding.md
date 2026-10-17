@@ -24,7 +24,7 @@ PYTHONPATH=src python -m career_radar.ingest \
   --source-name "Documented authorised source"
 ```
 
-This writes normalised jobs and evidence records to `data/processed/`. The output includes source ID, URL, collection timestamp, exact matched phrase, rule version, and confidence.
+This writes normalised jobs and evidence records to `data/processed/`. The output includes source ID, URL, collection timestamp, exact matched phrase, rule version, and confidence. It also writes an ingestion manifest containing the source-row count, duplicate count, unique-job count, and extraction version.
 
 ## Approved Greenhouse sources
 
@@ -65,3 +65,37 @@ The connector targets Dublin and the four MVP role queries, deduplicates repeate
 - Review the source count, Dublin coverage, and duplicate rate.
 - Manually check at least 100 extracted skills before reporting precision.
 - Display collection date, source coverage, and sample size beside all dashboard metrics.
+
+Prepare a reproducible, category-balanced review queue and quality profile:
+
+```bash
+PYTHONPATH=src python -m career_radar.validation prepare \
+  --jobs data/processed/jobs_normalised_TIMESTAMP.csv \
+  --evidence data/processed/job_skill_evidence_TIMESTAMP.csv \
+  --source-row-count SOURCE_ROWS \
+  --sample-size 100
+```
+
+Open `data/validation/extraction_review.csv` and label each row `accepted` or
+`rejected`. Use the source phrase, surrounding context, and source URL rather than
+guessing from the normalised skill alone. Then calculate the evaluation:
+
+```bash
+PYTHONPATH=src python -m career_radar.validation score \
+  --review-file data/validation/extraction_review.csv
+```
+
+The result reports overall and category precision, a 95% Wilson confidence interval,
+and whether the project's minimum of 100 reviews at 90% precision has been met. A
+snapshot is publishable only when this evaluation is attached and the dataset is
+explicitly labelled `validated`.
+
+```bash
+PYTHONPATH=src python -m career_radar.build_snapshot \
+  --jobs data/processed/jobs_normalised_TIMESTAMP.csv \
+  --evidence data/processed/job_skill_evidence_TIMESTAMP.csv \
+  --evaluation data/validation/extraction_evaluation.json \
+  --source-row-count SOURCE_ROWS \
+  --dataset-label "Source and collection window" \
+  --data-status validated
+```
