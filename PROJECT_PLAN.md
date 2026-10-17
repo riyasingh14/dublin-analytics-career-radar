@@ -2,6 +2,12 @@
 
 ## Product statement
 
+Primary objective: a portfolio-quality project for data/business analyst applications,
+demonstrating end-to-end analytical and stakeholder decision skills to recruiters
+and senior executives. Commercial viability is a secondary hypothesis. Evaluate
+new features by the analytical question and capability they demonstrate, not feature
+count or unverified claims of competitor superiority.
+
 Dublin Analytics Career Radar is an AI-assisted career intelligence product that analyses observed technology-role requirements across Ireland, with Dublin shown separately and converts a candidate's most important skill gaps into concrete, evidence-backed portfolio actions.
 
 It is a separate repository, application, data pipeline, and deployment from the Telco Churn Analysis project.
@@ -82,6 +88,17 @@ Exit criterion: a candidate can select a target role and current skills, then re
 - Automated tests and scheduled data-refresh workflow where source terms allow it.
 - Accessibility, mobile, empty-state, error-state, and source-link checks.
 - Architecture diagram, screenshots, short demo, CV bullet, and LinkedIn launch post.
+
+### Planned extension — Career Mobility Lab
+
+- A synthetic-data analytical tool for occupation, employer, industry and seniority
+  transitions, including compensation trajectories and scenario comparisons.
+- Linked radial network, readable flow/heatmap alternatives and cohort drill-downs.
+- Seeded career-history generation, SQL transition models, validated denominators,
+  explicit assumptions and synthetic labels in every view/export.
+- Keep synthetic mobility results separate from observed job-market evidence.
+- Design brief: [Career Mobility Lab](docs/career-mobility-lab.md). This module is
+  planned; none of its visualisations or analytical models is implemented yet.
 
 ## Success measures
 

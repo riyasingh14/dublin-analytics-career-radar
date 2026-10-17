@@ -7,6 +7,12 @@
 
 ## Product thesis
 
+The primary project outcome is an interview-ready demonstration of data and business
+analysis: framing useful questions, building reliable models, writing SQL, validating
+metrics and communicating decisions. Product usability matters; commercial adoption
+and superiority over competitors require separate evidence. Technological depth
+should serve these outcomes rather than maximise the feature count.
+
 **Dublin Analytics Career Radar** translates fragmented job descriptions into transparent, current labour-market signals and practical proof-of-work recommendations for analytics candidates.
 
 The distinctive feature is the **proof-of-work planner**. A generic skill-gap product may say “learn SQL.” This product links the gap to Dublin demand and recommends a credible artefact to demonstrate it, such as a SQL cohort-retention analysis, a Power BI executive decision page, or a requirements-to-dashboard case study.
@@ -33,6 +39,15 @@ The distinctive feature is the **proof-of-work planner**. A generic skill-gap pr
 - No automated CV rejection, ranking, or adverse decision-making.
 - No claims of complete coverage of the Dublin job market.
 - No generic chatbot without source citations.
+
+## Planned synthetic career analysis
+
+The [Career Mobility Lab](career-mobility-lab.md) will explore employer, occupation,
+industry and level transitions through simulated histories and salary trajectories.
+It will pair a distinctive radial network with readable analytical views and SQL
+cohort models. Every output remains visibly synthetic; it does not establish real
+salary returns or predict an individual's career outcome. This is a planned
+portfolio extension, separate from the observed market radar.
 
 ## Success measures
 
