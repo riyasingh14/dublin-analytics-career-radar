@@ -41,3 +41,5 @@ Streamlit web app: signals, evidence, and proof-of-work plans
 ```
 
 See [product strategy](docs/product-strategy.md) and [data governance](docs/data-governance.md).
+
+The implementation roadmap and completion criteria are tracked in [PROJECT_PLAN.md](PROJECT_PLAN.md).
