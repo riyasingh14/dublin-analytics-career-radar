@@ -3,7 +3,7 @@ from pathlib import Path
 
 from career_radar.normalise import classify_role, deduplication_key, extract_skills, load_taxonomy
 from career_radar.greenhouse import html_to_text, normalise_greenhouse_job
-from career_radar.adzuna import normalise_adzuna_job
+from career_radar.adzuna import normalise_adzuna_job, planned_request_count
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -52,6 +52,11 @@ class NormalisationTests(unittest.TestCase):
         normalised = normalise_adzuna_job(job)
         self.assertEqual(normalised["source_job_id"], "az-123")
         self.assertEqual(normalised["canonical_url"], "https://www.adzuna.ie/details/az-123")
+
+    def test_adzuna_request_plan_is_explicit(self):
+        self.assertEqual(planned_request_count(("data analyst", "bi analyst"), 2), 4)
+        with self.assertRaises(ValueError):
+            planned_request_count(("data analyst",), 0)
 
 
 if __name__ == "__main__":

@@ -17,6 +17,13 @@ from urllib.request import Request, urlopen
 
 
 DEFAULT_QUERIES = ("data analyst", "business analyst", "bi analyst", "product analyst")
+DEFAULT_MAX_REQUESTS = 4
+
+
+def planned_request_count(queries: tuple[str, ...], pages: int) -> int:
+    if pages < 1:
+        raise ValueError("pages must be at least 1")
+    return len(queries) * pages
 
 
 def normalise_adzuna_job(job: dict[str, object]) -> dict[str, str]:
@@ -59,7 +66,18 @@ def fetch_page(query: str, page: int, app_id: str, app_key: str) -> list[dict[st
 def main() -> None:
     parser = argparse.ArgumentParser(description="Export Dublin postings from the official Adzuna Ireland API.")
     parser.add_argument("--output", type=Path, default=Path("data/raw/adzuna_dublin_jobs.csv"))
-    parser.add_argument("--pages", type=int, default=2, help="Pages to fetch for each target role query")
+    parser.add_argument(
+        "--pages",
+        type=int,
+        default=1,
+        help="Pages per target role query; defaults to one for the free-tier collection policy",
+    )
+    parser.add_argument(
+        "--max-requests",
+        type=int,
+        default=DEFAULT_MAX_REQUESTS,
+        help="Hard request ceiling for this run (default: 4)",
+    )
     parser.add_argument(
         "--terms-checked-on",
         required=True,
@@ -72,10 +90,19 @@ def main() -> None:
     app_key = os.getenv("ADZUNA_APP_KEY")
     if not app_id or not app_key:
         raise SystemExit("Set ADZUNA_APP_ID and ADZUNA_APP_KEY securely before running this connector.")
-    if args.pages < 1:
-        raise SystemExit("--pages must be at least 1")
-
     queries = tuple(args.queries) if args.queries else DEFAULT_QUERIES
+    try:
+        request_count = planned_request_count(queries, args.pages)
+    except ValueError as error:
+        raise SystemExit(str(error)) from error
+    if args.max_requests < 1:
+        raise SystemExit("--max-requests must be at least 1")
+    if request_count > args.max_requests:
+        raise SystemExit(
+            f"Planned run needs {request_count} API requests, exceeding the "
+            f"--max-requests limit of {args.max_requests}."
+        )
+
     rows_by_source_id: dict[str, dict[str, str]] = {}
     for query in queries:
         for page in range(1, args.pages + 1):
@@ -94,6 +121,7 @@ def main() -> None:
         writer.writerows(rows_by_source_id.values())
 
     print(f"Exported {len(rows_by_source_id)} unique Dublin postings from {len(queries)} role queries.")
+    print(f"API requests used: {request_count} of the {args.max_requests} run limit.")
     print(f"Terms reviewed on: {args.terms_checked_on}")
     print(f"Collection timestamp: {datetime.now(UTC).replace(microsecond=0).isoformat()}")
 

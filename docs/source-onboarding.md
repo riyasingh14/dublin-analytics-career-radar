@@ -59,6 +59,19 @@ PYTHONPATH=src python -m career_radar.ingest \
 
 The connector targets Dublin and the four MVP role queries, deduplicates repeated results across queries, and writes the original source URL and collection timestamp into downstream outputs.
 
+### Zero-budget collection policy
+
+The default run fetches one page for each of the four target roles: four API requests
+in total, with up to 50 results returned per request. The connector enforces a hard
+`--max-requests 4` ceiling so increasing the page count fails before any request is
+made. Run the collection weekly, keep the dated processed snapshot, and use fixtures
+for development rather than repeatedly calling the live API. If the account's current
+Adzuna allowance is lower, reduce the queries or ceiling to match it.
+
+Greenhouse company career feeds are the preferred no-cost supplementary source, but
+only boards recorded in `data/reference/greenhouse_sources.csv` after a terms review
+may be collected. We do not scrape general job sites to increase volume.
+
 ## Validation before publishing insights
 
 - Verify source reuse permission and log the check date.

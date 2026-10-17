@@ -54,6 +54,10 @@ skill-evidence coverage, and employer concentration. It creates a reproducible
 interval. A `validated` label alone cannot unlock publication; the documented review
 threshold must also pass.
 
+Live Adzuna collection defaults to a zero-budget four-request weekly run. A hard
+request ceiling prevents accidental high-volume API use; local fixtures and saved
+snapshots are used for development.
+
 ### Run the automated checks
 
 ```bash
