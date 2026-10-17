@@ -6,6 +6,8 @@ import csv
 from collections import Counter, defaultdict
 from pathlib import Path
 
+from career_radar.normalise import ROLE_RULES
+
 
 def read_csv(path: Path) -> list[dict[str, str]]:
     with path.open(newline="", encoding="utf-8") as file:
@@ -54,6 +56,8 @@ def build_market_summary(
 
     role_skills: dict[str, list[dict[str, object]]] = {}
     for role_name, skills in role_skill_jobs.items():
+        if role_name not in ROLE_RULES:
+            continue
         denominator = role_counts[role_name]
         rows = [
             {
@@ -109,3 +113,25 @@ def recommend_proof_of_work(
         if len(recommendations) == limit:
             break
     return recommendations
+
+
+def build_evidence_records(
+    jobs: list[dict[str, str]], evidence: list[dict[str, str]]
+) -> list[dict[str, str]]:
+    """Join exact skill phrases to their source jobs without full descriptions or profiles."""
+    jobs_by_url = {job["canonical_url"]: job for job in jobs}
+    records = []
+    for item in evidence:
+        job = jobs_by_url.get(item["canonical_url"])
+        if job is None:
+            continue
+        records.append({
+            **{key: str(item.get(key, "")) for key in (
+                "skill_id", "skill_name", "source_phrase", "extraction_method",
+                "extraction_version", "confidence", "canonical_url",
+            )},
+            **{key: str(job.get(key, "")) for key in (
+                "title", "employer_name", "role_name", "source_name", "posted_at",
+            )},
+        })
+    return records

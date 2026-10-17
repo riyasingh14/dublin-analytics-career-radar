@@ -21,6 +21,16 @@ class NormalisationTests(unittest.TestCase):
     def test_classifies_target_role(self):
         self.assertEqual(classify_role("Senior Business Intelligence Analyst"), ("BI Analyst", 0.99))
 
+    def test_role_title_variants_and_unrelated_titles(self):
+        for title, role in (("Senior Business Systems Analyst", "Business Analyst"),
+                            ("Power BI Consultant", "BI Analyst"),
+                            ("Senior Product Analyst", "Product Analyst")):
+            with self.subTest(title=title):
+                self.assertEqual(classify_role(title)[0], role)
+        for title in ("Metadata Analyst", "Transport Analyst", "Business Operations Manager"):
+            with self.subTest(title=title):
+                self.assertEqual(classify_role(title), (None, 0.0))
+
     def test_deduplication_is_case_and_space_insensitive(self):
         first = deduplication_key("Data Analyst", "Example", "Dublin", "Use SQL")
         second = deduplication_key(" data analyst ", "example", "dublin", "use   sql")

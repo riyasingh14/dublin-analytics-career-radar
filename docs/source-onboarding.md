@@ -6,7 +6,7 @@
 2. An official job-board API used according to its terms.
 3. A public company careers API/feed after its reuse terms are checked and recorded.
 
-Do not use LinkedIn or Indeed page scraping.
+Do not perform direct LinkedIn or Indeed scraping. The user has approved importing the existing Apify LinkedIn export for private validation; this is not a claim of LinkedIn authorisation. Do not run additional paid collection automatically.
 
 ## Required CSV columns
 
@@ -44,9 +44,9 @@ PYTHONPATH=src python -m career_radar.ingest \
   --source-name "Approved Greenhouse sources"
 ```
 
-## Adzuna Ireland API
+## Adzuna connector — Ireland coverage unverified
 
-The project also supports the official Adzuna Ireland API. Create an Adzuna developer application, review the current API terms for your intended portfolio use, then save the application values as secure environment variables—not in a file or Git history:
+The existing Ireland search route returned HTTP 404 during the initial attempt. Ireland API support and account activation requirements remain unverified. Do not pay, retry automatically, or substitute UK data for Dublin coverage. The connector is retained as an experimental optional source. Create an Adzuna developer application, review the current API terms for your intended portfolio use, then save the application values as secure environment variables—not in a file or Git history:
 
 ```bash
 export ADZUNA_APP_ID="..."
@@ -70,7 +70,46 @@ Adzuna allowance is lower, reduce the queries or ceiling to match it.
 
 Greenhouse company career feeds are the preferred no-cost supplementary source, but
 only boards recorded in `data/reference/greenhouse_sources.csv` after a terms review
-may be collected. We do not scrape general job sites to increase volume.
+may be collected. Do not broaden source collection merely to increase volume.
+
+## User-provided Apify JSON exports
+
+The current pilot contains 32 job records provided by the user from
+`bebity/linkedin-jobs-scraper`. Source review was confirmed by the user; this project
+has not independently verified LinkedIn permission. Keep the dataset unreviewed and
+private while reviewing extraction and source permissions. The actor's `verified`
+job field, if present, describes a posting badge, not permission to collect data.
+
+Import an existing JSON array without contacting Apify or consuming credits:
+
+```bash
+PYTHONPATH=src python -m career_radar.apify_import \
+  --input /path/to/export.json \
+  --output-dir data/raw/apify_pilot
+PYTHONPATH=src python -m career_radar.ingest \
+  --input data/raw/apify_pilot/jobs.csv \
+  --source-name "LinkedIn via user-provided Apify export" \
+  --output-dir data/processed/apify_pilot
+```
+
+Use a new output directory for each import. The importer checks required fields,
+Dublin/Ireland location text, and HTTPS LinkedIn job links. It writes only the seven
+CSV job fields and a provenance sidecar with the export hash and search terms.
+Recruiter profile fields are omitted; descriptions may still contain personal data
+and require review. Search terms do not determine job-role classification.
+
+Supply `--collected-at` (a timestamp with timezone) and `--run-id` only when known
+from the actual Apify run. Leave collection time unknown rather than treating
+posting dates or local ingestion time as the scraping date. Pass
+`--provenance data/raw/apify_pilot/provenance.json` to `career_radar.build_snapshot`
+to include collection-time status in the dashboard. Do not include tokens or cookies.
+
+Use the existing validation commands below with the generated jobs and evidence
+paths, then build a snapshot labelled `unreviewed`. Set `CAREER_RADAR_SNAPSHOT` to
+the snapshot path when starting Streamlit. This import does not start a paid Actor
+run. The user's total Apify budget is US$10; the proposed pilot maximum was US$1.
+Actual pilot cost has not been supplied. Check actual spend before any new run;
+keep scheduling and paid enrichment disabled unless explicitly requested.
 
 ## Validation before publishing insights
 

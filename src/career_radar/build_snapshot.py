@@ -7,7 +7,7 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
-from career_radar.analytics import build_market_summary, read_csv
+from career_radar.analytics import build_evidence_records, build_market_summary, read_csv
 from career_radar.validation import build_quality_profile
 
 
@@ -18,6 +18,7 @@ def build_snapshot_payload(
     data_status: str,
     source_row_count: int | None = None,
     evaluation: dict[str, object] | None = None,
+    provenance: dict[str, object] | None = None,
 ) -> dict[str, object]:
     summary = build_market_summary(jobs, evidence)
     quality = build_quality_profile(jobs, evidence, source_row_count)
@@ -36,6 +37,14 @@ def build_snapshot_payload(
         "quality": quality,
         "evaluation": evaluation,
         "market": summary,
+        "evidence": build_evidence_records(jobs, evidence),
+        "provenance": {
+            "collection_timestamp": (provenance or {}).get("collection_timestamp"),
+            "actor": (provenance or {}).get("actor"),
+            "export_sha256": (provenance or {}).get("export_sha256"),
+            "source_counts": quality["source_counts"],
+            "extraction_versions": sorted({row.get("extraction_version", "unknown") for row in evidence}),
+        },
     }
 
 
@@ -61,6 +70,7 @@ def main() -> None:
         type=Path,
         help="JSON output from career_radar.validation score",
     )
+    parser.add_argument("--provenance", type=Path, help="Source-import provenance JSON, if available")
     args = parser.parse_args()
 
     jobs = read_csv(args.jobs)
@@ -75,6 +85,7 @@ def main() -> None:
         args.data_status,
         args.source_row_count,
         evaluation,
+        json.loads(args.provenance.read_text(encoding="utf-8")) if args.provenance else None,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(snapshot, indent=2) + "\n", encoding="utf-8")

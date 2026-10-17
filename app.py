@@ -10,6 +10,7 @@ import pandas as pd
 import streamlit as st
 
 from career_radar.analytics import load_proof_recommendations, recommend_proof_of_work
+from career_radar.normalise import ROLE_RULES
 
 
 ROOT = Path(__file__).resolve().parent
@@ -18,7 +19,7 @@ TAXONOMY_PATH = ROOT / "data" / "reference" / "skills.csv"
 
 
 @st.cache_data
-def load_snapshot(path: str) -> dict[str, object]:
+def load_snapshot(path: str, modified_ns: int) -> dict[str, object]:
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
@@ -50,11 +51,16 @@ def main() -> None:
         )
         st.stop()
 
-    snapshot = load_snapshot(str(snapshot_path))
+    try:
+        snapshot = load_snapshot(str(snapshot_path), snapshot_path.stat().st_mtime_ns)
+    except (OSError, ValueError):
+        st.error("The market snapshot could not be read. Rebuild it or select a valid snapshot.")
+        st.stop()
     metadata = snapshot["metadata"]
     market = snapshot["market"]
     quality = snapshot.get("quality", {})
     evaluation = snapshot.get("evaluation") or {}
+    provenance = snapshot.get("provenance") or {}
     if not metadata["publish_allowed"]:
         st.warning(
             f"{str(metadata['data_status']).upper()} DATA — not approved for public market claims. "
@@ -66,9 +72,14 @@ def main() -> None:
         f"Status: {metadata['data_status']}"
     )
     st.caption(str(metadata["disclosure"]))
+    st.caption(
+        f"Source collection time: {provenance.get('collection_timestamp') or 'Not supplied'} · "
+        f"Source count: {len(quality.get('source_counts', {}))} · "
+        "Rule-based extraction; generated time is not source collection time."
+    )
 
-    overview_tab, role_tab, planner_tab, method_tab = st.tabs(
-        ["Market overview", "Role comparison", "Proof-of-work planner", "Methodology"]
+    overview_tab, role_tab, evidence_tab, planner_tab, method_tab = st.tabs(
+        ["Market overview", "Role comparison", "Skills evidence", "Proof-of-work planner", "Methodology"]
     )
 
     with overview_tab:
@@ -77,7 +88,7 @@ def main() -> None:
         patterns = market["work_pattern_counts"]
         metric_cols = st.columns(3)
         metric_cols[0].metric("Postings in this sample", total_jobs)
-        metric_cols[1].metric("Target role groups", len(roles))
+        metric_cols[1].metric("Target role groups", sum(role in ROLE_RULES for role in roles))
         metric_cols[2].metric("Skills observed", len(market["top_skills"]))
 
         st.subheader("Skills appearing in this sample")
@@ -107,7 +118,7 @@ def main() -> None:
         chart_cols[1].bar_chart(pd.Series(patterns, name="Postings"))
 
     with role_tab:
-        available_roles = sorted(market["role_skills"])
+        available_roles = sorted(role for role in market["role_skills"] if role in ROLE_RULES)
         if available_roles:
             selected_role = st.selectbox("Compare skills for", available_roles)
             role_df = pd.DataFrame(market["role_skills"][selected_role])
@@ -125,6 +136,30 @@ def main() -> None:
         else:
             st.info("No classified target roles are available in this snapshot.")
 
+    with evidence_tab:
+        st.subheader("Trace a skill to its source")
+        st.caption("Matched phrases are rule-based evidence of a mention and still require human review.")
+        evidence_records = snapshot.get("evidence", [])
+        if evidence_records:
+            evidence_df = pd.DataFrame(evidence_records)
+            selected_skill = st.selectbox("Skill evidence", sorted(evidence_df["skill_name"].unique()))
+            selected_evidence_role = st.selectbox(
+                "Evidence role", ["All roles", *sorted(evidence_df["role_name"].unique())]
+            )
+            filtered = evidence_df[evidence_df["skill_name"] == selected_skill]
+            if selected_evidence_role != "All roles":
+                filtered = filtered[filtered["role_name"] == selected_evidence_role]
+            st.write(f"{filtered['canonical_url'].nunique()} source postings in this selection")
+            st.dataframe(
+                filtered[["skill_name", "source_phrase", "title", "employer_name", "role_name",
+                          "canonical_url", "extraction_method", "extraction_version"]],
+                hide_index=True,
+                width="stretch",
+                column_config={"canonical_url": st.column_config.LinkColumn("Source job")},
+            )
+        else:
+            st.info("Rebuild this snapshot to include source-linked skill evidence.")
+
     with planner_tab:
         st.subheader("Turn a market gap into credible evidence")
         st.write(
@@ -133,7 +168,7 @@ def main() -> None:
         )
         taxonomy = load_taxonomy()
         skill_labels = dict(zip(taxonomy["skill_name"], taxonomy["skill_id"]))
-        target_roles = sorted(market["role_skills"])
+        target_roles = sorted(role for role in market["role_skills"] if role in ROLE_RULES)
         if target_roles:
             target_role = st.selectbox("Target role", target_roles, key="planner_role")
             selected_skill_names = st.multiselect(
@@ -155,9 +190,20 @@ def main() -> None:
                         st.markdown(f"**Build this evidence:** {recommendation['proof_of_work']}")
             else:
                 st.success("No uncovered skills were found for this role in the current sample.")
+        else:
+            st.info("No target-role evidence is available for recommendations in this sample.")
 
     with method_tab:
         st.subheader("Data quality and extraction evaluation")
+        if quality.get("source_counts"):
+            st.write("Source coverage", quality["source_counts"])
+        if provenance.get("extraction_versions"):
+            st.caption("Extraction versions: " + ", ".join(provenance["extraction_versions"]))
+        if quality.get("role_counts", {}).get("Unclassified", 0):
+            st.info(
+                f"{quality['role_counts']['Unclassified']} postings have no target-role classification. "
+                "They remain in sample-wide counts and are excluded from role recommendations."
+            )
         if quality:
             quality_cols = st.columns(4)
             quality_cols[0].metric("Sample jobs", int(quality.get("sample_size", 0)))

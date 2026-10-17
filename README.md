@@ -24,7 +24,7 @@ Job boards list vacancies. Enterprise labour-market platforms are expensive and 
 
 ## Data strategy
 
-Only authorised, documented sources will be used: official job-board APIs where permitted, public company careers APIs/feed endpoints, and user-provided CSV imports. The project will not scrape LinkedIn or Indeed pages. Every observation will retain source, URL, and collection timestamp so the dashboard never claims comprehensive market coverage.
+Only authorised, documented sources will be used: official job-board APIs where permitted, public company careers APIs/feed endpoints, and user-provided CSV imports. The project does not directly scrape LinkedIn or Indeed pages. A user-approved Apify job export can be imported for private validation; see the source-onboarding guide for provenance, privacy and budget limits. Every observation will retain source, URL, and collection timestamp so the dashboard never claims comprehensive market coverage.
 
 ## Architecture
 
@@ -80,6 +80,19 @@ Use `validated` only after completing and documenting the manual extraction revi
 
 See the source-onboarding guide for the `career_radar.validation prepare` and
 `career_radar.validation score` workflow used to create and evaluate the review sample.
+
+### Import a saved Apify pilot
+
+```bash
+PYTHONPATH=src python -m career_radar.apify_import \
+  --input /path/to/export.json --output-dir data/raw/apify_pilot
+```
+
+This is a local import and spends no Apify credits. Follow
+[source onboarding](docs/source-onboarding.md#user-provided-apify-json-exports)
+for ingestion, review, snapshot creation and optional known collection-time metadata.
+The dashboard includes a source-linked skills evidence explorer. Unclassified jobs
+remain in sample-wide counts but are excluded from target-role recommendations.
 
 ### Run the web app
 

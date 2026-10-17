@@ -50,7 +50,8 @@ Every published market claim must expose its collection window, sample size, sou
 - [Implemented] Profile role coverage, duplicate rate, missingness, and employer concentration.
 - [Implemented] Generate a reproducible, category-balanced queue for at least 100 reviews.
 - [Implemented] Publish overall/category precision and a 95% confidence interval.
-- [Pending real data] Complete the review and document taxonomy gaps before showing AI insights.
+- [Pilot imported] 32 user-provided Apify records; skill extraction review remains pending.
+- [Pending human review] Complete the review and document taxonomy gaps before showing AI insights.
 
 Exit criterion: a documented, reproducible dataset with enough coverage to support labelled sample-based insights.
 
@@ -68,7 +69,7 @@ Exit criterion: every recommendation can be traced to market evidence and a revi
 
 - Market overview with freshness and coverage labels.
 - Role comparison.
-- Skills evidence explorer.
+- [Implemented] Skills evidence explorer with exact phrases, job links, employer and role filters.
 - Candidate skill-gap assessment.
 - Proof-of-work planner.
 - Methodology, privacy, and limitations pages.
@@ -93,7 +94,7 @@ Exit criterion: a candidate can select a target role and current skills, then re
 ## Explicit non-goals
 
 - Building another general job-search site.
-- Scraping LinkedIn or Indeed pages.
+- Direct scraping of LinkedIn or Indeed pages. A user-approved Apify export may be imported for private validation with recorded provenance.
 - Claiming comprehensive coverage of the Dublin labour market.
 - Automatically rejecting, ranking, or making adverse decisions about candidates.
 - Adding a chatbot before the evidence and evaluation layers work.

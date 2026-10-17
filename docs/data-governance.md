@@ -2,12 +2,12 @@
 
 ## Data provenance
 
-The product stores the source, canonical job URL, collection timestamp, and extraction version for every posting. Public insights always show the collection window and sample size.
+The product stores the source, canonical job URL, collection timestamp when known, ingestion timestamp, and extraction version for every posting. Public insights always show the verified collection window and sample size. Unknown source collection time must be displayed as unknown, never inferred from the snapshot generation time.
 
 ## Responsible collection
 
 - Use official APIs, public company careers endpoints where their terms permit reuse, or user-provided files.
-- Do not scrape LinkedIn or Indeed pages.
+- Do not directly scrape LinkedIn or Indeed pages. The user-approved Apify export is an exception for private import and validation; record its provenance without claiming independently verified platform authorisation. Additional paid collection is not automatic.
 - Remove duplicate jobs using canonical URL, employer, title, location, and text similarity.
 - Respect source removal requests and expired postings.
 

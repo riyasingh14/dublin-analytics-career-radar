@@ -63,8 +63,8 @@ def extract_skills(description: str, taxonomy: list[Skill]) -> list[dict[str, st
 
 ROLE_RULES = {
     "Data Analyst": ("data analyst", "analytics analyst"),
-    "Business Analyst": ("business analyst",),
-    "BI Analyst": ("bi analyst", "business intelligence analyst", "reporting analyst"),
+    "Business Analyst": ("business analyst", "business systems analyst"),
+    "BI Analyst": ("bi analyst", "business intelligence analyst", "reporting analyst", "power bi consultant"),
     "Product Analyst": ("product analyst",),
 }
 
@@ -72,7 +72,7 @@ ROLE_RULES = {
 def classify_role(title: str) -> tuple[str | None, float]:
     lower_title = (title or "").lower()
     for role, terms in ROLE_RULES.items():
-        if any(term in lower_title for term in terms):
+        if any(re.search(r"(?<!\w)" + re.escape(term) + r"(?!\w)", lower_title) for term in terms):
             return role, 0.99
     return None, 0.0
 
