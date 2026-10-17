@@ -43,3 +43,27 @@ Streamlit web app: signals, evidence, and proof-of-work plans
 See [product strategy](docs/product-strategy.md) and [data governance](docs/data-governance.md).
 
 The implementation roadmap and completion criteria are tracked in [PROJECT_PLAN.md](PROJECT_PLAN.md).
+
+## Current engine
+
+The current implementation can ingest authorised job exports, deduplicate postings, classify the four target roles, preserve exact skill evidence, calculate sample-based demand metrics, and convert missing role skills into proof-of-work recommendations. Public publishing remains disabled until a real source snapshot has been manually reviewed and marked `validated`.
+
+### Run the automated checks
+
+```bash
+PYTHONPATH=src python -m unittest discover -s tests -v
+```
+
+### Build a labelled market snapshot
+
+After processing an authorised export, provide the generated job and evidence files:
+
+```bash
+PYTHONPATH=src python -m career_radar.build_snapshot \
+  --jobs data/processed/jobs_normalised_TIMESTAMP.csv \
+  --evidence data/processed/job_skill_evidence_TIMESTAMP.csv \
+  --dataset-label "Source and collection-window description" \
+  --data-status unreviewed
+```
+
+Use `validated` only after completing and documenting the manual extraction review described in [source onboarding](docs/source-onboarding.md).
