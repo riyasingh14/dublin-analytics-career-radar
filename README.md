@@ -67,3 +67,12 @@ PYTHONPATH=src python -m career_radar.build_snapshot \
 ```
 
 Use `validated` only after completing and documenting the manual extraction review described in [source onboarding](docs/source-onboarding.md).
+
+### Run the web app
+
+```bash
+python -m pip install -r requirements.txt
+PYTHONPATH=src streamlit run app.py
+```
+
+The app shows an empty setup state when no snapshot exists and a prominent non-public warning for `fixture` or `unreviewed` data.
