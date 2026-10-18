@@ -11,6 +11,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "test": "playwright test",
+    "test:deployed": "node scripts/check-deployment.mjs",
     "test:types": "tsc --noEmit"
   },
   "dependencies": {

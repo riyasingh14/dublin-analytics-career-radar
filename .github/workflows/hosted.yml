@@ -1,0 +1,44 @@
+name: Hosted release checks
+
+on:
+  deployment_status:
+  workflow_dispatch:
+    inputs:
+      deployment_url:
+        description: Public HTTPS deployment origin
+        required: true
+        default: https://dublin-analytics-career-radar.vercel.app/
+
+permissions:
+  contents: read
+
+jobs:
+  hosted:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+      (github.event.deployment.environment == 'Production' ||
+       github.event.deployment.environment == 'production'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Check the actual hosted release without local servers
+        env:
+          DEPLOYMENT_URL: ${{ inputs.deployment_url || github.event.deployment_status.environment_url || github.event.deployment_status.target_url }}
+        run: npm run test:deployed -- "$DEPLOYMENT_URL"
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: hosted-browser-failures
+          path: test-results/
+          retention-days: 7

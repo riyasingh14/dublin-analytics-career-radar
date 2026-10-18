@@ -50,6 +50,31 @@ test("constellation recomputes a sparse geography and exports labelled metrics",
   );
 });
 
+test("constellation connects keyboard selection to exact source phrases and all supporting jobs", async ({ page }) => {
+  await page.goto("/#/constellation");
+  await page.getByRole("button", { name: "Inspect Communication and Excel: 10 fictional postings", exact: true }).click();
+  await expect(page.getByText("Selected: Communication + Excel", { exact: true })).toBeVisible();
+  const edge = page.getByRole("button", { name: "Inspect Excel and SQL: 10 fictional postings", exact: true });
+  await expect(edge).toBeVisible();
+  await edge.focus();
+  await page.keyboard.press("Enter");
+  await expect(edge).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText("Selected: Excel + SQL", { exact: true })).toBeVisible();
+  await expect(page.getByText("10 fictional postings support the selected pair.", { exact: false })).toBeVisible();
+  await expect(page.locator("details.source-row")).toHaveCount(8);
+  await page.getByRole("button", { name: "Show all 10 supporting examples" }).click();
+  await expect(page.locator("details.source-row")).toHaveCount(10);
+  const first = page.locator("details.source-row").first();
+  await first.locator("summary").click();
+  await expect(first.getByText("Excel · exact matched phrase", { exact: true })).toBeVisible();
+  await expect(first.getByText("SQL · exact matched phrase", { exact: true })).toBeVisible();
+  await expect(first.locator("q").filter({ hasText: /^SQL$/ })).toBeVisible();
+  await expect(first.getByText("Method: rule · Version: taxonomy-v2-tech").first()).toBeVisible();
+  await page.getByLabel("Focus skill", { exact: true }).selectOption("git");
+  await expect(page.getByText("Selected: Excel + SQL", { exact: true })).toHaveCount(0);
+  await expect(page.locator(".selected-pair")).toContainText("Git");
+});
+
 test("diagnostic analyses, reviews, clears and retains no rendered report", async ({
   page,
 }) => {

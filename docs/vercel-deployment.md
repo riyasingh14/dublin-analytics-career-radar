@@ -124,9 +124,55 @@ Keep the last known-good release and inspect the underlying error before retryin
 
 ## Current connection status
 
-The user confirmed GitHub is connected to Vercel. This coding workspace has no
-linked Vercel project or authenticated CLI session. A CLI login was attempted but
-failed with a network fetch error. This does not establish a problem with the
-user's Vercel account. Import/open the repository in the Vercel dashboard and share
-the resulting deployment URL for hosted verification. No hosted URL has been
-confirmed during this task.
+The owner reports deployment at
+<https://dublin-analytics-career-radar.vercel.app/> and previously confirmed GitHub
+is connected. This workspace has no linked Vercel project or authenticated CLI
+session. Requests to the supplied URL fail at the egress proxy with tunnel HTTP
+403; direct Playwright requests fail DNS resolution (`EAI_AGAIN`). Neither result
+establishes an application failure or a successful hosted release.
+
+The requested official `vercel/vercel-plugin` was downloaded and installed with
+`plugins@1.3.5`. Its standard Codex marketplace install failed because neither
+configured curated marketplace contained `vercel`; installing the same official
+repository through the installer's supported local-source mode succeeded. It
+updated the user-level plugin cache, marketplace and Codex configuration outside
+this repository. The installer explicitly requires an agent-tool restart. No
+Vercel MCP tools or Vercel OAuth grant are active in this conversation yet.
+Installation is not account authentication.
+
+After restarting/loading the plugin, complete its Vercel OAuth flow. Verify the
+account/team and existing project's Git repository before linking or deploying.
+The existing GitHub integration can deliver subsequent `main` commits without a
+workspace token; its production branch and resulting deployment status still need
+account-side verification. Do not paste access tokens into chat. If the workspace
+uses an Internet allowlist, retain existing destinations and allow the supplied
+deployment hostname, `mcp.vercel.com`, `api.vercel.com`, `vercel.com` and any actual
+OAuth redirect destination reported by the supported login flow.
+
+## Repeatable release verification
+
+```bash
+npm run test:deployed -- https://dublin-analytics-career-radar.vercel.app/
+# Smaller API-only check:
+npm run test:deployed -- https://dublin-analytics-career-radar.vercel.app/ --grep 'release API'
+```
+
+This requires Playwright Chromium (or `PLAYWRIGHT_CHROMIUM_EXECUTABLE`). The runner
+requires an explicit HTTPS origin without credentials, path, query or fragment.
+It sets the suite's remote base URL and disables both local test servers. Failures
+retain their exit status. The tests use synthetic inputs and make no paid source
+calls. They cover all four tools, mobile navigation, downloads, API health,
+synthetic-only bootstrap, filtered denominators and safe validation errors.
+
+`.github/workflows/quality.yml` runs the build, Python suite and local browser/API
+suite on pushes to `main` and pull requests. `.github/workflows/hosted.yml` runs the
+same browser/API suite on successful production `deployment_status` events and
+supports manual **Run workflow** with a deployment URL. The deployment-event path
+checks out the deployed commit to avoid testing future UI expectations against an
+older release. Automatic execution depends on Vercel emitting GitHub deployment
+events; use the manual workflow if it does not. Protected preview URLs may require
+authenticated Vercel access; do not disable protection to make tests pass.
+
+The workflows are configured but their hosted GitHub execution has not been
+observed from this workspace. Inspect the Actions results and Vercel deployment
+logs after pushing. Local green checks alone are not hosted acceptance evidence.

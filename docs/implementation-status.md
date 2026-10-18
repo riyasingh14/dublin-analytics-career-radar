@@ -15,8 +15,25 @@ research dependencies moved to `requirements-local.txt`. See
 The Vercel iteration passed 80 Python tests, seven Playwright browser flows, the
 production frontend build and an isolated deployment-only Python runtime check.
 A successful local build/test does not establish an actual hosted deployment. The
-CLI is logged out and its login attempt failed with a network fetch error; the
-account-side GitHub project import and hosted checks remain outstanding.
+CLI is logged out and its login attempt failed with a network fetch error. The
+owner subsequently supplied the deployed website URL. Independent hosted checks
+remain blocked by proxy HTTP 403 / direct DNS failure in this workspace. The
+official Vercel plugin is installed in the user configuration; tool restart and
+OAuth are still required before claiming an authenticated Vercel connection.
+
+The subsequent evidence/release iteration adds keyboard-selectable network edges,
+visible selection, exact matched source phrases with rule versions, and access to
+every supporting fictional posting. Changing focus clears incompatible pair
+selection. Filter recalculation clears stale results. The release runner targets
+an explicit hosted origin without local fallback; GitHub workflows configure
+local checks and deployment-event/manual hosted checks. Workflow execution and
+actual hosted acceptance are still unverified.
+
+Validation for this subsequent iteration: all 80 Python tests, all 10 browser/API
+checks and the TypeScript/production build passed locally. The graph check covers
+both pointer and keyboard selection, exact phrases, rule versions, expansion to
+all supporting examples and clearing incompatible selection on skill focus.
+Both workflow YAML files parsed locally; this is not evidence of GitHub execution.
 
 ## What works
 

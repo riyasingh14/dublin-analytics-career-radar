@@ -19,8 +19,9 @@ Job boards list vacancies. Enterprise labour-market platforms are expensive and 
 A React/Vite website and lightweight Python API now provide the public-demo version
 of all four tools. It uses generated examples; the private job sample is not exposed.
 See **[Vercel deployment](docs/vercel-deployment.md)** for GitHub linking, local setup,
-validation and hosted smoke checks. Account linking and a hosted deployment still
-need to be confirmed; code readiness is not a live website.
+validation and hosted smoke checks. The owner reports deployment at
+[dublin-analytics-career-radar.vercel.app](https://dublin-analytics-career-radar.vercel.app/).
+Workspace network restrictions currently prevent independent hosted verification.
 
 ```bash
 python -m venv .venv
@@ -35,6 +36,13 @@ npm run dev
 `npm run build` creates the static site. `npm test` runs the browser flows (requires
 Playwright Chromium; see the deployment guide). The Vercel project root must be the
 repository root; framework Vite, output `dist`. No API keys are needed for the demo.
+
+Run the browser/API release suite against the actual website with
+`npm run test:deployed -- https://dublin-analytics-career-radar.vercel.app/`.
+GitHub Actions checks builds, Python and browser regressions on pushes/PRs. A
+separate hosted workflow runs when Vercel emits a successful production deployment
+event, or manually from Actions. Its results must be inspected before claiming a
+hosted release is verified.
 
 ## Selected product scope
 

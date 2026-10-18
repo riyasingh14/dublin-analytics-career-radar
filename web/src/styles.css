@@ -812,6 +812,43 @@ textarea:disabled {
 .graph-node:hover circle {
   stroke: #bc693f;
 }
+.graph-edge,
+.graph-line {
+  cursor: pointer;
+}
+.graph-line:hover .edge-mark {
+  stroke: #a74726;
+  stroke-width: 5;
+  stroke-opacity: 1;
+}
+.graph-edge:hover circle,
+.graph-edge:focus-visible circle {
+  fill: #a74726;
+  stroke: #a74726;
+  stroke-width: 4;
+}
+.graph-node:focus-visible circle {
+  stroke: #a74726;
+  stroke-width: 5;
+}
+.selected-pair {
+  font-weight: 600;
+}
+.phrase-evidence {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  gap: 18px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #edf2eb;
+}
+.phrase-evidence dt {
+  font-size: .8rem;
+  font-weight: 600;
+}
+.phrase-evidence dd {
+  margin: 8px 0 0;
+}
 .mobility-network text {
   font-size: 8px;
   fill: #45644f;

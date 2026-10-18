@@ -21,6 +21,7 @@ export default function Constellation({
     const c = new AbortController();
     setBusy(true);
     setError("");
+    setResult(null);
     api("constellation", { role, geography, min_pair_count: minimum }, c.signal)
       .then(setResult)
       .catch((e) => {
@@ -59,9 +60,19 @@ export default function Constellation({
   const connected = new Set(
     graphEdges.flatMap((p: any) => [p.skill_a, p.skill_b]),
   );
+  const inspectionPairs = pairs.filter(
+    (p: any) => !focus || [p.skill_a, p.skill_b].includes(focus),
+  );
   const selected =
-    pairs.find((p: any) => p.skill_a + "|" + p.skill_b === pairKey) ||
-    pairs.find((p: any) => !focus || [p.skill_a, p.skill_b].includes(focus));
+    inspectionPairs.find((p: any) => p.skill_a + "|" + p.skill_b === pairKey) ||
+    inspectionPairs[0];
+  const selectedKey = selected ? selected.skill_a + "|" + selected.skill_b : "";
+  const [showAllEvidence, setShowAllEvidence] = useState(false);
+  useEffect(() => setShowAllEvidence(false), [selectedKey, role, geography]);
+  const focusSkill = (id: string) => {
+    setFocus(focus === id ? "" : id);
+    setPairKey("");
+  };
   const supportJobs = selected
     ? (result?.postings || []).filter((job: any) => {
         const ids = new Set(
@@ -232,8 +243,8 @@ export default function Constellation({
                 <svg
                   className="constellation-chart"
                   viewBox="0 0 600 450"
-                  role="img"
-                  aria-label="Skill co-mention network; equivalent metrics are in the table below"
+                  role="group"
+                  aria-label="Interactive skill co-mention network; select a connection to inspect its evidence"
                 >
                   <circle
                     cx="300"
@@ -244,24 +255,50 @@ export default function Constellation({
                     strokeDasharray="3 7"
                   />
                   {graphEdges.map((p: any) => {
+                    const a = position(p.skill_a), b = position(p.skill_b);
+                    const key = p.skill_a + "|" + p.skill_b;
+                    return (
+                      <g key={key} className="graph-line" aria-hidden="true"
+                        onClick={() => setPairKey(key)}>
+                        <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]}
+                          stroke="transparent" strokeWidth="12" />
+                        <line className="edge-mark" x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]}
+                          stroke={key === selectedKey ? "#b85b38" : "#80aa9c"}
+                          strokeOpacity={key === selectedKey ? 1 : .45}
+                          strokeWidth={key === selectedKey ? 4 : 1 + 3 * p.support}
+                          pointerEvents="none" />
+                      </g>
+                    );
+                  })}
+                  {graphEdges.map((p: any) => {
                     const a = position(p.skill_a),
                       b = position(p.skill_b);
+                    const key = p.skill_a + "|" + p.skill_b;
                     return (
-                      <line
+                      <g
                         key={p.skill_a + p.skill_b}
-                        x1={a[0]}
-                        y1={a[1]}
-                        x2={b[0]}
-                        y2={b[1]}
-                        stroke="#80aa9c"
-                        strokeOpacity=".45"
-                        strokeWidth={1 + 3 * p.support}
+                        className="graph-edge"
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`Inspect ${labels[p.skill_a]} and ${labels[p.skill_b]}: ${p.pair_count} fictional postings`}
+                        aria-pressed={key === selectedKey}
+                        onClick={() => setPairKey(key)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setPairKey(key);
+                          }
+                        }}
                       >
+                        <circle cx={(a[0] + b[0]) / 2} cy={(a[1] + b[1]) / 2}
+                          r={key === selectedKey ? 6 : 4}
+                          stroke="#f8f7f2" strokeWidth="1.5"
+                          fill={key === selectedKey ? "#b85b38" : "#80aa9c"} />
                         <title>
                           {labels[p.skill_a]} + {labels[p.skill_b]}:{" "}
                           {p.pair_count} postings; lift {p.lift.toFixed(2)}
                         </title>
-                      </line>
+                      </g>
                     );
                   })}
                   {nodes
@@ -275,13 +312,12 @@ export default function Constellation({
                           role="button"
                           tabIndex={0}
                           aria-label={`Focus ${n.skill_name}`}
-                          onClick={() =>
-                            setFocus(focus === n.skill_id ? "" : n.skill_id)
-                          }
+                          aria-pressed={focus === n.skill_id}
+                          onClick={() => focusSkill(n.skill_id)}
                           onKeyDown={(e) => {
                             if (e.key === "Enter" || e.key === " ") {
                               e.preventDefault();
-                              setFocus(focus === n.skill_id ? "" : n.skill_id);
+                              focusSkill(n.skill_id);
                             }
                           }}
                           className="graph-node"
@@ -307,7 +343,9 @@ export default function Constellation({
               )}
               <p className="caption">
                 Node size: unique posting count. Fixed positions. Maximum 40
-                nodes / 80 edges. Co-mention is association, not causation.
+                nodes / 80 edges. Select a line to inspect its source phrases;
+                select a node to focus. Keyboard: Tab, then Enter or Space.
+                Co-mention is association, not causation.
               </p>
             </article>
             <aside className="panel dark-panel">
@@ -338,6 +376,9 @@ export default function Constellation({
               </label>
               {selected ? (
                 <>
+                  <p role="status" className="selected-pair">
+                    Selected: {labels[selected.skill_a]} + {labels[selected.skill_b]}
+                  </p>
                   <div className="pair-stat">
                     <strong>{selected.pair_count}</strong>
                     <span>
@@ -430,17 +471,35 @@ export default function Constellation({
               {supportJobs.length} fictional postings support the selected pair.
               These examples have no external job URLs.
             </p>
-            {supportJobs.slice(0, 8).map((job: any) => (
+            {supportJobs.slice(0, showAllEvidence ? supportJobs.length : 8).map((job: any) => (
               <details key={job.canonical_url} className="source-row">
                 <summary>
                   {job.title} · {job.employer_name} · {job.location_text}
                 </summary>
+                <dl className="phrase-evidence">
+                  {(result.evidence || [])
+                    .filter((e: any) => e.canonical_url === job.canonical_url &&
+                      [selected?.skill_a, selected?.skill_b].includes(e.skill_id))
+                    .map((e: any) => (
+                      <div key={e.skill_id}>
+                        <dt>{e.skill_name} · exact matched phrase</dt>
+                        <dd><q>{e.source_phrase}</q></dd>
+                        <dd className="caption">Method: {e.extraction_method} · Version: {e.extraction_version}</dd>
+                      </div>
+                    ))}
+                </dl>
+                <p className="eyebrow">COMPLETE SYNTHETIC DESCRIPTION</p>
                 <p>{job.description_text}</p>
                 <p className="caption">
                   Generated example · {job.source_job_id} · not a real vacancy
                 </p>
               </details>
             ))}
+            {supportJobs.length > 8 && (
+              <button className="button-secondary" onClick={() => setShowAllEvidence(!showAllEvidence)}>
+                {showAllEvidence ? "Show first 8 examples" : `Show all ${supportJobs.length} supporting examples`}
+              </button>
+            )}
           </article>
         </>
       )}
