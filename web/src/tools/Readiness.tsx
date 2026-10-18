@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { Compass, Download, ArrowRight, RotateCcw } from "lucide-react";
 import { api, Bootstrap, DEMO_TEXT, downloadJSON, format } from "../lib/api";
+import EvidencePlanner, { ActionPlan, EvidenceAction, EvidenceBreakdown } from "../components/EvidencePlanner";
 type Entry = { status: string; note: string };
 function Summary({ result }: { result: any }) {
   return (
@@ -49,6 +50,7 @@ export default function Readiness({
     [result, setResult] = useState<any>(null),
     [scenario, setScenario] = useState<any>(null),
     [report, setReport] = useState<any>(null),
+    [actionPlan, setActionPlan] = useState<ActionPlan | null>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [gap, setGap] = useState(""),
@@ -61,6 +63,7 @@ export default function Readiness({
     setKinds({});
     setResult(null);
     setReport(null);
+    setActionPlan(null);
     setScenario(null);
     setGap("");
     setPlan("");
@@ -107,9 +110,11 @@ export default function Readiness({
         setResult(null);
         setScenario(null);
         setReport(null);
+        setActionPlan(null);
       } else if (mode === "assess") {
         setResult(data.assessment);
         setReport(data.report);
+        setActionPlan(data.action_plan);
         setScenario(null);
         setGap("");
         setPlan("");
@@ -133,9 +138,22 @@ export default function Readiness({
     setResult(null);
     setScenario(null);
     setReport(null);
+    setActionPlan(null);
+  };
+  const reviewAction = (action: EvidenceAction) => {
+    const row = result.rows.find((r: any) => action.requirement_ids.includes(r.requirement_id) && r.status === "unknown");
+    document.getElementById("evidence-status-" + (row?.requirement_id || action.requirement_ids[0]))?.focus();
+  };
+  const exploreAction = (action: EvidenceAction) => {
+    const row = result.rows.find((r: any) => action.requirement_ids.includes(r.requirement_id) && r.status !== "supported");
+    setGap(row?.requirement_id || "");
+    setPlan(action.project_brief || "");
+    setScenario(null);
+    requestAnimationFrame(() => document.getElementById("planned-evidence")?.focus());
   };
   const gaps = (result?.rows || []).filter(
-    (r: any) => r.weight && r.status !== "supported",
+    (r: any) => r.weight && r.status !== "supported" &&
+      result.skill_summary.some((s: any) => s.requirement_ids.includes(r.requirement_id)),
   );
   return (
     <section className="tool-page">
@@ -246,6 +264,7 @@ export default function Readiness({
                         setResult(null);
                         setScenario(null);
                         setReport(null);
+                        setActionPlan(null);
                       }}
                     >
                       {["required", "preferred", "uncertain", "negated"].map(
@@ -258,6 +277,7 @@ export default function Readiness({
                   <label className="field">
                     Evidence status for {r.skill_name}
                     <select
+                      id={"evidence-status-" + r.requirement_id}
                       aria-label={"Evidence status for " + r.skill_name}
                       value={entries[r.requirement_id]?.status || "unknown"}
                       disabled={busy}
@@ -314,6 +334,7 @@ export default function Readiness({
             <p className="eyebrow">YOUR SUBMITTED BASELINE</p>
             <h2>Evidence you can explain.</h2>
             <Summary result={result} />
+            <EvidenceBreakdown breakdown={result.evidence_breakdown} totalWeight={result.total_weight} />
             <p className="caption">{result.formula}</p>
             {result.rows
               .filter((r: any) => r.issue)
@@ -348,13 +369,16 @@ export default function Readiness({
               {result.limitation} {result.eligibility_status}
             </p>
           </article>
+          {actionPlan && <EvidencePlanner plan={actionPlan} rows={result.rows} busy={busy}
+            onExplore={exploreAction} onReview={reviewAction} />}
           {gaps.length > 0 && (
             <article className="panel">
               <p className="eyebrow">WHAT IF?</p>
               <h2>Explore one next step.</h2>
               <p>
                 Compare hypothetical completed evidence without changing your
-                submitted baseline.
+                submitted baseline. This changes one source requirement only;
+                repeated contexts may still limit the skill's assessed evidence.
               </p>
               <div className="grid-two">
                 <label className="field">
@@ -371,6 +395,8 @@ export default function Readiness({
                     {gaps.map((r: any) => (
                       <option value={r.requirement_id} key={r.requirement_id}>
                         {r.skill_name} · {r.requirement_type}
+                        {(result.rows.filter((row: any) => row.skill_id === r.skill_id).length > 1)
+                          ? ` · mention ${result.rows.filter((row: any) => row.skill_id === r.skill_id).findIndex((row: any) => row.requirement_id === r.requirement_id) + 1}` : ""}
                       </option>
                     ))}
                   </select>
@@ -378,6 +404,7 @@ export default function Readiness({
                 <label className="field">
                   Planned evidence
                   <input
+                    id="planned-evidence"
                     maxLength={500}
                     value={plan}
                     onChange={(e) => {

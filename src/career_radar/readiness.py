@@ -47,15 +47,27 @@ def assess_readiness(requirements: list[dict], evidence: dict[str, dict] | None 
         if row["weight"]:
             skills.setdefault(row["skill_id"], []).append(row)
     total_weight = assessed_weight = earned_weight = 0.0
-    for contexts in skills.values():
+    skill_summary = []
+    breakdown = {status: {"skill_count": 0, "weight": 0.0}
+                 for status in ("supported", "partial", "missing", "unknown")}
+    for skill_id, contexts in sorted(skills.items()):
         weight = max(row["weight"] for row in contexts)
         relevant = [row for row in contexts if row["weight"] == weight]
         total_weight += weight
         # Every occurrence at the strongest requirement level must be assessed.
-        if any(row["status"] == "unknown" for row in relevant):
-            continue
-        assessed_weight += weight
-        earned_weight += weight * min(STATUS_VALUES[row["status"]] for row in relevant)
+        status = ("unknown" if any(row["status"] == "unknown" for row in relevant)
+                  else min((row["status"] for row in relevant), key=STATUS_VALUES.__getitem__))
+        breakdown[status]["skill_count"] += 1
+        breakdown[status]["weight"] += weight
+        skill_summary.append({
+            "skill_id": skill_id, "skill_name": relevant[0]["skill_name"],
+            "requirement_type": relevant[0]["requirement_type"], "weight": weight,
+            "status": status,
+            "requirement_ids": [row["requirement_id"] for row in relevant],
+        })
+        if status != "unknown":
+            assessed_weight += weight
+            earned_weight += weight * STATUS_VALUES[status]
     coverage = assessed_weight / total_weight if total_weight else None
     alignment = (
         100 * earned_weight / assessed_weight
@@ -65,6 +77,8 @@ def assess_readiness(requirements: list[dict], evidence: dict[str, dict] | None 
         "version": READINESS_VERSION,
         "label": "Self-reported evidence alignment",
         "rows": rows,
+        "skill_summary": skill_summary,
+        "evidence_breakdown": breakdown,
         "confirmed_skill_count": len(skills),
         "total_weight": total_weight,
         "assessed_weight": assessed_weight,
@@ -105,8 +119,9 @@ def export_analysis(assessment: dict) -> dict:
     """
     fields = ("version", "label", "confirmed_skill_count", "total_weight", "assessed_weight", "unassessed_weight", "earned_weight", "coverage_pct", "alignment_pct", "eligibility_status", "formula", "limitation")
     report = {key: assessment[key] for key in fields}
+    report["evidence_breakdown"] = deepcopy(assessment["evidence_breakdown"])
     report["requirements"] = [
-        {key: row.get(key) for key in ("skill_id", "skill_name", "requirement_type", "extracted_requirement_type", "classification_provenance", "classification_corrected", "status", "weight", "evidence_provenance")}
+        {key: row.get(key) for key in ("requirement_id", "skill_id", "skill_name", "requirement_type", "extracted_requirement_type", "classification_provenance", "classification_corrected", "status", "weight", "evidence_provenance")}
         for row in assessment["rows"]
     ]
     report["privacy"] = "Candidate notes and original job text omitted; no identity or contact fields collected."

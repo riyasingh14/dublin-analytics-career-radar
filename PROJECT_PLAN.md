@@ -28,7 +28,7 @@ self-reported candidate evidence. This remains separate from Telco Churn Analysi
 - Prepared: a bounded Ireland collection input targeting approximately 200 unique
   postings, with up to 315 candidate results. The broader export is not yet available.
 - Generated: a 100-record extraction review queue; human review is pending.
-- The previous baseline had 28 passing tests; the expanded suite now exercises the four tool prototypes and their integration. See docs/implementation-status.md.
+- The expanded suite now exercises the four tool prototypes, their integration and the Readiness evidence-action planner. Weighted breakdowns, authored project briefs and scenario handoff are implemented. See docs/implementation-status.md.
 - PostgreSQL schema exists; an operational SQL/database pipeline is still planned.
 - No automatic weekly collection is operational. The owner reports the React/Vite + Flask demo deployed on Vercel. Hosted checks are blocked by this workspace's network; the installed Vercel plugin needs tool restart and OAuth. Build/browser/API CI and deployment-event/manual hosted checks are configured; remote execution is unverified.
 

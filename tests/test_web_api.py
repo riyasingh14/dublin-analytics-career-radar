@@ -62,6 +62,30 @@ class WebAPITests(unittest.TestCase):
         self.assertEqual(response.status_code,400)
         self.assertNotIn('secret content',response.get_data(as_text=True))
 
+    def test_action_plan_uses_corrected_requirements_and_leaves_baseline_unchanged(self):
+        text = 'SQL is required. Python is preferred.'
+        initial = self.post('readiness', text=text).get_json()
+        by_skill = {r['skill_id']: r['requirement_id'] for r in initial['requirements']}
+        self.assertTrue(all(a['kind'] == 'clarify_evidence' for a in initial['action_plan']['actions']))
+        evidence = {by_skill['sql']: {'status': 'missing'},
+                    by_skill['python']: {'status': 'supported', 'note': 'PRIVATE_TEST_EVIDENCE'}}
+        assessed = self.post('readiness', text=text, evidence=evidence).get_json()
+        self.assertEqual(len(assessed['action_plan']['actions']), 1)
+        self.assertEqual(assessed['action_plan']['actions'][0]['skill_id'], 'sql')
+        self.assertIn('window functions', assessed['action_plan']['actions'][0]['project_brief'])
+        self.assertEqual(assessed['assessment']['alignment_pct'], 25)
+        scenario = self.post('readiness', text=text, evidence=evidence,
+            hypothetical={'requirement_id': by_skill['sql'], 'note': 'PLANNED_TEST_EVIDENCE'}).get_json()
+        self.assertEqual(scenario['scenario']['alignment_pct'], 100)
+        self.assertEqual(scenario['assessment']['alignment_pct'], 25)
+        self.assertEqual(scenario['action_plan'], assessed['action_plan'])
+        self.assertNotIn('PRIVATE_TEST_EVIDENCE', json.dumps(scenario['report']))
+        self.assertNotIn('PLANNED_TEST_EVIDENCE', json.dumps(scenario['report']))
+        corrected = self.post('readiness', text=text, evidence=evidence,
+            classifications={by_skill['sql']: 'negated'}).get_json()
+        self.assertEqual(corrected['action_plan']['actions'], [])
+        self.assertEqual(corrected['assessment']['total_weight'], 1)
+
     def test_scenarios_are_deterministic_and_labelled(self):
         payload={'scenario':{'people':50,'seed':42,'years':3}}
         first=self.post('mobility',**payload).get_json()

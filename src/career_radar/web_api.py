@@ -8,6 +8,8 @@ import math
 from pathlib import Path
 
 from career_radar.constellation import build_constellation
+from career_radar.analytics import load_proof_recommendations
+from career_radar.evidence_plan import build_evidence_plan
 from career_radar.demo import constellation_demo
 from career_radar.diagnostic import analyze_description
 from career_radar.mobility import Scenario, derive_transitions, generate_histories, metadata, salary_metrics
@@ -28,6 +30,11 @@ SALARY_FIELDS = {'median_individual_pct_change', 'individual_change_iqr', 'media
 @lru_cache(maxsize=1)
 def taxonomy():
     return load_taxonomy(ROOT / 'data/reference/skills.csv')
+
+
+@lru_cache(maxsize=1)
+def proof_recommendations():
+    return load_proof_recommendations(ROOT / 'data/reference/skills.csv')
 
 
 @lru_cache(maxsize=1)
@@ -156,7 +163,10 @@ def dispatch(action, payload=None):
                      'classification_corrected': overrides.get(r['requirement_id'], r['requirement_type']) != r['requirement_type']}
                     for r in requirements]
         result = assess_readiness(reviewed, evidence)
-        output = {'requirements': requirements, 'assessment': result, 'report': export_analysis(result), 'scenario': None}
+        plan = build_evidence_plan(result, proof_recommendations())
+        report = {**export_analysis(result), 'action_plan': plan}
+        output = {'requirements': requirements, 'assessment': result, 'report': report,
+                  'action_plan': plan, 'scenario': None}
         if payload.get('hypothetical') is not None:
             hypothetical = _object(payload['hypothetical'], 'hypothetical')
             identifier = _text(hypothetical.get('requirement_id'), 'Hypothetical requirement', 100, required=True)

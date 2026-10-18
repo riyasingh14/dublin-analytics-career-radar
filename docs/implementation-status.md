@@ -35,6 +35,31 @@ both pointer and keyboard selection, exact phrases, rule versions, expansion to
 all supporting examples and clearing incompatible selection on skill focus.
 Both workflow YAML files parsed locally; this is not evidence of GitHub execution.
 
+## Readiness evidence-action iteration
+
+The public web Readiness Studio now has a weighted, deduplicated evidence breakdown
+and a versioned evidence-action planner. It reuses the score's strongest-confirmed
+skill grouping, preventing repeated mentions from increasing priority or weight.
+Unknown evidence prompts review rather than an invented skill deficit. Missing
+and partial evidence receive authored taxonomy-linked project briefs, deliverables
+and completion checks. Supported skills produce no unnecessary project action.
+
+Each action exposes its source contexts. Project actions prepare a separate
+what-if for an unresolved occurrence, including when an earlier repeated mention
+already has supported evidence. Planning does not change baseline notes, statuses
+or scores. The scenario selector omits weaker repeated mentions that do not affect
+the score. Exports include the plan and weight breakdown while omitting candidate
+notes and advert text. This is a web enhancement; the internal Streamlit interface
+retains its previous presentation.
+
+Validation: 86 Python tests, 14 browser/API checks and the production build passed
+locally. Nine HTTP-boundary tests also passed using the Flask-only deployment
+environment. New checks reconcile a hand-calculated repeated-skill example,
+unknowns, corrected classifications, immutable plans, source tracing, private
+downloads, hypothetical isolation and an expanded 390px mobile layout. These do
+not establish real-world rule accuracy, verified proficiency or hosted acceptance.
+See [evidence planner](evidence-planner.md) for the worked calculation and limits.
+
 ## What works
 
 The internal Streamlit entry point is `app.py`: a responsive landing page with four working
@@ -71,7 +96,8 @@ flagship on the landing page.
 
 ## Validation
 
-All 72 automated tests passed in this iteration. The suite covers legacy ingestion/extraction, snapshot allowlisting,
+The initial Streamlit iteration passed 72 automated tests; the newer web iteration
+counts are recorded above. The suite covers legacy ingestion/extraction, snapshot allowlisting,
 unique denominators, co-mention formulas, requirement language regressions,
 user corrections, evidence coverage, hypothetical isolation, deterministic histories,
 career breaks and invalid salary pairs, SQL fixtures, session reset, malformed

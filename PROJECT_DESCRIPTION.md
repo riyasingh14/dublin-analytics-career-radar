@@ -197,6 +197,17 @@ For confirmed requirements, candidate evidence is recorded as supported, partial
 
 Keep degree, grade, location or other explicit eligibility conditions outside the skill index. An unknown eligibility condition is not a confirmed failure. Present project actions as ways to build evidence, not promises of an interview or a substitute for a mandatory credential.
 
+The evidence action planner uses the same deduplicated skill groups as the index.
+Prioritise required over preferred skills, then review unknown evidence before
+addressing missing and partial evidence within each level. Supported skills need
+no automatic new project. Unknowns prompt an inventory/review of existing work;
+confirmed gaps receive authored, taxonomy-linked project briefs, deliverables and
+completion checks. This order is an inspectable planning heuristic, not a model
+of hiring benefit. Actions link back to source contexts and may prefill a separate
+what-if proposal without changing the baseline. See
+[evidence-planner design](docs/evidence-planner.md) for the worked calculation and
+privacy boundaries.
+
 ### Visual specification
 
 Use a requirement/evidence matrix and a compact breakdown of supported, partial, missing and unassessed requirements. Add a linked path from requirement to source phrase to candidate evidence. What-if comparisons show the original and hypothetical states side by side. Avoid a single dramatic gauge that implies certainty or hiring probability.

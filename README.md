@@ -52,7 +52,7 @@ requirements, data controls and acceptance criteria. The existing market dashboa
 is their shared analytical foundation.
 
 1. **Skill Constellation** — inspect skill co-mentions and associations with source evidence.
-2. **Opportunity Readiness Studio** — compare candidate evidence with explicit job requirements; no callback probabilities.
+2. **Opportunity Readiness Studio** — compare candidate evidence with explicit job requirements; inspect weighted status breakdowns and turn gaps into authored proof-of-work plans with completion checks. No callback probabilities. See the [evidence-planner design](docs/evidence-planner.md).
 3. **Career Mobility Lab** — explore clearly labelled synthetic career transitions and salary scenarios.
 4. **Job Description Diagnostic** — inspect clarity, completeness and consistency with traceable findings.
 
