@@ -3,9 +3,24 @@
 Date: 18 October 2026. This records working code and validation, not a public launch
 or a claim that every future enhancement in the master specification is complete.
 
+## Vercel web version
+
+The React/Vite frontend under `web/` and Flask function under `api/` now implement
+the four public-demo workflows using the same Python analytical core. This is a
+separate hosting interface; it does not attempt to run Streamlit on Vercel. Public
+bootstrap data is always synthetic. Root deployment dependencies are Flask-only;
+research dependencies moved to `requirements-local.txt`. See
+[Vercel deployment](vercel-deployment.md) for account linking and verification.
+
+The Vercel iteration passed 80 Python tests, seven Playwright browser flows, the
+production frontend build and an isolated deployment-only Python runtime check.
+A successful local build/test does not establish an actual hosted deployment. The
+CLI is logged out and its login attempt failed with a network fetch error; the
+account-side GitHub project import and hosted checks remain outstanding.
+
 ## What works
 
-The primary entry point is `app.py`: a responsive landing page with four working
+The internal Streamlit entry point is `app.py`: a responsive landing page with four working
 cards, shared navigation, honest dataset status and a Methodology route. Independent
 tools remain usable when the observed snapshot is missing or malformed.
 
@@ -57,7 +72,7 @@ opening third-party job pages is outside the local functional check.
 ```bash
 cd /workspace/dublin-analytics-career-radar
 python -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m pip install -r requirements-local.txt
 PYTHONPATH=src .venv/bin/python -m unittest discover -s tests -v
 PYTHONPATH=src .venv/bin/python -m streamlit run app.py --server.headless=true
 ```

@@ -30,7 +30,7 @@ self-reported candidate evidence. This remains separate from Telco Churn Analysi
 - Generated: a 100-record extraction review queue; human review is pending.
 - The previous baseline had 28 passing tests; the expanded suite now exercises the four tool prototypes and their integration. See docs/implementation-status.md.
 - PostgreSQL schema exists; an operational SQL/database pipeline is still planned.
-- No automatic weekly collection or public application deployment is operational.
+- No automatic weekly collection is operational. React/Vite + Flask demo code is prepared for Vercel; account linking and hosted verification remain pending.
 
 ## Milestones
 

@@ -328,7 +328,7 @@ Initial interaction targets are a usable default view within five seconds and co
 | Data processing | Python, CSV/JSON ingestion, pandas available | Versioned transforms, reusable source adapters, validated contracts |
 | Storage | Ignored local files and snapshots | PostgreSQL analytical model plus reproducible file-based development path |
 | SQL | PostgreSQL schema exists | Executed, tested posting, skill-pair, requirement and transition models |
-| Interface | Streamlit with market, role, evidence, planner and methodology tabs | Four flagship experiences using the existing app first |
+| Interface | Streamlit research workbench plus React/Vite four-tool web demo | Vercel static frontend with stateless Flask API reusing the Python core |
 | Visualisation | Basic charts and evidence tables | Linked network/flow views, heatmaps, distributions and accessible tables |
 | AI | Deterministic evidence-preserving extraction | Optional evaluated assistance where rules prove insufficient |
 | Operations | Manual local workflows | Permission-aware weekly refresh, run history, quality gates and failure handling |
@@ -381,7 +381,7 @@ validation limits are recorded in [implementation status](docs/implementation-st
 | Career Mobility generator, SQL models and visual lab | In-memory generator and visual lab implemented; PostgreSQL worksheet unexecuted |
 | Job Description Diagnostic | Initial deterministic diagnostic implemented; benchmark and human evaluation pending |
 | Weekly automated refresh / live PostgreSQL workflow | Planned, not operational |
-| Public application or commercial launch | Not completed |
+| Public application or commercial launch | Vercel-compatible public-demo code prepared; account linking, hosted verification and real-data release not completed |
 
 ## 11. Delivery sequence and milestones
 

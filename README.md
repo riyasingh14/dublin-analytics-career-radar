@@ -14,6 +14,28 @@ Job boards list vacancies. Enterprise labour-market platforms are expensive and 
 - a skill-gap view that turns a missing skill into a concrete portfolio or interview-proof action;
 - published data freshness, coverage, and limitations.
 
+## Web app and Vercel deployment
+
+A React/Vite website and lightweight Python API now provide the public-demo version
+of all four tools. It uses generated examples; the private job sample is not exposed.
+See **[Vercel deployment](docs/vercel-deployment.md)** for GitHub linking, local setup,
+validation and hosted smoke checks. Account linking and a hosted deployment still
+need to be confirmed; code readiness is not a live website.
+
+```bash
+python -m venv .venv
+.venv/bin/python -m pip install -r requirements-local.txt
+npm ci
+# terminal 1
+.venv/bin/python api/index.py
+# terminal 2
+npm run dev
+```
+
+`npm run build` creates the static site. `npm test` runs the browser flows (requires
+Playwright Chromium; see the deployment guide). The Vercel project root must be the
+repository root; framework Vite, output `dist`. No API keys are needed for the demo.
+
 ## Selected product scope
 
 The complete specification is in **[PROJECT_DESCRIPTION.md](PROJECT_DESCRIPTION.md)**.
@@ -53,7 +75,7 @@ Evidence-preserving rule extraction and taxonomy normalisation
         ↓
 Versioned CSV/JSON snapshots + reference SQL models
         ↓
-Streamlit landing page + four analytical tools
+React/Vite public demo + Python API; Streamlit internal workbench
 ```
 
 PostgreSQL schema and SQL reference queries are provided; a live database pipeline
@@ -123,10 +145,10 @@ remain in sample-wide counts but are excluded from target-role recommendations.
 ### Run the web app
 
 ```bash
-python -m pip install -r requirements.txt
+python -m pip install -r requirements-local.txt
 PYTHONPATH=src streamlit run app.py
 ```
 
 The app shows an empty setup state when no snapshot exists and a prominent non-public warning for `fixture` or `unreviewed` data.
 
-The original market/evidence workbench remains available with `PYTHONPATH=src streamlit run market_app.py`. The primary application is `app.py`.
+The original market/evidence workbench remains available with `PYTHONPATH=src streamlit run market_app.py`. The Streamlit workbench entry is `app.py`; the Vercel web frontend is under `web/`.

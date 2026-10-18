@@ -4,3 +4,11 @@ __pycache__/
 data/processed/
 data/raw/
 data/validation/
+node_modules/
+dist/
+.vercel/
+test-results/
+playwright-report/
+.env
+.env.*
+!.env.example
