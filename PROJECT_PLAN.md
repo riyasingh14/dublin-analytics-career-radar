@@ -29,7 +29,7 @@ self-reported candidate evidence. This remains separate from Telco Churn Analysi
   postings, with up to 315 candidate results. The broader export is not yet available.
 - Generated: a 100-record extraction review queue; human review is pending.
 - The expanded suite now exercises the four tool prototypes, their integration and the Readiness evidence-action planner. Weighted breakdowns, authored project briefs and scenario handoff are implemented. See docs/implementation-status.md.
-- PostgreSQL schema exists; an operational SQL/database pipeline is still planned.
+- Executable private PostgreSQL loader and metric reconciliation now pass actual PostgreSQL 17.11 tests; managed database hosting remains unconfigured.
 - No automatic weekly collection is operational. The owner reports the React/Vite + Flask demo deployed on Vercel. Hosted checks are blocked by this workspace's network; the installed Vercel plugin needs tool restart and OAuth. Build/browser/API CI and deployment-event/manual hosted checks are configured; remote execution is unverified.
 
 ## Milestones
@@ -38,11 +38,11 @@ self-reported candidate evidence. This remains separate from Telco Churn Analysi
 |---|---|---|---|
 | M0 | Master specification for the four selected features | Description, definitions, flows, scope and acceptance criteria | Documented; implementation work follows |
 | M1 | Reviewed broader dataset and executable SQL foundation | Import, quality report, relevant human evaluation, reconciled SQL | In progress; broader export and review pending |
-| M2 | Skill Constellation | SC-01 through SC-05 in the master specification | Initial prototype implemented; human validation pending |
-| M3 | Job Description Diagnostic | JD-01 through JD-05 and evaluated rule examples | Initial prototype implemented; human evaluation pending |
-| M4 | Opportunity Readiness Studio | OR-01 through OR-06, inspectable scoring and session privacy | Initial prototype implemented; usability/evaluation pending |
-| M5 | Career Mobility Lab | CM-01 through CM-06 and reproducible synthetic scenarios | Initial in-memory prototype implemented; PostgreSQL path pending |
-| M6 | Consistent presentation, optional permitted refresh and portfolio launch | Accessibility, performance evidence, runbook and five-minute demo | Planned |
+| M2 | Skill Constellation | SC-01 through SC-05 in the master specification | Demo features/review complete; observed-data/human validation pending |
+| M3 | Job Description Diagnostic | JD-01 through JD-05 and evaluated rule examples | Source/diff/review flows complete; human evaluation and observed benchmarks pending |
+| M4 | Opportunity Readiness Studio | OR-01 through OR-06, inspectable scoring and session privacy | Evidence/conditions/plans/scenarios complete; user evaluation pending |
+| M5 | Career Mobility Lab | CM-01 through CM-06 and reproducible synthetic scenarios | Linked visuals and actual PostgreSQL reconciliation complete; synthetic-only |
+| M6 | Consistent presentation, optional permitted refresh and portfolio launch | Accessibility, performance evidence, runbook and five-minute demo | Reviewed editorial/motion demo and saved-file operations complete; hosted verification/user study/live-source launch pending |
 
 The diagnostic precedes readiness because both need a reliable requirement model.
 Develop readable analytical views before adding complex network interactions.

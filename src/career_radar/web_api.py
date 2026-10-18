@@ -8,11 +8,15 @@ import math
 from pathlib import Path
 
 from career_radar.constellation import build_constellation
+from career_radar.constellation_comparison import build_role_comparison
+from career_radar.constellation_comparison_demo import comparison_demo
 from career_radar.analytics import load_proof_recommendations
 from career_radar.evidence_plan import build_evidence_plan
 from career_radar.demo import constellation_demo
 from career_radar.diagnostic import analyze_description
 from career_radar.mobility import Scenario, derive_transitions, generate_histories, metadata, salary_metrics
+from career_radar.mobility_cohorts import validate_filters, select_cohort, guarded_metrics, flow_metrics, cohort_details, origin_stayer_reference
+from career_radar.listing_conditions import extract_listing_conditions
 from career_radar.normalise import load_taxonomy
 from career_radar.readiness import assess_readiness, export_analysis, hypothetical_readiness
 from career_radar.requirements_model import extract_requirements
@@ -43,6 +47,11 @@ def public_snapshot():
     return constellation_demo(taxonomy())
 
 
+@lru_cache(maxsize=1)
+def public_comparison_snapshot():
+    return comparison_demo(taxonomy())
+
+
 def _object(value, name):
     if not isinstance(value, dict):
         raise ValueError(f'{name} must be an object.')
@@ -56,7 +65,7 @@ def _text(value, name, maximum=30000, required=False):
 
 
 def _number(value, name, low, high, integer=False):
-    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or not low <= value <= high:
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not low <= value <= high or not math.isfinite(value):
         raise ValueError(f'{name} must be between {low} and {high}.')
     if integer and int(value) != value:
         raise ValueError(f'{name} must be an integer.')
@@ -84,31 +93,16 @@ def _mobility(payload):
     spells = generate_histories(scenario)
     events = derive_transitions(spells)
     baseline = derive_transitions(generate_histories(Scenario(seed=scenario.seed, people=scenario.people, years=scenario.years)))
-    filters = _object(payload.get('filters', {}), 'filters')
-    fields = ('origin', 'destination', 'geography', 'category', 'origin_seniority', 'destination_seniority', 'origin_industry', 'destination_industry')
-    if set(filters) - set(fields):
-        raise ValueError('Unknown cohort filter.')
-    for name, value in filters.items():
-        _text(value, name, 150)
-    def select(rows, category=None):
-        return [row for row in rows if all(
-            value in ('', 'All') or row.get(name) == value
-            for name, value in {**filters, **({'category': category} if category is not None else {})}.items())]
-    cohort, base_cohort = select(events), select(baseline)
+    filters = validate_filters(_object(payload.get('filters', {}), 'filters'))
     selection = _text(payload.get('flow', ''), 'flow', 300)
-    if selection:
-        cohort = [row for row in cohort if row['origin_state'] + ' → ' + row['destination_state'] == selection]
-        base_cohort = [row for row in base_cohort if row['origin_state'] + ' → ' + row['destination_state'] == selection]
-    grouped = defaultdict(list)
-    for row in cohort:
-        grouped[(row['origin_state'], row['destination_state'])].append(row)
-    flows = [{'origin': origin, 'destination': destination, **_suppressed(salary_metrics(rows))}
-             for (origin, destination), rows in grouped.items()]
-    flows.sort(key=lambda row: (-row['events'], row['origin'], row['destination']))
-    metrics = _suppressed(salary_metrics(cohort))
+    context = select_cohort(events, filters)
+    cohort = select_cohort(events, filters, selection)
+    base_cohort = select_cohort(baseline, filters, selection)
+    flows = flow_metrics(cohort)
+    metrics = guarded_metrics(cohort)
     comparisons = [{'name': name, **_suppressed(salary_metrics(rows))}
                    for name, rows in [('Named baseline (4 / 8 / 2)', base_cohort),
-                                      ('Adjusted scenario', cohort), ('Stayers within cohort filters', select(events, 'Stayer'))]]
+                                      ('Adjusted scenario', cohort), ('Origin-state stayer reference', origin_stayer_reference(events, filters, cohort))]]
     people_ids = sorted({row['person_id'] for row in cohort})
     person = _text(payload.get('person_id', ''), 'person_id', 30)
     if person not in people_ids:
@@ -116,6 +110,8 @@ def _mobility(payload):
     trajectory = [row for row in spells if row['person_id'] == person]
     valid = [row for row in cohort if row['valid_pair']] if metrics['comparison_available'] else []
     return {'metadata': metadata(scenario), 'metrics': metrics, 'flows': flows,
+            'context_flows': flow_metrics(context), **cohort_details(cohort),
+            'stayer_reference_scope': 'Selected cohort origin states; retains geography, origin industry, experience and period filters; releases destination, transition type and exact-flow restrictions. Descriptive, not causal.',
             'comparisons': comparisons, 'trajectory': trajectory, 'people_ids': people_ids,
             'selected_person': person, 'distributions': {'before': [r['before_salary'] for r in valid], 'after': [r['after_salary'] for r in valid]},
             'filters': filters, 'flow': selection,
@@ -138,8 +134,9 @@ def dispatch(action, payload=None):
         if geography is not None: _text(geography, 'geography', 100)
         count = _number(payload.get('min_pair_count', 5), 'min_pair_count', 1, 100, True)
         sample = _number(payload.get('min_sample_size', 20), 'min_sample_size', 1, 1000, True)
-        return build_constellation(public_snapshot(), role=role, geography=geography,
-                                   min_pair_count=count, min_sample_size=sample)
+        return {**build_constellation(public_snapshot(), role=role, geography=geography,
+                                     min_pair_count=count, min_sample_size=sample),
+                'role_comparison': build_role_comparison(public_comparison_snapshot(), taxonomy(), geography=geography)}
     if action in ('diagnostic', 'readiness'):
         text = _text(payload.get('text'), 'Description', required=True)
         if action == 'diagnostic':
@@ -166,7 +163,8 @@ def dispatch(action, payload=None):
         plan = build_evidence_plan(result, proof_recommendations())
         report = {**export_analysis(result), 'action_plan': plan}
         output = {'requirements': requirements, 'assessment': result, 'report': report,
-                  'action_plan': plan, 'scenario': None}
+                  'action_plan': plan, 'scenario': None,
+                  'listing_conditions': extract_listing_conditions(text)}
         if payload.get('hypothetical') is not None:
             hypothetical = _object(payload['hypothetical'], 'hypothetical')
             identifier = _text(hypothetical.get('requirement_id'), 'Hypothetical requirement', 100, required=True)

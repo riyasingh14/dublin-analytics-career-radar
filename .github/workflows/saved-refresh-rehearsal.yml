@@ -1,0 +1,42 @@
+name: Saved fixture refresh rehearsal
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 08:00 UTC Monday = 08:00 Dublin winter / 09:00 Dublin summer.
+    - cron: '0 8 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: saved-fixture-refresh
+  cancel-in-progress: false
+
+jobs:
+  fixture-only:
+    # Schedule is dormant unless the owner explicitly enables this repository var.
+    # A manual rehearsal is safe: synthetic committed fixture, zero live calls.
+    if: github.event_name == 'workflow_dispatch' || vars.ENABLE_FIXTURE_REFRESH == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Rehearse private saved-file ingestion, quality and review queue
+        env:
+          PYTHONPATH: src
+        run: >-
+          python -m career_radar.refresh
+          --input tests/fixtures/authorised_sample_jobs.csv
+          --policy config/refresh-fixture.json
+          --output-dir data/processed/refresh-rehearsal
+      - uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-refresh-rehearsal
+          path: data/processed/refresh-rehearsal/
+          retention-days: 7

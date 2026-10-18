@@ -1,0 +1,14 @@
+{
+  "source_name": "Authorized synthetic CSV fixture — not observed vacancies",
+  "source_home_url": "https://careers.example.test",
+  "dataset_kind": "fixture",
+  "collection_authorized": true,
+  "display_authorized": false,
+  "terms_reviewed_on": null,
+  "live_collection_enabled": false,
+  "max_live_requests": 0,
+  "max_spend_usd": 0,
+  "min_job_count": 1,
+  "max_missing_description_pct": 0,
+  "max_employer_share_pct": 100
+}

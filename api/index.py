@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 from flask import Flask, jsonify, request
 from werkzeug.exceptions import BadRequest, RequestEntityTooLarge, UnsupportedMediaType
 from career_radar.web_api import dispatch
+from career_radar.requirements_model import AnalysisLimitError
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 64 * 1024
@@ -36,6 +37,8 @@ def endpoint():
         return jsonify(dispatch(action, payload))
     except RequestEntityTooLarge:
         return jsonify(error='Request exceeds the 64 KB limit.'), 413
+    except AnalysisLimitError as error:
+        return jsonify(error=str(error)), 400
     except (BadRequest, UnsupportedMediaType):
         return jsonify(error='Send a valid JSON object.'), 400
     except (ValueError, TypeError, KeyError):

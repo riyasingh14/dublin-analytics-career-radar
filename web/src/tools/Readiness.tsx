@@ -1,8 +1,10 @@
 import { useRef, useState } from "react";
 import { Compass, Download, ArrowRight, RotateCcw } from "lucide-react";
 import { api, Bootstrap, DEMO_TEXT, downloadJSON, format } from "../lib/api";
+import ListingConditions, { ListingCondition } from "../components/ListingConditions";
 import EvidencePlanner, { ActionPlan, EvidenceAction, EvidenceBreakdown } from "../components/EvidencePlanner";
-type Entry = { status: string; note: string };
+type Entry = { status: string; note: string; provenance?: string };
+const provenanceLabels: Record<string, string> = { self_declared: "Self-declared", project_linked: "Project-linked", coursework_linked: "Coursework-linked" };
 function Summary({ result }: { result: any }) {
   return (
     <>
@@ -55,10 +57,17 @@ export default function Readiness({
     [error, setError] = useState(""),
     [gap, setGap] = useState(""),
     [plan, setPlan] = useState(""),
-    [example, setExample] = useState(false);
+    [example, setExample] = useState(false),
+    [sourceId, setSourceId] = useState(""),
+    [conditions, setConditions] = useState<ListingCondition[]>([]),
+    [conditionResponses, setConditionResponses] = useState<Record<string, string>>({}),
+    [extracted, setExtracted] = useState(false);
   const request = useRef<AbortController | null>(null);
   const invalidate = () => {
     setRequirements([]);
+    setConditions([]);
+    setConditionResponses({});
+    setExtracted(false);
     setEntries({});
     setKinds({});
     setResult(null);
@@ -74,6 +83,7 @@ export default function Readiness({
     setError("");
     setText("");
     setExample(false);
+    setSourceId("");
     invalidate();
   };
   async function send(mode: "extract" | "assess" | "scenario") {
@@ -98,14 +108,10 @@ export default function Readiness({
       );
       if (mode === "extract") {
         setRequirements(data.requirements);
-        setKinds(
-          Object.fromEntries(
-            data.requirements.map((r: any) => [
-              r.requirement_id,
-              r.requirement_type,
-            ]),
-          ),
-        );
+        setConditions(data.listing_conditions || []);
+        setConditionResponses({});
+        setExtracted(true);
+        setKinds({});
         setEntries({});
         setResult(null);
         setScenario(null);
@@ -113,7 +119,9 @@ export default function Readiness({
         setActionPlan(null);
       } else if (mode === "assess") {
         setResult(data.assessment);
-        setReport(data.report);
+        setReport({ ...data.report, evidence_provenance: Object.fromEntries(
+          data.requirements.map((r: any) => [r.requirement_id, entries[r.requirement_id]?.provenance || "self_declared"])
+        ), provenance_limitation: "Candidate-supplied categories only; no artefacts or credentials verified." });
         setActionPlan(data.action_plan);
         setScenario(null);
         setGap("");
@@ -186,14 +194,33 @@ export default function Readiness({
           </button>
         </div>
         <label className="field">
+          Choose a synthetic source posting (optional)
+          <select aria-label="Choose a synthetic source posting (optional)" value={sourceId} disabled={busy || !bootstrap} onChange={(e) => {
+            const posting = bootstrap?.snapshot.postings.find((p: any) => p.canonical_url === e.target.value);
+            setSourceId(e.target.value);
+            setText(posting?.description_text || "");
+            setExample(Boolean(posting));
+            invalidate();
+          }}>
+            <option value="">Use pasted text or the authored example</option>
+            {(bootstrap?.snapshot.postings || []).map((p: any, index: number) => <option key={p.canonical_url} value={p.canonical_url}>
+              Fictional #{index + 1} · {p.employer_name} · {p.location_text}
+            </option>)}
+          </select>
+        </label>
+        {sourceId && <p className="caption">Selected fixture: {sourceId}. All 30 fixtures are fictional Data Analyst examples,
+          not a representative role sample. Mere skill mentions may remain uncertain until you review their context.</p>}
+        <label className="field">
           Job description
           <textarea
+            aria-label="Job description"
             rows={7}
             value={text}
             maxLength={30000}
             disabled={busy}
             onChange={(e) => {
               setText(e.target.value);
+              setSourceId("");
               invalidate();
             }}
             placeholder="Paste the description you want to compare. Leave out names and contact details."
@@ -220,6 +247,7 @@ export default function Readiness({
             onClick={() => {
               setText(bootstrap?.example_description || DEMO_TEXT);
               setExample(true);
+              setSourceId("");
               invalidate();
             }}
           >
@@ -232,6 +260,8 @@ export default function Readiness({
           {error}
         </p>
       )}
+      {extracted && <ListingConditions conditions={conditions} responses={conditionResponses}
+        onChange={(id, value) => setConditionResponses({ ...conditionResponses, [id]: value })} />}
       {requirements.length > 0 && (
         <article className="panel">
           <p className="eyebrow">STEP 02</p>
@@ -246,15 +276,18 @@ export default function Readiness({
               <div className="requirement-card" key={r.requirement_id}>
                 <div className="requirement-head">
                   <h3>{r.skill_name}</h3>
-                  <span className="badge">RULE: {r.requirement_type}</span>
+                  <span className="badge">{kinds[r.requirement_id] == null ? "RULE-EXTRACTED" : "USER-CONFIRMED"}: {kinds[r.requirement_id] ?? r.requirement_type}</span>
                 </div>
                 <blockquote>{r.source_text}</blockquote>
+                <p className="caption">Exact matched phrase: <q>{r.source_phrase}</q> · Unicode character span [{r.start}:{r.end}].
+                  {r.context_truncated && <> Context excerpt [{r.context_start}:{r.context_end}] is truncated; review the complete description above.</>}
+                </p>
                 <div className="grid-two">
                   <label className="field">
                     Confirm classification for {r.skill_name}
                     <select
                       aria-label={"Confirm classification for " + r.skill_name}
-                      value={kinds[r.requirement_id]}
+                      value={kinds[r.requirement_id] ?? r.requirement_type}
                       disabled={busy}
                       onChange={(e) => {
                         setKinds({
@@ -294,6 +327,16 @@ export default function Readiness({
                   </label>
                 </div>
                 <label className="field">
+                  Evidence provenance for {r.skill_name}
+                  <select aria-label={"Evidence provenance for " + r.skill_name}
+                    value={entries[r.requirement_id]?.provenance || "self_declared"} disabled={busy}
+                    onChange={(e) => update(r.requirement_id, "provenance", e.target.value)}>
+                    {Object.entries(provenanceLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                  </select>
+                </label>
+                <p className="caption">All provenance is self-reported. Project-linked or coursework-linked describes your note’s basis;
+                  it does not verify a link, completion, assessment or proficiency.</p>
+                <label className="field">
                   Evidence note for {r.skill_name}
                   <input
                     maxLength={500}
@@ -310,8 +353,9 @@ export default function Readiness({
           </div>
           <p className="caption">
             Uncertain and negated mentions are excluded. Repeated skills count
-            once at the strongest requirement level. Submitting confirms your
-            reviewed classifications.
+            once at the strongest requirement level. Untouched classifications retain
+            their rule-extracted label. Changing a classification records your
+            manual confirmation; submitting evidence alone does not confirm the rule’s interpretation.
           </p>
           <button
             className="button"
@@ -348,18 +392,20 @@ export default function Readiness({
                 <thead>
                   <tr>
                     <th>Skill</th>
-                    <th>Reviewed requirement</th>
+                    <th>Requirement / classification source</th>
                     <th>Status</th>
                     <th>Your evidence</th>
+                    <th>Provenance · self-reported</th>
                   </tr>
                 </thead>
                 <tbody>
                   {result.rows.map((r: any) => (
                     <tr key={r.requirement_id}>
                       <td>{r.skill_name}</td>
-                      <td>{r.requirement_type}</td>
+                      <td>{r.requirement_type}<br /><small>{r.classification_provenance || "rule-extracted"}</small></td>
                       <td>{r.status}</td>
                       <td>{r.evidence_note || "Not supplied"}</td>
+                      <td>{provenanceLabels[entries[r.requirement_id]?.provenance || "self_declared"]}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -425,7 +471,12 @@ export default function Readiness({
               {scenario && (
                 <>
                   <h3>Hypothetical — not completed or verified</h3>
-                  <Summary result={scenario} />
+                  <div className="grid-two readiness-comparison">
+                    <section aria-label="Submitted baseline comparison"><h3>Submitted baseline</h3><Summary result={result} /></section>
+                    <section aria-label="Hypothetical comparison"><h3>Hypothetical evidence</h3><Summary result={scenario} /></section>
+                  </div>
+                  <p className="notice">Listing conditions and your private checklist remain separate and unchanged.
+                    This scenario changes skill evidence only; it cannot establish qualifications or work eligibility.</p>
                   <p className="caption">
                     Baseline index: {format(result.alignment_pct, 1)}. Your
                     submitted evidence is unchanged. This does not establish a

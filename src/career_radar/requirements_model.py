@@ -6,7 +6,17 @@ import re
 
 from career_radar.normalise import Skill
 
-EXTRACTION_VERSION = "requirements-v1"
+EXTRACTION_VERSION = "requirements-v2-bounded"
+MAX_REQUIREMENTS = 200
+MAX_CONTEXT_CHARS = 600
+
+
+class AnalysisLimitError(ValueError):
+    """Known public input error; never embed supplied text in this message."""
+
+
+class RequirementLimitError(AnalysisLimitError):
+    """The repeated skill-mention ceiling was exceeded."""
 _REQUIRED = r"\b(?:required|essential|mandatory|must(?: have)?|need(?:ed)?|requirements)\b"
 _PREFERRED = r"\b(?:preferred|desirable|optional|nice[- ]to[- ]have|advantage|bonus)\b"
 _NEGATED = r"\b(?:not\s+(?:strictly\s+)?(?:required|essential|necessary|mandatory)|no\s+(?:prior\s+)?(?:experience|knowledge|proficiency)(?:\s+\w+){0,6}\s+(?:required|necessary)|do(?:es)?\s+not\s+require|no\s+(?:prior\s+)?(?:\w+\s+){1,4}experience\s+(?:is\s+)?required)\b"
@@ -99,11 +109,19 @@ def extract_requirements(text: str, taxonomy: list[Skill]) -> list[dict]:
                             kind = "uncertain"
                         offset = sentence.start() + clause.start() + part_start + segment_start
                         begin, end = offset + match.start(), offset + match.end()
+                        if len(results) >= MAX_REQUIREMENTS:
+                            raise RequirementLimitError("This description contains more than 200 skill mentions. Shorten it or remove repeated sections before analysing again.")
+                        context_start = max(sentence.start(), begin - 250)
+                        context_end = min(sentence.end(), context_start + MAX_CONTEXT_CHARS)
+                        if len(source) <= MAX_CONTEXT_CHARS:
+                            context_start, context_end = sentence.start(), sentence.end()
                         identity = f"{EXTRACTION_VERSION}|{text}|{skill.skill_id}|{begin}|{end}"
                         results.append({
                             "requirement_id": hashlib.sha256(identity.encode()).hexdigest()[:20],
                             "skill_id": skill.skill_id, "skill_name": skill.skill_name,
-                            "source_phrase": text[begin:end], "source_text": source,
+                            "source_phrase": text[begin:end], "source_text": text[context_start:context_end],
+                            "context_start": context_start, "context_end": context_end,
+                            "context_truncated": context_start != sentence.start() or context_end != sentence.end(),
                             "requirement_type": kind, "start": begin, "end": end,
                             "extraction_version": EXTRACTION_VERSION,
                         })

@@ -1,0 +1,57 @@
+name: PostgreSQL warehouse reconciliation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'sql/**'
+      - 'src/career_radar/**'
+      - 'tests/test_refresh.py'
+      - 'tests/test_postgres_integration.py'
+      - 'tests/fixtures/**'
+      - 'data/reference/**'
+      - 'config/refresh-fixture.json'
+      - 'requirements-sql.txt'
+      - '.github/workflows/warehouse.yml'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: career_radar_test
+          POSTGRES_PASSWORD: fixture-local-only
+          POSTGRES_DB: career_radar_test
+        ports:
+          - '127.0.0.1:5432:5432'
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      # Ephemeral localhost-only CI credentials; never reuse for a hosted database.
+      CAREER_RADAR_TEST_DATABASE_URL: postgresql://career_radar_test:fixture-local-only@127.0.0.1:5432/career_radar_test?sslmode=disable
+      PYTHONPATH: src
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-sql.txt
+      - run: python -m pip install -r requirements-sql.txt
+      - name: Exercise saved-file failure and recovery gates
+        run: python -m unittest discover -s tests -p test_refresh.py -v
+      - name: Execute real PostgreSQL metric reconciliation
+        run: python -m unittest discover -s tests -p test_postgres_integration.py -v

@@ -2,7 +2,7 @@
 
 ## Master project description and feature specification
 
-**Version:** 1.0 · **Date:** 18 October 2026 · **State:** four-feature specification; initial working prototypes now implemented. See [implementation status](docs/implementation-status.md) for current evidence and limits.
+**Version:** 1.1 · **Date:** 18 October 2026 · **State:** integrated four-tool synthetic demo, independent engineering review and light editorial motion design implemented. Observed-data/public operating gates remain pending. See [platform review](docs/platform-review.md) and [implementation status](docs/implementation-status.md).
 
 This is the primary product specification. Where older brainstorming notes or roadmaps differ, this document defines the intended scope. Planned requirements and acceptance criteria describe future work, not completed capabilities.
 
@@ -387,12 +387,13 @@ validation limits are recorded in [implementation status](docs/implementation-st
 | Snapshot publication flag | Disabled for the pilot |
 | Geography-filtered market summaries and source-linked evidence | Implemented baseline |
 | Basic skill-gap / proof-of-work planner | Implemented legacy baseline; supporting logic may be reused, not a fifth flagship |
-| Skill Constellation network and association models | Initial implementation: metrics, filters, graph, tables and evidence; historical window pending |
-| Opportunity Readiness evidence/requirements model | Initial implementation: corrected requirements, evidence matrix, coverage/index, scenarios and reset; human evaluation pending |
-| Career Mobility generator, SQL models and visual lab | In-memory generator and visual lab implemented; PostgreSQL worksheet unexecuted |
-| Job Description Diagnostic | Initial deterministic diagnostic implemented; benchmark and human evaluation pending |
-| Weekly automated refresh / live PostgreSQL workflow | Planned, not operational |
-| Public application or commercial launch | Vercel-compatible public-demo code prepared; account linking, hosted verification and real-data release not completed |
+| Skill Constellation network and association models | Bounded searchable graph, categories, evidence and separately labelled fictional role heatmap/table implemented; observed history pending |
+| Opportunity Readiness evidence/requirements model | Evidence matrix, corrected classifications, provenance, private condition checklist, action planner and baseline/scenarios implemented; human evaluation pending |
+| Career Mobility generator, SQL models and visual lab | Linked directional network, conserving Sankey, matrix, cohorts/timelines and executed PostgreSQL reconciliation implemented; synthetic-only |
+| Job Description Diagnostic | Source highlights, grouped findings, review/diff/export implemented; reviewed observed benchmarks and human evaluation pending |
+| Refresh / PostgreSQL workflow | Saved-file refresh and transactional SQL reconciliation tested locally; live collection and managed hosting not operating |
+| Presentation/review | Independent review, automated accessibility, measured local API workloads, editorial design and pause/reduced-motion controls implemented |
+| Public application or commercial launch | Owner reports Vercel demo deployed; latest hosted acceptance, authenticated tooling and observed-data release remain unverified |
 
 ## 11. Delivery sequence and milestones
 

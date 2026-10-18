@@ -154,7 +154,7 @@ test("mobility renders synthetic flows, switches views and filters empty cohorts
   await expect(page.getByText("2,000", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Flow", exact: true }).click();
   await expect(
-    page.getByRole("img", {
+    page.getByRole("group", {
       name: "Synthetic origin to destination flows, widths indicate event counts",
     }),
   ).toBeVisible();

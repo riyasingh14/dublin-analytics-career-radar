@@ -24,7 +24,7 @@ test("project plan hands off to what-if without claiming completed evidence", as
   await page.getByRole("button", { name: "Compare hypothetical evidence" }).click();
   await expect(page.getByRole("heading", { name: "Hypothetical — not completed or verified" })).toBeVisible();
   await expect(page.getByText("42.9 / 100", { exact: true })).toBeVisible();
-  await expect(page.getByText("0 / 100", { exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Submitted baseline comparison", exact: true }).getByText("0 / 100", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Clear all", exact: true }).click();
   await expect(page.locator(".evidence-planner")).toHaveCount(0);
   await expect(page.locator(".evidence-breakdown")).toHaveCount(0);
@@ -73,7 +73,7 @@ test("repeated requirements choose an unresolved context and preserve conservati
   await page.getByRole("button", { name: "Explore SQL project hypothetically" }).click();
   await page.getByRole("button", { name: "Compare hypothetical evidence" }).click();
   await expect(page.getByText("100 / 100", { exact: true })).toBeVisible();
-  await expect(page.getByText("0 / 100", { exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Submitted baseline comparison", exact: true }).getByText("0 / 100", { exact: true })).toBeVisible();
   await expect(statuses.nth(1)).toHaveValue("missing");
 });
 

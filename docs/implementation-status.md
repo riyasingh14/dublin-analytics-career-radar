@@ -3,6 +3,34 @@
 Date: 18 October 2026. This records working code and validation, not a public launch
 or a claim that every future enhancement in the master specification is complete.
 
+## Current release: integrated tools, review and editorial redesign
+
+All four public demonstration tools now include the functional gaps identified
+in the master-plan review: Constellation search/category legend/bounded graph and
+role-comparison heatmap; Readiness source selection/provenance/condition checklist
+and baseline comparison; Mobility linked cohorts, directional network, conserving
+Sankey, matrix, bands and timeline; Diagnostic highlighted source spans, review
+states, additive diff and unavailable observed benchmark. The shared data passport
+exposes fixture lineage and absent collection dates. A five-minute walkthrough is
+included on the Methods page.
+
+The private saved-file refresh and PostgreSQL warehouse are implemented and
+executed locally. The public app remains independent and synthetic. No live paid
+collector or observed-data publication is enabled. See the
+[operations runbook](operations-runbook.md).
+
+Independent cross-review and an additional release review preceded the new light
+editorial design. Cobalt/ivory/ink typography, a projected orbital skill sculpture,
+pointer-responsive cards and global/system motion controls are implemented.
+Analytical values and chart layouts stay stable while inspected.
+
+Final local validation: **130 Python tests passed with no skips**, including four
+actual PostgreSQL checks; **30 browser/interaction checks passed**, including all
+six routes under axe WCAG A/AA rules; production build passed. Separate Flask-only
+HTTP tests passed without SQL/research dependencies. See the
+[platform review and acceptance trace](platform-review.md) and
+[visual system](visual-system.md). Older iteration counts below are historical.
+
 ## Vercel web version
 
 The React/Vite frontend under `web/` and Flask function under `api/` now implement
@@ -132,9 +160,8 @@ its new schema is emitted automatically.
 
 ## Next release gates
 
-Import and review the broader Ireland sample; audit extraction and requirement
-rules on human-labelled examples; confirm source display permissions; measure
-usability and performance; execute the SQL pipeline against its intended database;
-and configure permitted, budget-capped weekly refresh. Public deployment, recurring
-paid services, automatic collection and a real hiring-outcome model are not part
-of this iteration.
+Import/review the broader Ireland sample; audit rules on human-labelled examples;
+confirm public source permissions; verify hosted deployment and remote CI; measure
+user comprehension and hosted performance; and configure authorised, budget-capped
+live collection if approved. PostgreSQL reconciliation and a saved-file fixture
+refresh now work locally. A real hiring-outcome model remains outside scope.

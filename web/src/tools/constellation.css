@@ -1,0 +1,9 @@
+.constellation-legend { display: flex; flex-wrap: wrap; gap: .6rem 1rem; padding: .8rem 0; font-size: .8rem; }
+.constellation-legend span { display: inline-flex; gap: .4rem; align-items: center; }
+.constellation-legend i { width: .7rem; height: .7rem; border-radius: 50%; display: inline-block; }
+.skill-category { display: block; font-size: .75rem; font-weight: 500; margin-top: .25rem; }
+.skill-heatmap caption { text-align: left; padding: 1rem 0; font-weight: 650; }
+.skill-heatmap td { font-variant-numeric: tabular-nums; }
+.constellation-coverage dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+.constellation-coverage dt { font-size: .75rem; color: var(--muted, #53656a); }
+.constellation-coverage dd { margin: .3rem 0 0; font-size: .9rem; overflow-wrap: anywhere; }

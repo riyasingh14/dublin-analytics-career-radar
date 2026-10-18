@@ -11,8 +11,13 @@ import {
   X,
   CircleCheck,
   Github,
+  Pause,
+  Play,
 } from "lucide-react";
 import { api, Bootstrap } from "./lib/api";
+import DataCoverage from "./components/DataCoverage";
+import { useStudioMotion } from "./components/StudioMotion";
+import AnalyticalSculpture from "./components/AnalyticalSculpture";
 const Constellation = lazy(() => import("./tools/Constellation"));
 const Readiness = lazy(() => import("./tools/Readiness"));
 const Mobility = lazy(() => import("./tools/Mobility"));
@@ -61,92 +66,7 @@ function currentRoute() {
     ? location.hash.slice(2) || "home"
     : "home";
 }
-function Orbit() {
-  const points = [
-    [220, 150],
-    [135, 70],
-    [310, 50],
-    [410, 130],
-    [350, 255],
-    [145, 270],
-    [58, 180],
-    [480, 250],
-  ];
-  return (
-    <svg
-      viewBox="0 0 540 330"
-      className="hero-network"
-      role="img"
-      aria-label="Illustrative connections between career skills, not market data"
-    >
-      <defs>
-        <pattern id="grid" width="25" height="25" patternUnits="userSpaceOnUse">
-          <circle cx="1" cy="1" r=".8" fill="#c4d1ca" />
-        </pattern>
-      </defs>
-      <rect width="540" height="330" fill="url(#grid)" rx="24" />
-      {[
-        [0, 1],
-        [0, 2],
-        [0, 3],
-        [0, 4],
-        [0, 5],
-        [0, 6],
-        [1, 2],
-        [1, 6],
-        [2, 3],
-        [3, 4],
-        [3, 7],
-        [4, 5],
-        [4, 7],
-        [5, 6],
-      ].map(([a, b], i) => (
-        <line
-          key={i}
-          x1={points[a][0]}
-          y1={points[a][1]}
-          x2={points[b][0]}
-          y2={points[b][1]}
-          stroke="#91ada4"
-          strokeWidth={i < 6 ? 2 : 1}
-        />
-      ))}
-      {points.map(([x, y], i) => (
-        <circle
-          key={i}
-          cx={x}
-          cy={y}
-          r={i === 0 ? 24 : i === 3 ? 15 : 10}
-          fill={i === 3 ? "#bc623e" : "#1b6657"}
-          stroke="#f8f7f2"
-          strokeWidth="5"
-        />
-      ))}
-      <text x="220" y="154" textAnchor="middle" fill="white" fontSize="12">
-        SQL
-      </text>
-      <text x="110" y="47">
-        Python
-      </text>
-      <text x="305" y="26">
-        Data quality
-      </text>
-      <text x="425" y="120">
-        Communication
-      </text>
-      <text x="312" y="286">
-        Visualisation
-      </text>
-      <text x="95" y="301">
-        Statistics
-      </text>
-      <text x="20" y="320" className="diagram-note">
-        ILLUSTRATIVE NETWORK · NOT MARKET DATA
-      </text>
-    </svg>
-  );
-}
-function Home({ bootstrap }: { bootstrap: Bootstrap | null }) {
+function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motionEnabled: boolean }) {
   return (
     <>
       <section className="hero">
@@ -178,11 +98,7 @@ function Home({ bootstrap }: { bootstrap: Bootstrap | null }) {
           </p>
         </div>
         <div className="hero-art">
-          <Orbit />
-          <div className="art-caption">
-            <span>CONNECTED SKILLS, CLEARER DECISIONS</span>
-            <span>RESEARCH STUDIO / 2026</span>
-          </div>
+          <AnalyticalSculpture motionEnabled={motionEnabled} />
         </div>
       </section>
       <section className="intro-strip">
@@ -303,6 +219,18 @@ function Methodology() {
       </p>
       <div className="grid-two">
         <article className="panel">
+          <p className="eyebrow">THE FIVE-MINUTE PORTFOLIO WALKTHROUGH</p>
+          <h2>One question. A traceable decision.</h2>
+          <ol className="walkthrough-list">
+            <li><a href="#/constellation">Find a skill pair</a> and trace its count to exact source phrases.</li>
+            <li><a href="#/diagnostic">Diagnose a description</a> and inspect the source behind one clarification.</li>
+            <li><a href="#/readiness">Assess an evidence gap</a>, inspect the arithmetic and prepare a proof-of-work brief.</li>
+            <li><a href="#/mobility">Explore a synthetic career flow</a>, then inspect the cohort, salary variation and assumptions.</li>
+          </ol>
+          <p>Each step demonstrates a different analytical skill: data modelling,
+            quality checks, requirements analysis, scenario design and communication.</p>
+        </article>
+        <article className="panel">
           <h2>Keep the data types distinct</h2>
           <p>
             <strong>Synthetic:</strong> the constellation examples and career
@@ -371,6 +299,7 @@ function Methodology() {
   );
 }
 export default function App() {
+  const motion = useStudioMotion();
   const [route, setRoute] = useState(currentRoute),
     [menu, setMenu] = useState(false),
     [bootstrap, setBootstrap] = useState<Bootstrap | null>(null),
@@ -409,7 +338,7 @@ export default function App() {
         Skip to content
       </a>
       <header className="site-header">
-        <a href="#/" className="brand" aria-label="Career Radar home">
+        <a href="#/" className="brand" title="Career Radar home">
           <span className="brand-mark">
             <Radar size={25} />
           </span>
@@ -451,6 +380,10 @@ export default function App() {
             Methods
           </a>
         </nav>
+        <button className="motion-control" onClick={motion.toggle} disabled={motion.reduced} aria-pressed={motion.enabled}>
+          {motion.enabled ? <Pause size={12} /> : <Play size={12} />}
+          {motion.reduced ? "Reduced motion" : motion.enabled ? "Pause motion" : "Enable motion"}
+        </button>
       </header>
       <main id="main" tabIndex={-1}>
         <div className="demo-banner">
@@ -460,6 +393,7 @@ export default function App() {
             Generated examples. No private job data or hiring predictions.
           </span>
         </div>
+        <DataCoverage bootstrap={bootstrap} />
         {error && (
           <div className="error" role="alert">
             {error}{" "}
@@ -472,7 +406,7 @@ export default function App() {
           </div>
         )}
         {route === "home" ? (
-          <Home bootstrap={bootstrap} />
+          <Home bootstrap={bootstrap} motionEnabled={motion.enabled} />
         ) : route === "methodology" ? (
           <Methodology />
         ) : active ? (

@@ -11,7 +11,7 @@
   font-weight: 400;
   line-height: 1.6;
   --ink: #193e34;
-  --muted: #65776d;
+  --muted: #526459;
   --line: #d9dfd5;
   --teal: #246b59;
   --clay: #b6613d;
@@ -322,7 +322,7 @@ nav a[aria-current="page"]:after {
   border-top: 1px solid #c9d4c8;
   font-size: 0.47rem;
   letter-spacing: 0.09em;
-  color: #688072;
+  color: #4b6154;
 }
 .intro-strip {
   display: grid;
@@ -422,7 +422,7 @@ nav a[aria-current="page"]:after {
 }
 .tool-card > p {
   font-size: 0.88rem;
-  color: #66796c;
+  color: #4d6355;
   max-width: 410px;
 }
 .card-bottom {
@@ -834,6 +834,17 @@ textarea:disabled {
 .selected-pair {
   font-weight: 600;
 }
+.coverage-passport { border-bottom: 1px solid var(--line); padding: 12px 0; font-size: .8rem; }
+.coverage-passport > summary { display: flex; gap: 16px; flex-wrap: wrap; cursor: pointer; font-weight: 600; }
+.coverage-passport > summary span { color: var(--muted); font-weight: 400; }
+.coverage-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,220px),1fr)); gap: 18px; margin: 24px 0; }
+.coverage-grid dt { color: var(--muted); }
+.coverage-grid dd { margin: 5px 0 0; }
+.walkthrough-list { padding-left: 20px; }
+.walkthrough-list li { padding: 8px 0; }
+.walkthrough-list a { text-decoration: underline; text-underline-offset: 3px; }
+.skill-heatmap td { color: var(--ink); }
+.readiness-comparison .metrics.three { grid-template-columns: 1fr; }
 .evidence-breakdown {
   margin: 28px 0;
   padding: 22px;

@@ -3,9 +3,9 @@ from __future__ import annotations
 import hashlib
 import re
 from career_radar.normalise import Skill, classify_role
-from career_radar.requirements_model import extract_requirements
+from career_radar.requirements_model import extract_requirements, AnalysisLimitError
 
-RULE_VERSION = "diagnostic-v1"
+RULE_VERSION = "diagnostic-v2"
 LIMITATIONS = ("Deterministic document review only; not an employer, legal or hiring-effectiveness assessment. "
                "Missing means not stated in this text. Unknown means wording needs human interpretation. "
                "No external model or comparable-posting benchmark is used.")
@@ -16,6 +16,8 @@ def analyze_description(text: str, taxonomy: list[Skill]) -> dict:
     findings = []
 
     def finding(rule, category, rationale, suggestion, match=None, absent_field=None, severity="review"):
+        if len(findings) >= 200:
+            raise AnalysisLimitError("This description produces more than 200 review findings. Shorten it or remove repeated sections before analysing again.")
         start, end = (match.start(), match.end()) if match else (None, None)
         findings.append({
             "finding_id": hashlib.sha256(f"{RULE_VERSION}|{rule}|{start}|{text}".encode()).hexdigest()[:16],
@@ -28,12 +30,20 @@ def analyze_description(text: str, taxonomy: list[Skill]) -> dict:
         "salary": (r"(?:€|£|\$|\bEUR\b|\bGBP\b|\bUSD\b)\s*\d[\d,.]*(?:\s*[kK])?", r"\b(?:salary|pay|compensation|remuneration)\b", "What is the salary range, currency and pay period?"),
         "work_arrangement": (r"\b(?:hybrid|remote|on[- ]?site|office[- ]based)\b", r"\b(?:flexible working|work arrangement)\b", "What are the office attendance and remote-location requirements?"),
         "location": (r"\b(?:Dublin|Cork|Galway|Limerick|Waterford|Belfast|Ireland)\b|\blocation\s*:\s*\w+", r"\b(?:location|based in|office)\b", "Where is the role based, and are there location restrictions?"),
-        "contract_type": (r"\b(?:permanent|fixed[- ]term|temporary|contractor|internship|full[- ]time|part[- ]time)\b", r"\b(?:contract|employment type)\b", "What are the contract duration and working hours?"),
+        "contract_type": (r"\b(?:permanent|fixed[- ]term|temporary|contractor|internship)\b", r"\b(?:contract|employment type|full[- ]time|part[- ]time)\b", "What are the contract duration and working hours?"),
         "responsibilities": (r"\b(?:responsibilities|duties|you will|you'll|your role|what you(?:'|’)ll do)\b", r"\b(?:role|work|responsibility)\b", "What outcomes and day-to-day responsibilities will this role own?"),
     }
     completeness = {}
     for name, (present_pattern, unknown_pattern, question) in checks.items():
         present = re.search(present_pattern, text, re.I)
+        if name == "salary":
+            # Currency alone also matches training budgets and expense allowances.
+            # Require an explicit pay label in the same short sentence/clause.
+            present = next((amount for amount in re.finditer(present_pattern, text, re.I)
+                            if re.search(r"\b(?:salary|pay|compensation|remuneration)\b",
+                                         re.split(r"[.;\n]", text[max(0, amount.start()-65):amount.start()])[-1], re.I)
+                            and not re.search(r"\b(?:budget|allowance|expenses|training|equipment)\b",
+                                              text[max(0, amount.start()-35):amount.start()], re.I)), None)
         unknown = re.search(unknown_pattern, text, re.I)
         match = present or unknown
         status = "present" if present else "unknown" if unknown else "missing"
@@ -59,7 +69,7 @@ def analyze_description(text: str, taxonomy: list[Skill]) -> dict:
         if not re.search(expansion, text):
             finding("clarity.possible_abbreviation", "Clarity",
                     "This uppercase term may be an abbreviation, name or code. The limited rule found no preceding parenthesised expansion.",
-                    f"If {term} is an unfamiliar abbreviation, expand it on first use; otherwise dismiss this flag.", match)
+                    "If this term is an unfamiliar abbreviation, expand it on first use; otherwise dismiss this flag.", match)
     first_line = next((line for line in text.splitlines() if line.strip()), "")
     title_role = classify_role(first_line)[0]
     if title_role:
@@ -106,5 +116,13 @@ def analyze_description(text: str, taxonomy: list[Skill]) -> dict:
                     "This exact line appears more than once; inspect for export/parsing duplication.",
                     "Review the repetition before removing anything from the original.", match)
         seen.add(line)
+    # Preserve malformed source exactly; a flag is a parsing warning, not a repair.
+    for match in re.finditer(r"\ufffd|[\x00-\x08\x0b\x0c\x0e-\x1f]|</?[A-Za-z][^>\n]{0,250}>", text):
+        finding("quality.possible_export_artifact", "Data quality",
+                "A replacement character, control character or HTML-like tag appears in the source. It may be an export artifact or intentional example code.",
+                "Compare with the authorised original; correct only confirmed export errors. Keep intentional code unchanged.", match)
     return {"requirements": requirements, "findings": findings, "completeness": completeness,
-            "rule_version": RULE_VERSION, "limitations": LIMITATIONS, "benchmark": None}
+            "rule_version": RULE_VERSION, "limitations": LIMITATIONS, "benchmark": None,
+            "benchmark_status": {"available": False, "comparable_observed_postings": 0,
+                                 "minimum_sample": 20,
+                                 "reason": "No reviewed, comparable observed postings are connected to this analysis. Synthetic examples are excluded."}}

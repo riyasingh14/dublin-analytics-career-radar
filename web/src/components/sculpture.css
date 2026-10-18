@@ -1,0 +1,58 @@
+.analytical-sculpture {
+  --sculpture-ink: #232921;
+  --sculpture-paper: #fbfaf5;
+  --sculpture-blue: #2146ed;
+  margin: 0;
+  width: 100%;
+  min-width: 0;
+  position: relative;
+  color: var(--sculpture-ink);
+  background: var(--sculpture-paper);
+  isolation: isolate;
+}
+.sculpture-overline {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem 0;
+  font-size: .58rem;
+  letter-spacing: .12em;
+  font-weight: 650;
+  line-height: 1.4;
+}
+.sculpture-overline span:last-child { color: #586344; }
+.sculpture-canvas { display: block; width: 100%; height: auto; overflow: visible; }
+.sculpture-axis { fill: none; stroke: #d9dcd0; stroke-width: .65; stroke-dasharray: 2 7; }
+.sculpture-boundary { fill: none; stroke: #e6e6dc; stroke-width: .7; }
+.sculpture-orbit { fill: none; stroke: #8f9a88; stroke-width: .8; opacity: .58; }
+.sculpture-orbit-1 { stroke: #2146ed; opacity: .45; }
+.sculpture-orbit-2 { stroke-dasharray: 3 5; opacity: .6; }
+.sculpture-coordinate { fill: #6a7364; font-family: ui-monospace, monospace; font-size: 7.5px; letter-spacing: 1.1px; }
+.sculpture-link { stroke: #7e8979; stroke-width: .7; opacity: .22; pointer-events: none; }
+.sculpture-link.is-selected { stroke: #2146ed; stroke-width: 1; opacity: .55; }
+.sculpture-skill { cursor: pointer; outline: none; }
+.sculpture-hit { fill: transparent; }
+.sculpture-selection-ring { fill: none; stroke: #2146ed; stroke-width: .8; stroke-dasharray: 2 4; opacity: .7; pointer-events: none; }
+.sculpture-label { fill: #232921; font: 14px Georgia, "Times New Roman", serif; pointer-events: none; }
+.sculpture-centre-label { fill: #fff; font: 12px ui-monospace, monospace; font-weight: 650; letter-spacing: .6px; pointer-events: none; }
+.sculpture-skill:focus-visible .sculpture-hit { stroke: #2146ed; stroke-width: 3; stroke-dasharray: 3 3; }
+.sculpture-skill:hover .sculpture-label, .sculpture-skill:focus-visible .sculpture-label { fill: #2146ed; }
+.sculpture-caption { border-top: 1px solid #d7dbce; margin: 0 1.25rem; padding: 1rem 0 .8rem; }
+.sculpture-selected { display: grid; grid-template-columns: 2rem 1fr; gap: .7rem; min-height: 7rem; }
+.sculpture-index { color: #2146ed; font: .7rem ui-monospace, monospace; padding-top: .3rem; }
+.sculpture-selected strong { font: 1.25rem Georgia, "Times New Roman", serif; }
+.sculpture-selected p { font-size: .76rem; line-height: 1.6; color: #51594e; max-width: 44ch; margin: .45rem 0 .7rem; }
+.sculpture-explore { display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: .73rem; font-weight: 650; color: #2146ed; padding: .5rem 0; }
+.sculpture-explore span { font-size: 1.3rem; line-height: 1; }
+.sculpture-explore:focus-visible { outline: 2px solid #2146ed; outline-offset: 3px; }
+.sculpture-disclosure { font-size: .6rem; line-height: 1.6; color: #64705c; max-width: 58ch; margin: .55rem 0 0; }
+@media (max-width: 640px) {
+  .sculpture-overline { padding: 1rem .8rem 0; font-size: .5rem; letter-spacing: .07em; }
+  .sculpture-label { font-size: 16px; }
+  .sculpture-caption { margin: 0 1rem; }
+  .sculpture-selected { min-height: 7.5rem; }
+  .sculpture-selected p { font-size: .74rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .analytical-sculpture *, .analytical-sculpture *::before, .analytical-sculpture *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

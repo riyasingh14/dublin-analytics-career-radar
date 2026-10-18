@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Download, Network, ArrowRight } from "lucide-react";
 import { api, Bootstrap, downloadJSON, format } from "../lib/api";
+import ConstellationComparison from "./ConstellationComparison";
+import { boundedGraph, categoryColour } from "./constellationModel";
+import "./constellation.css";
 
 export default function Constellation({
   bootstrap,
@@ -15,7 +18,8 @@ export default function Constellation({
     [result, setResult] = useState<any>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
-    [pairKey, setPairKey] = useState("");
+    [pairKey, setPairKey] = useState(""),
+    [skillSearch, setSkillSearch] = useState("");
   useEffect(() => {
     if (!bootstrap) return;
     const c = new AbortController();
@@ -43,7 +47,7 @@ export default function Constellation({
   );
   const universe = useMemo(
     () =>
-      [...(bootstrap?.snapshot.market.top_skills || [])].sort(
+      [...new Map<string, any>((bootstrap?.snapshot.evidence || []).map((row: any) => [row.skill_id, row])).values()].sort(
         (a: any, b: any) => a.skill_id.localeCompare(b.skill_id),
       ),
     [bootstrap],
@@ -53,13 +57,17 @@ export default function Constellation({
       theta = (2 * Math.PI * i) / Math.max(universe.length, 1) - Math.PI / 2;
     return [300 + 205 * Math.cos(theta), 225 + 165 * Math.sin(theta)];
   };
-  const graphEdges = eligible
-    .filter((p: any) => !focus || [p.skill_a, p.skill_b].includes(focus))
-    .sort((a: any, b: any) => b[metric] - a[metric])
-    .slice(0, 80);
-  const connected = new Set(
-    graphEdges.flatMap((p: any) => [p.skill_a, p.skill_b]),
-  );
+  const graph = boundedGraph(nodes, eligible, metric, focus);
+  const graphEdges = graph.edges;
+  const categoryById = Object.fromEntries((bootstrap?.taxonomy || []).map((skill: any) => [skill.skill_id, skill.category]));
+  const categories = [...new Set<string>(graph.nodes.map((node: any) => categoryById[node.skill_id] || "Uncategorised"))].sort();
+  const searchableNodes = nodes.filter((node: any) => `${node.skill_name} ${categoryById[node.skill_id] || ""}`.toLowerCase().includes(skillSearch.toLowerCase()));
+  useEffect(() => {
+    if (result && focus && !result.nodes.some((node: any) => node.skill_id === focus)) {
+      setFocus("");
+      setPairKey("");
+    }
+  }, [result, focus]);
   const inspectionPairs = pairs.filter(
     (p: any) => !focus || [p.skill_a, p.skill_b].includes(focus),
   );
@@ -153,6 +161,10 @@ export default function Constellation({
           />
         </label>
         <label className="field">
+          Search skills
+          <input type="search" aria-label="Search skills" value={skillSearch} onChange={(e) => setSkillSearch(e.target.value)} placeholder="Skill or category" />
+        </label>
+        <label className="field">
           Focus skill
           <select
             aria-label="Focus skill"
@@ -163,7 +175,8 @@ export default function Constellation({
             }}
           >
             <option value="">All skills</option>
-            {nodes.map((n: any) => (
+            {focus && !searchableNodes.some((node: any) => node.skill_id === focus) && <option value={focus}>{labels[focus]}</option>}
+            {searchableNodes.map((n: any) => (
               <option value={n.skill_id} key={n.skill_id}>
                 {n.skill_name}
               </option>
@@ -205,6 +218,18 @@ export default function Constellation({
               <small>After sample and pair guards</small>
             </div>
           </div>
+          <article className="panel constellation-coverage">
+            <p className="eyebrow">SAMPLE COVERAGE & LIMITS</p><h2>Know what this view can support.</h2>
+            <dl>
+              <div><dt>Data source</dt><dd>Generated fictional fixture; no live feed</dd></div>
+              <div><dt>Evidence coverage</dt><dd>{result.jobs_with_skills} / {result.sample_size} selected postings{result.sample_size ? ` · ${format(100 * result.jobs_with_skills / result.sample_size, 1, "%")}` : " · unavailable"}</dd></div>
+              <div><dt>Collection date</dt><dd>Not applicable: no vacancies collected</dd></div>
+              <div><dt>Extraction method</dt><dd>Controlled phrase rules · {[...new Set<string>((result.evidence || []).map((row: any) => row.extraction_version))].join(", ") || "No extracted evidence"}</dd></div>
+              <div><dt>Observation window</dt><dd>Single fictional fixture; no historical trend available</dd></div>
+              <div><dt>Unprovided filters</dt><dd>Industry and seniority are unavailable in this sample</dd></div>
+            </dl>
+            <p className="caption">No observed market coverage or extraction precision is claimed. A fixture is not a human-reviewed live dataset. Postings without an extracted match still count in N. Source mix, collection bias and human validation must be assessed before real-data publication.</p>
+          </article>
           <div className="graph-layout">
             <article className="panel">
               <div className="panel-heading">
@@ -301,9 +326,7 @@ export default function Constellation({
                       </g>
                     );
                   })}
-                  {nodes
-                    .filter((n: any) => connected.has(n.skill_id))
-                    .slice(0, 40)
+                  {graph.nodes
                     .map((n: any) => {
                       const [x, y] = position(n.skill_id);
                       return (
@@ -326,21 +349,22 @@ export default function Constellation({
                             cx={x}
                             cy={y}
                             r={9 + 16 * Math.sqrt(n.sample_share)}
-                            fill={focus === n.skill_id ? "#b85b38" : "#246b59"}
-                            stroke="#f8f7f2"
-                            strokeWidth="3"
+                            fill={categoryColour(categoryById[n.skill_id] || "Uncategorised")}
+                            stroke={focus === n.skill_id ? "#151f1b" : "#f8f7f2"}
+                            strokeWidth={focus === n.skill_id ? 5 : 3}
                           />
                           <text x={x} y={y - 32} textAnchor="middle">
                             {n.skill_name}
                           </text>
                           <title>
-                            {n.skill_name}: {n.job_count} fictional postings
+                            {n.skill_name} · {categoryById[n.skill_id] || "Uncategorised"}: {n.job_count} fictional postings
                           </title>
                         </g>
                       );
                     })}
                 </svg>
               )}
+              <div className="constellation-legend" aria-label="Taxonomy category legend">{categories.map((category) => <span key={category}><i aria-hidden="true" style={{background: categoryColour(category)}} />{category}</span>)}</div>
               <p className="caption">
                 Node size: unique posting count. Fixed positions. Maximum 40
                 nodes / 80 edges. Select a line to inspect its source phrases;
@@ -411,6 +435,7 @@ export default function Constellation({
               )}
             </aside>
           </div>
+          <ConstellationComparison comparison={result.role_comparison} />
           <details className="panel">
             <summary>Calculation definitions and complete pair table</summary>
             <p>
@@ -454,6 +479,8 @@ export default function Constellation({
                   data_label: "Synthetic demonstration",
                   sample_size: result.sample_size,
                   filters: { role, geography },
+                  definitions: { support: "n(A,B)/N", jaccard: "n(A,B)/(n(A)+n(B)-n(A,B))", lift: "n(A,B)*N/(n(A)*n(B))" },
+                  interpretation: "Fictional sample; co-mention is association, not causation; display guards are heuristics.",
                   pairs,
                 })
               }

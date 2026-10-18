@@ -60,6 +60,19 @@ Initial working versions of all four tools and a landing page are implemented.
 See [implementation status](docs/implementation-status.md) for tested capabilities,
 limits and remaining release gates. Human review and the broader dataset remain pending.
 
+The integrated release adds source-linked comparisons, editable diagnostic diffs,
+private condition checklists and linked synthetic career cohorts. It has undergone
+independent cross-review and a light editorial redesign with an orbital skill
+sculpture, pointer-responsive depth and accessible motion controls. See the
+[full review/acceptance trace](docs/platform-review.md) and
+[visual system](docs/visual-system.md). Local verification passed 130 Python tests
+(including actual PostgreSQL integration) and 30 browser/interaction checks.
+
+The [operations runbook](docs/operations-runbook.md) documents a real transactional
+PostgreSQL reconciliation path and an idempotent saved-file refresh with quality,
+hash and failure-recovery gates. This is separate from the public synthetic app;
+live collection and public observed data remain disabled.
+
 ## Existing baseline features
 
 1. **Market signal dashboard** — role counts, top skills, industries, work patterns, and skill trends.
@@ -86,8 +99,9 @@ Versioned CSV/JSON snapshots + reference SQL models
 React/Vite public demo + Python API; Streamlit internal workbench
 ```
 
-PostgreSQL schema and SQL reference queries are provided; a live database pipeline
-and scheduled refresh remain planned. See [product strategy](docs/product-strategy.md),
+The private PostgreSQL loader and SQL/Python reconciliation are now executable and
+tested locally. A saved-fixture refresh and dormant rehearsal workflow are provided;
+managed hosting and real scheduled collection remain pending. See [product strategy](docs/product-strategy.md),
 [implementation status](docs/implementation-status.md), and [data governance](docs/data-governance.md).
 
 The [master project description](PROJECT_DESCRIPTION.md) defines the scope and
