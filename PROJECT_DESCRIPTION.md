@@ -2,7 +2,7 @@
 
 ## Master project description and feature specification
 
-**Version:** 1.0 · **Date:** 18 October 2026 · **State:** agreed four-feature scope, with implementation status recorded below.
+**Version:** 1.0 · **Date:** 18 October 2026 · **State:** four-feature specification; initial working prototypes now implemented. See [implementation status](docs/implementation-status.md) for current evidence and limits.
 
 This is the primary product specification. Where older brainstorming notes or roadmaps differ, this document defines the intended scope. Planned requirements and acceptance criteria describe future work, not completed capabilities.
 
@@ -353,7 +353,7 @@ Use explicit grains and keys to prevent accidental duplication across source run
 
 ## 9. Validation and release evidence
 
-The existing 28 passing automated tests establish the baseline; they do not validate the four planned flagships. Each feature needs relevant new fixtures and functional checks. Separate passed, failed, skipped and unrun checks in release reporting.
+The original 28 passing automated tests established the pre-feature baseline. The expanded suite now checks the prototype tools; see [implementation status](docs/implementation-status.md). Passing authored tests does not establish human-audited model accuracy. Each feature needs relevant new fixtures and functional checks. Separate passed, failed, skipped and unrun checks in release reporting.
 
 Required validation includes schema and geography checks, deduplication, rule boundaries, SQL/Python metric reconciliation, graph counts, filter denominators, sparse cohorts, requirement negation/preference, deterministic scenarios, privacy/reset behaviour and accessible error/empty states.
 
@@ -362,6 +362,9 @@ Maintain human-labelled evaluation sets for skill extraction, requirement classi
 Public release requires source/display permissions, applicable extraction review, tested feature-specific rules, visible methodology, no secret/personal-data leakage and labelled synthetic outputs. The project is not publicly deployed merely because code is pushed to GitHub or environment instructions are saved.
 
 ## 10. Implementation status as of 18 October 2026
+
+These are prototype capabilities, not a public/commercial release. Details and
+validation limits are recorded in [implementation status](docs/implementation-status.md).
 
 | Component | Status |
 |---|---|
@@ -373,10 +376,10 @@ Public release requires source/display permissions, applicable extraction review
 | Snapshot publication flag | Disabled for the pilot |
 | Geography-filtered market summaries and source-linked evidence | Implemented baseline |
 | Basic skill-gap / proof-of-work planner | Implemented legacy baseline; supporting logic may be reused, not a fifth flagship |
-| Skill Constellation network and association models | Planned |
-| Opportunity Readiness evidence/requirements model | Planned; legacy skill selection is only a partial foundation |
-| Career Mobility generator, SQL models and visual lab | Planned |
-| Job Description Diagnostic | Planned |
+| Skill Constellation network and association models | Initial implementation: metrics, filters, graph, tables and evidence; historical window pending |
+| Opportunity Readiness evidence/requirements model | Initial implementation: corrected requirements, evidence matrix, coverage/index, scenarios and reset; human evaluation pending |
+| Career Mobility generator, SQL models and visual lab | In-memory generator and visual lab implemented; PostgreSQL worksheet unexecuted |
+| Job Description Diagnostic | Initial deterministic diagnostic implemented; benchmark and human evaluation pending |
 | Weekly automated refresh / live PostgreSQL workflow | Planned, not operational |
 | Public application or commercial launch | Not completed |
 

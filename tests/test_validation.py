@@ -90,6 +90,21 @@ class ValidationTests(unittest.TestCase):
         )
         self.assertTrue(with_review["metadata"]["publish_allowed"])
 
+    def test_snapshot_postings_are_allowlisted_and_keep_no_skill_jobs_in_denominator(self):
+        jobs = [
+            {**self.jobs[0], "posterFullName": "Do not export", "api_token": "Do not export"},
+            {**self.jobs[1], "canonical_url": "https://example.test/no-skills"},
+        ]
+        evidence = [row for row in self.evidence if row["canonical_url"] == jobs[0]["canonical_url"]]
+        payload = build_snapshot_payload(jobs, evidence, "Fixture", "unreviewed")
+        self.assertEqual(payload["schema_version"], 2)
+        self.assertEqual(len(payload["postings"]), 2)
+        self.assertEqual(payload["market"]["sample_size"], 2)
+        self.assertEqual(payload["postings"][0]["description_text"], jobs[0]["description_text"])
+        self.assertNotIn("posterFullName", payload["postings"][0])
+        self.assertNotIn("api_token", payload["postings"][0])
+        self.assertFalse(payload["metadata"]["publish_allowed"])
+
 
 if __name__ == "__main__":
     unittest.main()

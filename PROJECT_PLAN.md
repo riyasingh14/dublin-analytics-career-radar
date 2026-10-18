@@ -9,7 +9,7 @@ older brainstorming proposals are not additional release requirements.
 Build a portfolio-quality data/business analyst project for recruiters, hiring
 managers and senior executives. Commercial potential is secondary. The four
 flagship experiences are **Skill Constellation**, **Opportunity Readiness Studio**,
-**Career Mobility Lab**, and **Job Description Diagnostic**. The job-market dashboard
+**Career Mobility Lab**, and **Job Description Diagnostic**. A landing page and all four tool routes are implemented. The job-market dashboard
 and methodology are shared foundations. The existing proof-of-work planner can
 supply supporting logic but is not a fifth flagship.
 
@@ -28,7 +28,7 @@ self-reported candidate evidence. This remains separate from Telco Churn Analysi
 - Prepared: a bounded Ireland collection input targeting approximately 200 unique
   postings, with up to 315 candidate results. The broader export is not yet available.
 - Generated: a 100-record extraction review queue; human review is pending.
-- Verified baseline: 28 automated tests passed in the previous implementation task.
+- The previous baseline had 28 passing tests; the expanded suite now exercises the four tool prototypes and their integration. See docs/implementation-status.md.
 - PostgreSQL schema exists; an operational SQL/database pipeline is still planned.
 - No automatic weekly collection or public application deployment is operational.
 
@@ -38,10 +38,10 @@ self-reported candidate evidence. This remains separate from Telco Churn Analysi
 |---|---|---|---|
 | M0 | Master specification for the four selected features | Description, definitions, flows, scope and acceptance criteria | Documented; implementation work follows |
 | M1 | Reviewed broader dataset and executable SQL foundation | Import, quality report, relevant human evaluation, reconciled SQL | In progress; broader export and review pending |
-| M2 | Skill Constellation | SC-01 through SC-05 in the master specification | Planned |
-| M3 | Job Description Diagnostic | JD-01 through JD-05 and evaluated rule examples | Planned |
-| M4 | Opportunity Readiness Studio | OR-01 through OR-06, inspectable scoring and session privacy | Planned |
-| M5 | Career Mobility Lab | CM-01 through CM-06 and reproducible synthetic scenarios | Planned |
+| M2 | Skill Constellation | SC-01 through SC-05 in the master specification | Initial prototype implemented; human validation pending |
+| M3 | Job Description Diagnostic | JD-01 through JD-05 and evaluated rule examples | Initial prototype implemented; human evaluation pending |
+| M4 | Opportunity Readiness Studio | OR-01 through OR-06, inspectable scoring and session privacy | Initial prototype implemented; usability/evaluation pending |
+| M5 | Career Mobility Lab | CM-01 through CM-06 and reproducible synthetic scenarios | Initial in-memory prototype implemented; PostgreSQL path pending |
 | M6 | Consistent presentation, optional permitted refresh and portfolio launch | Accessibility, performance evidence, runbook and five-minute demo | Planned |
 
 The diagnostic precedes readiness because both need a reliable requirement model.

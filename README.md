@@ -2,14 +2,14 @@
 
 An evidence-backed labour-market intelligence tool for technology careers across Ireland, with Dublin shown separately. The expanded scope covers 21 role families and retains the original analytics workflow.
 
-It does not try to replace a job board. It answers a different question: **which skills are in demand now, what evidence supports that conclusion, and what is the most valuable proof-of-work a candidate should build next?**
+A four-tool research studio for exploring skill relationships, assessing candidate evidence, analysing synthetic career moves and diagnosing job descriptions. It is built as an inspectable data/business analyst portfolio project.
 
 ## The product gap
 
 Job boards list vacancies. Enterprise labour-market platforms are expensive and opaque. This project focuses on a transparent, candidate-facing middle ground:
 
 - Ireland-wide technology skill evidence, with Dublin shown separately;
-- AI-normalised skills with source evidence and confidence;
+- Rule-normalised skills with exact source evidence and versioned assumptions;
 - comparison of target role, seniority, industry, and work pattern;
 - a skill-gap view that turns a missing skill into a concrete portfolio or interview-proof action;
 - published data freshness, coverage, and limitations.
@@ -26,8 +26,9 @@ is their shared analytical foundation.
 3. **Career Mobility Lab** — explore clearly labelled synthetic career transitions and salary scenarios.
 4. **Job Description Diagnostic** — inspect clarity, completeness and consistency with traceable findings.
 
-These complete flagship experiences are planned. The baseline features below
-provide reusable components; they are not claims that the four modules are finished.
+Initial working versions of all four tools and a landing page are implemented.
+See [implementation status](docs/implementation-status.md) for tested capabilities,
+limits and remaining release gates. Human review and the broader dataset remain pending.
 
 ## Existing baseline features
 
@@ -39,7 +40,7 @@ provide reusable components; they are not claims that the four modules are finis
 
 ## Data strategy
 
-Only authorised, documented sources will be used: official job-board APIs where permitted, public company careers APIs/feed endpoints, and user-provided CSV imports. The project does not directly scrape LinkedIn or Indeed pages. A user-approved Apify job export can be imported for private validation; see the source-onboarding guide for provenance, privacy and budget limits. Every observation will retain source, URL, and collection timestamp so the dashboard never claims comprehensive market coverage.
+Only authorised, documented sources will be used: official job-board APIs where permitted, public company careers APIs/feed endpoints, and user-provided CSV imports. The project does not directly scrape LinkedIn or Indeed pages. A user-approved Apify job export can be imported for private validation; see the source-onboarding guide for provenance, privacy and budget limits. Every observation retains source and URL, with source collection time when known and an explicit unknown otherwise. The dashboard does not claim comprehensive market coverage.
 
 ## Architecture
 
@@ -48,14 +49,16 @@ Authorised job feeds / CSV imports
         ↓
 Python ingestion + deduplication
         ↓
-AI skill extraction and taxonomy normalisation
+Evidence-preserving rule extraction and taxonomy normalisation
         ↓
-PostgreSQL analytical model + weekly snapshots
+Versioned CSV/JSON snapshots + reference SQL models
         ↓
-Streamlit web app: signals, evidence, and proof-of-work plans
+Streamlit landing page + four analytical tools
 ```
 
-See [product strategy](docs/product-strategy.md) and [data governance](docs/data-governance.md).
+PostgreSQL schema and SQL reference queries are provided; a live database pipeline
+and scheduled refresh remain planned. See [product strategy](docs/product-strategy.md),
+[implementation status](docs/implementation-status.md), and [data governance](docs/data-governance.md).
 
 The [master project description](PROJECT_DESCRIPTION.md) defines the scope and
 acceptance criteria; [PROJECT_PLAN.md](PROJECT_PLAN.md) tracks delivery milestones.
@@ -70,9 +73,9 @@ skill-evidence coverage, and employer concentration. It creates a reproducible
 interval. A `validated` label alone cannot unlock publication; the documented review
 threshold must also pass.
 
-Live Adzuna collection defaults to a zero-budget four-request weekly run. A hard
-request ceiling prevents accidental high-volume API use; local fixtures and saved
-snapshots are used for development.
+The optional Adzuna connector retains a four-request ceiling, but its Ireland
+endpoint returned HTTP 404 and coverage remains unverified. No live collection
+runs automatically; local fixtures and saved snapshots support development.
 
 ### Run the automated checks
 
@@ -125,3 +128,5 @@ PYTHONPATH=src streamlit run app.py
 ```
 
 The app shows an empty setup state when no snapshot exists and a prominent non-public warning for `fixture` or `unreviewed` data.
+
+The original market/evidence workbench remains available with `PYTHONPATH=src streamlit run market_app.py`. The primary application is `app.py`.

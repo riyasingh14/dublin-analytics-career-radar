@@ -36,7 +36,7 @@ class DashboardTests(unittest.TestCase):
             snapshot = Path(directory) / "snapshot.json"
             snapshot.write_text(json.dumps(self.payload()))
             with patch.dict(os.environ, {"CAREER_RADAR_SNAPSHOT": str(snapshot)}):
-                app = AppTest.from_file(str(ROOT / "app.py")).run(timeout=30)
+                app = AppTest.from_file(str(ROOT / "market_app.py")).run(timeout=30)
                 self.assertFalse(app.exception)
                 self.assertEqual(len(app.tabs), 5)
                 self.assertEqual(app.metric[1].value, "1")
@@ -58,7 +58,7 @@ class DashboardTests(unittest.TestCase):
             snapshot = Path(directory) / "old.json"
             snapshot.write_text(json.dumps(payload))
             with patch.dict(os.environ, {"CAREER_RADAR_SNAPSHOT": str(snapshot)}):
-                app = AppTest.from_file(str(ROOT / "app.py")).run(timeout=30)
+                app = AppTest.from_file(str(ROOT / "market_app.py")).run(timeout=30)
                 self.assertFalse(app.exception)
                 self.assertTrue(any("Rebuild this snapshot" in item.value for item in app.info))
 
@@ -67,7 +67,7 @@ class DashboardTests(unittest.TestCase):
             snapshot = Path(directory) / "snapshot.json"
             snapshot.write_text(json.dumps(self.payload()))
             with patch.dict(os.environ, {"CAREER_RADAR_SNAPSHOT": str(snapshot)}):
-                app = AppTest.from_file(str(ROOT / "app.py")).run(timeout=30)
+                app = AppTest.from_file(str(ROOT / "market_app.py")).run(timeout=30)
                 geography = next(item for item in app.selectbox if item.label == "Market geography")
                 geography.select("Rest of Ireland").run()
                 self.assertFalse(app.exception)

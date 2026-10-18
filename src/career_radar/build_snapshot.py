@@ -26,6 +26,7 @@ def build_snapshot_payload(
     threshold_met = bool(evaluation and evaluation.get("publication_threshold_met"))
     publish_allowed = data_status == "validated" and threshold_met
     return {
+        "schema_version": 2,
         "metadata": {
             "dataset_label": dataset_label,
             "data_status": data_status,
@@ -46,6 +47,18 @@ def build_snapshot_payload(
             for geography in sorted({geography_group(job.get("location_text", "")) for job in jobs})
         },
         "evidence": build_evidence_records(jobs, evidence),
+        # Explicit allowlist: no recruiter profiles or arbitrary imported metadata.
+        # Descriptions support local diagnostic/readiness; public data still needs review.
+        "postings": [
+            {
+                **{key: str(job.get(key, "")) for key in (
+                    "source_job_id", "canonical_url", "title", "employer_name", "location_text",
+                    "role_name", "work_pattern", "description_text", "posted_at", "source_name",
+                )},
+                "geography": geography_group(job.get("location_text", "")),
+            }
+            for job in jobs
+        ],
         "provenance": {
             "geographic_scope": (provenance or {}).get("geographic_scope", "not supplied"),
             "collection_timestamp": (provenance or {}).get("collection_timestamp"),

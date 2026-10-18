@@ -3,7 +3,7 @@
 The [master project specification](../PROJECT_DESCRIPTION.md#6-feature-3--career-mobility-lab)
 defines the selected scope and acceptance criteria. This document supplies supporting design rationale.
 
-Status: design brief, not implemented. All career-history and compensation data in
+Status: supporting design brief. An initial in-memory generator and interactive lab are implemented; see [implementation status](implementation-status.md). The PostgreSQL worksheet remains unexecuted. All career-history and compensation data in
 this module will be synthetic. It is independent of the observed job-posting sample.
 
 ## Purpose and audience
