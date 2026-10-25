@@ -1,35 +1,35 @@
-import { ArrowUpRight, Github, Linkedin, Sparkles } from "lucide-react";
+import { ArrowUpRight, Github, Linkedin, Mail, Sparkles } from "lucide-react";
 
 export default function BuilderNote() {
   return (
     <section className="builder-note" id="builder" aria-labelledby="builder-title" tabIndex={-1}>
-      <div className="builder-monogram" aria-hidden="true">
-        <span>RS</span><Sparkles size={23} />
-        <small>CURIOSITY: ALWAYS ON</small>
+      <div className="builder-topline">
+        <span><span className="builder-beacon" /> MEET THE BUILDER</span>
+        <Sparkles size={19} aria-hidden="true" />
       </div>
-      <div className="builder-copy">
-        <p className="eyebrow">BUILT BY RIYA SINGH</p>
-        <h2 id="builder-title">The human behind the radar.</h2>
-        <p>Hi, I’m Riya. I’m building a career in business and data analytics—and
-          this is where I turn the methods into something you can actually use.</p>
-        <p>I like following a question all the way through: messy inputs, SQL models,
-          a clear visual, an honest limitation and a useful next step.</p>
-        <div className="builder-actions">
-          <a className="text-link" href="https://www.linkedin.com/in/riya-singh-business-analyst/" target="_blank" rel="noreferrer">
-            <Linkedin size={15} /> Connect on LinkedIn <ArrowUpRight size={15} />
-          </a>
-          <a className="text-link" href="https://github.com/riyasingh14/dublin-analytics-career-radar" target="_blank" rel="noreferrer">
-            <Github size={15} /> Explore the build <ArrowUpRight size={15} />
-          </a>
-          <a className="text-link" href="#/methodology">Follow the method <ArrowUpRight size={15} /></a>
+      <div className="builder-identity">
+        <span className="builder-monogram" aria-hidden="true">RS<span>↗</span></span>
+        <div>
+          <h2 id="builder-title">Riya Singh<span>.</span></h2>
+          <p>Business &amp; Data Analytics</p>
         </div>
       </div>
-      <div className="builder-process" aria-label="Riya’s analytical approach">
-        <span>01 <strong>Ask a better question.</strong></span>
-        <span>02 <strong>Make the evidence visible.</strong></span>
-        <span>03 <strong>Help someone decide.</strong></span>
-        <p>A little curiosity.<br />A lot of checking the denominator.</p>
+      <p className="builder-intro">Curious mind. Analytical instincts.<br />The human turning this radar into reality.</p>
+      <div className="builder-method" aria-label="My approach">
+        <span>Ask sharply</span><span>Build carefully</span><span>Make it useful</span>
       </div>
+      <div className="builder-actions">
+        <a href="https://www.linkedin.com/in/riya-singh-business-analyst/" target="_blank" rel="noreferrer" aria-label="Connect on LinkedIn">
+          <Linkedin size={16} /> LinkedIn <ArrowUpRight size={14} />
+        </a>
+        <a href="https://github.com/riyasingh14" target="_blank" rel="noreferrer" aria-label="Riya’s GitHub profile">
+          <Github size={16} /> GitHub <ArrowUpRight size={14} />
+        </a>
+        <a href="mailto:kashyapriya2020@gmail.com" aria-label="Email Riya at kashyapriya2020@gmail.com">
+          <Mail size={16} /> Email <ArrowUpRight size={14} />
+        </a>
+      </div>
+      <div className="builder-footer"><span>FROM QUESTIONS → TO DECISIONS</span><span>Built with curiosity ↗</span></div>
     </section>
   );
 }

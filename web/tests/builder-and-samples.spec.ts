@@ -6,11 +6,19 @@ test("home sculpture is immersive and Riya’s builder introduction is reachable
   const sculpture = page.getByTestId("analytical-sculpture");
   await expect(sculpture).toBeVisible();
   expect(await sculpture.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe("rgba(0, 0, 0, 0)");
+  await expect(page.getByRole("heading", { name: "Riya Singh." })).toBeInViewport();
+  await expect(page.getByRole("link", { name: "Riya’s GitHub profile" })).toHaveAttribute("href", "https://github.com/riyasingh14");
+  await expect(page.getByRole("link", { name: "Email Riya at kashyapriya2020@gmail.com" })).toHaveAttribute("href", "mailto:kashyapriya2020@gmail.com");
+  await page.screenshot({ path: test.info().outputPath("profile-desktop.png") });
   await page.getByRole("link", { name: "Meet Riya", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "The human behind the radar." })).toBeInViewport();
+  await expect(page.getByRole("heading", { name: "Riya Singh." })).toBeInViewport();
   expect(new URL(page.url()).hash).not.toBe("#builder");
   await expect(page.getByRole("link", { name: "Connect on LinkedIn" })).toHaveAttribute("href", "https://www.linkedin.com/in/riya-singh-business-analyst/");
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Riya Singh." })).toBeInViewport();
+  await expect(page.getByRole("link", { name: "Email Riya at kashyapriya2020@gmail.com" })).toBeInViewport();
+  await page.screenshot({ path: test.info().outputPath("profile-mobile.png") });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 

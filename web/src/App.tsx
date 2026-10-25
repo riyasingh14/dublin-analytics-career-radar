@@ -104,11 +104,11 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
             }}>Meet Riya <ArrowUpRight size={12} /></a>
           </p>
         </div>
+        <BuilderNote />
         <div className="hero-art">
           <AnalyticalSculpture motionEnabled={motionEnabled} />
         </div>
       </section>
-      <BuilderNote />
       <section className="intro-strip">
         <div>
           <span className="eyebrow">THE IDEA</span>
