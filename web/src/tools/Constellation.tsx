@@ -1,3 +1,4 @@
+import ToolStatus from "../components/ToolStatus";
 import { useEffect, useMemo, useState } from "react";
 import { Download, Network, ArrowRight } from "lucide-react";
 import { api, Bootstrap, downloadJSON, format } from "../lib/api";
@@ -189,11 +190,7 @@ export default function Constellation({
           {error}
         </p>
       )}
-      {busy && (
-        <p role="status" className="muted">
-          Recalculating the selected sample…
-        </p>
-      )}
+      <ToolStatus busy={busy}>Recalculating the selected sample…</ToolStatus>
       {result && (
         <>
           <div className="metrics">

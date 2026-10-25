@@ -1,3 +1,4 @@
+import ToolStatus from "../components/ToolStatus";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Route, Download, ArrowRight } from "lucide-react";
 import {
@@ -255,11 +256,7 @@ export default function Mobility(_props: { bootstrap: Bootstrap | null }) {
       {error && (
         <div><p className="error" role="alert">{error}</p><button className="button-secondary" onClick={() => { setFilters({}); setFlow(""); setPerson(""); }}>Clear cohort filters</button></div>
       )}
-      {busy && (
-        <p role="status" className="muted">
-          Generating the scenario and recalculating cohorts…
-        </p>
-      )}
+      <ToolStatus busy={busy}>Generating the scenario and recalculating cohorts…</ToolStatus>
       {result && (
         <>
           <div className="filter-bar">
@@ -432,12 +429,14 @@ export default function Mobility(_props: { bootstrap: Bootstrap | null }) {
                           <Tooltip />
                           <Legend />
                           <Bar
+                            isAnimationActive={false}
                             dataKey="before"
                             name="Before"
                             fill="#2a6d59"
                             radius={[3, 3, 0, 0]}
                           />
                           <Bar
+                            isAnimationActive={false}
                             dataKey="after"
                             name="After"
                             fill="#bf784f"
@@ -558,6 +557,7 @@ export default function Mobility(_props: { bootstrap: Bootstrap | null }) {
                         formatter={(v) => format(Number(v), 0, " EUR")}
                       />
                       <Line
+                        isAnimationActive={false}
                         type="linear"
                         dataKey="salary_eur_annual_fte"
                         name="Synthetic annual FTE salary"

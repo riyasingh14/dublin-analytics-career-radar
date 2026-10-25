@@ -1,3 +1,4 @@
+import ToolStatus from "../components/ToolStatus";
 import { useRef, useState } from "react";
 import { Download, ScanText, ArrowRight, RotateCcw } from "lucide-react";
 import { api, Bootstrap, DEMO_TEXT, downloadJSON, DescriptionSample } from "../lib/api";
@@ -115,6 +116,7 @@ export default function Diagnostic({
         assessment. Your text is processed transiently; no external language
         model is used.
       </div>
+      <ToolStatus busy={busy}>Analysing the description and locating source evidence…</ToolStatus>
       <article className="panel">
         <div className="panel-heading">
           <h2>Start with the description.</h2>
@@ -164,6 +166,7 @@ export default function Diagnostic({
         <div className="action-row">
           <button
             className="button"
+            aria-busy={busy}
             disabled={busy || !text.trim()}
             onClick={analyze}
           >

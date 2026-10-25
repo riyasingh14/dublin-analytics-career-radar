@@ -1,3 +1,4 @@
+import ToolStatus from "../components/ToolStatus";
 import { useRef, useState } from "react";
 import { Compass, Download, ArrowRight, RotateCcw } from "lucide-react";
 import { api, Bootstrap, DEMO_TEXT, downloadJSON, format, DescriptionSample } from "../lib/api";
@@ -187,6 +188,7 @@ export default function Readiness({
         location and work eligibility are outside this skill index. Check
         explicit conditions in the original listing.
       </div>
+      <ToolStatus busy={busy}>Checking requirements and your submitted evidence…</ToolStatus>
       <article className="panel">
         <div className="panel-heading">
           <div>
@@ -247,6 +249,7 @@ export default function Readiness({
         <div className="action-row">
           <button
             className="button"
+            aria-busy={busy}
             disabled={busy || !text.trim()}
             onClick={() => send("extract")}
           >
@@ -375,7 +378,7 @@ export default function Readiness({
             disabled={busy}
             onClick={() => send("assess")}
           >
-            Assess my evidence <ArrowRight size={16} />
+            {busy ? "Assessing evidence…" : "Assess my evidence"} <ArrowRight size={16} />
           </button>
         </article>
       )}

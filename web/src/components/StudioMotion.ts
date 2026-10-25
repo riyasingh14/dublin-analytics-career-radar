@@ -6,6 +6,16 @@ export function useStudioMotion() {
   const [paused, setPaused] = useState(false);
   const enabled = !reduced && !paused;
   useEffect(() => {
+    const keyboard = () => { document.documentElement.dataset.input = "keyboard"; };
+    const pointer = () => { document.documentElement.dataset.input = "pointer"; };
+    document.addEventListener("keydown", keyboard, true);
+    document.addEventListener("pointerdown", pointer, true);
+    return () => {
+      document.removeEventListener("keydown", keyboard, true);
+      document.removeEventListener("pointerdown", pointer, true);
+    };
+  }, []);
+  useEffect(() => {
     const preference = matchMedia("(prefers-reduced-motion: reduce)");
     const changed = () => setReduced(preference.matches);
     preference.addEventListener("change", changed);
@@ -18,14 +28,12 @@ export function useStudioMotion() {
     let card: HTMLElement | null = null;
     let pending: PointerEvent | null = null;
     const reset = () => {
-      card?.style.removeProperty("--tilt-x");
-      card?.style.removeProperty("--tilt-y");
-      card?.style.removeProperty("--spot-x");
-      card?.style.removeProperty("--spot-y");
+      card?.style.removeProperty("transform");
       card = null;
     };
     const move = (event: PointerEvent) => {
-      if (event.pointerType !== "mouse") return;
+      if (event.pointerType !== "mouse" || !matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+      document.documentElement.dataset.input = "pointer";
       pending = event;
       if (frame) return;
       frame = requestAnimationFrame(() => {
@@ -37,17 +45,22 @@ export function useStudioMotion() {
         const box = card.getBoundingClientRect();
         const x = (e.clientX - box.left) / box.width;
         const y = (e.clientY - box.top) / box.height;
-        card.style.setProperty("--tilt-x", `${(y - .5) * -5}deg`);
-        card.style.setProperty("--tilt-y", `${(x - .5) * 5}deg`);
-        card.style.setProperty("--spot-x", `${x * 100}%`);
-        card.style.setProperty("--spot-y", `${y * 100}%`);
+        // Write to the animated element; inherited variables would restyle its children.
+        card.style.transform = `perspective(900px) rotateX(${(y - .5) * -5}deg) rotateY(${(x - .5) * 5}deg) translateY(-2px)`;
       });
     };
+    const keyboard = () => { pending = null; cancelAnimationFrame(frame); frame = 0; reset(); };
+    document.addEventListener("keydown", keyboard);
+    window.addEventListener("blur", keyboard);
+    document.addEventListener("visibilitychange", keyboard);
     document.addEventListener("pointermove", move, { passive: true });
-    document.addEventListener("pointerleave", reset);
+    document.addEventListener("pointerleave", keyboard);
     return () => {
+      document.removeEventListener("keydown", keyboard);
+      window.removeEventListener("blur", keyboard);
+      document.removeEventListener("visibilitychange", keyboard);
       document.removeEventListener("pointermove", move);
-      document.removeEventListener("pointerleave", reset);
+      document.removeEventListener("pointerleave", keyboard);
       cancelAnimationFrame(frame);
       reset();
     };

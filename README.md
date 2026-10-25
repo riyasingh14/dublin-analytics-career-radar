@@ -71,6 +71,11 @@ sculpture, pointer-responsive depth and accessible motion controls. See the
 [visual system](docs/visual-system.md). Local verification passed 130 Python tests
 (including actual PostgreSQL integration) and 30 browser/interaction checks.
 
+The [Emil design-engineering pass](docs/design-engineering-pass.md) records the
+installed skills and changes across the homepage, all four tools and methods.
+Its production build and 36 browser checks passed, including accessibility,
+keyboard, touch and loading-state coverage.
+
 The [operations runbook](docs/operations-runbook.md) documents a real transactional
 PostgreSQL reconciliation path and an idempotent saved-file refresh with quality,
 hash and failure-recovery gates. This is separate from the public synthetic app;

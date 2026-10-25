@@ -18,3 +18,6 @@ playwright-report
 test-results
 .env
 .env.*
+
+.agents
+skills-lock.json

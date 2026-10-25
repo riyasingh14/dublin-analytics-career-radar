@@ -100,7 +100,7 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
               event.preventDefault();
               const section = document.getElementById("builder");
               section?.focus({ preventScroll: true });
-              section?.scrollIntoView({ behavior: motionEnabled ? "smooth" : "auto", block: "center" });
+              section?.scrollIntoView({ behavior: motionEnabled && document.documentElement.dataset.input !== "keyboard" ? "smooth" : "auto", block: "center" });
             }}>Meet Riya <ArrowUpRight size={12} /></a>
           </p>
         </div>
@@ -322,6 +322,8 @@ export default function App() {
       setRoute(currentRoute());
       setMenu(false);
       window.scrollTo(0, 0);
+      // A mobile route change hides navigation: move focus back into visible content.
+      document.getElementById("main")?.focus({ preventScroll: true });
     };
     window.addEventListener("hashchange", change);
     return () => window.removeEventListener("hashchange", change);
@@ -372,6 +374,12 @@ export default function App() {
           id="site-nav"
           className={menu ? "open" : ""}
           aria-label="Main navigation"
+          onKeyDown={(event) => {
+            if (event.key === "Escape" && menu) {
+              setMenu(false);
+              document.querySelector<HTMLButtonElement>(".menu-toggle")?.focus();
+            }
+          }}
         >
           <a href="#/" aria-current={route === "home" ? "page" : undefined}>
             Overview

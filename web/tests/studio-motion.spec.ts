@@ -37,7 +37,7 @@ test("mouse movement adds bounded depth to editorial tool cards", async ({ page 
   await card.scrollIntoViewIfNeeded();
   const box = (await card.boundingBox())!;
   await page.mouse.move(box.x + box.width * .8, box.y + box.height * .3);
-  await expect.poll(() => card.evaluate((el) => el.style.getPropertyValue("--tilt-x"))).not.toBe("");
+  await expect.poll(() => card.evaluate((el) => el.style.transform)).not.toBe("");
   await page.getByRole("button", { name: "Pause motion", exact: true }).click();
-  expect(await card.evaluate((el) => el.style.getPropertyValue("--tilt-x"))).toBe("");
+  expect(await card.evaluate((el) => el.style.transform)).toBe("");
 });
