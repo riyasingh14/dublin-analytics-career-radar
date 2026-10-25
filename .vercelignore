@@ -10,6 +10,7 @@ data/validation
 tests
 app.py
 market_app.py
+review_app.py
 src/career_radar/ui
 requirements-local.txt
 web/tests

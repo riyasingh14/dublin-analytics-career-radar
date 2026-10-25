@@ -8,7 +8,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from career_radar.analytics import build_evidence_records, build_market_summary, read_csv
-from career_radar.validation import build_quality_profile
+from career_radar.validation import build_quality_profile, review_matches_dataset
 from career_radar.normalise import geography_group
 
 
@@ -23,7 +23,7 @@ def build_snapshot_payload(
 ) -> dict[str, object]:
     summary = build_market_summary(jobs, evidence)
     quality = build_quality_profile(jobs, evidence, source_row_count)
-    threshold_met = bool(evaluation and evaluation.get("publication_threshold_met"))
+    threshold_met = review_matches_dataset(evaluation, jobs, evidence)
     publish_allowed = data_status == "validated" and threshold_met
     return {
         "schema_version": 2,

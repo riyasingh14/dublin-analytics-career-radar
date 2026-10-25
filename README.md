@@ -73,6 +73,13 @@ PostgreSQL reconciliation path and an idempotent saved-file refresh with quality
 hash and failure-recovery gates. This is separate from the public synthetic app;
 live collection and public observed data remain disabled.
 
+A [private human-review workbench](docs/human-review-workbench.md) now supports
+per-record decisions, queue-bound checkpoint resume, category coverage, Wilson
+intervals and private exports. Its publication checks require distinct reviewed
+evidence and matching dataset/rule lineage. The prepared 100-record pilot queue
+still has zero completed human decisions; no labels or real-market results are
+invented. This workbench is excluded from the public deployment.
+
 ## Existing baseline features
 
 1. **Market signal dashboard** — role counts, top skills, industries, work patterns, and skill trends.

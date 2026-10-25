@@ -72,6 +72,13 @@ attested. A completed human review and applicable publication evaluation remain
 separate gates. Never commit raw/processed/review data or set review labels just to
 clear a release gate.
 
+Use the [private human-review workbench](human-review-workbench.md) for per-record
+annotation and queue-bound resume. Newly prepared review queues include v2
+dataset/population lineage; older completed refresh runs remain immutable. Create
+a new review workspace from their existing jobs/evidence via `validation prepare`
+without recollecting data. A copied gate flag cannot make a different dataset
+eligible for publication.
+
 ## PostgreSQL setup and loader
 
 Use a dedicated PostgreSQL 17 analyst/test database. Install the optional client

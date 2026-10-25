@@ -66,6 +66,11 @@ class ValidationTests(unittest.TestCase):
         rows = [
             {"category": "Data", "reviewer_label": "accepted"} for _ in range(90)
         ] + [{"category": "Data", "reviewer_label": "rejected"} for _ in range(10)]
+        for index, row in enumerate(rows):
+            row.update(review_id=str(index), canonical_url=f'https://example.test/{index}',
+                       skill_id='sql', skill_name='SQL', source_phrase='SQL', extraction_method='rule', extraction_version='taxonomy-v2-tech',
+                       dataset_fingerprint='a'*64, population_extraction_versions='["taxonomy-v2-tech"]',
+                       population_categories='["Data"]')
         evaluation = evaluate_review(rows)
         self.assertEqual(evaluation["precision_pct"], 90.0)
         self.assertTrue(evaluation["publication_threshold_met"])
@@ -88,7 +93,7 @@ class ValidationTests(unittest.TestCase):
             "validated",
             evaluation={"publication_threshold_met": True},
         )
-        self.assertTrue(with_review["metadata"]["publish_allowed"])
+        self.assertFalse(with_review["metadata"]["publish_allowed"])
 
     def test_snapshot_postings_are_allowlisted_and_keep_no_skill_jobs_in_denominator(self):
         jobs = [

@@ -5,6 +5,19 @@ or a claim that every future enhancement in the master specification is complete
 
 ## Current release: integrated tools, review and editorial redesign
 
+**25 October addition:** private `review_app.py` provides manual extraction review,
+checkpoint resume, category progress and private exports. V2 evaluations reject
+duplicate evidence, inconsistent statuses, rounded-below-threshold precision and
+reuse against a changed dataset or displayed source evidence. A fresh 100-record
+queue was prepared from the existing 32-job pilot; all labels remain blank and
+publication remains disabled. See [human review](human-review-workbench.md).
+Validation for this addition: 148 Python tests passed, including four actual
+PostgreSQL checks and five private-review AppTest flows; public build and nine
+Flask-only HTTP checks passed. The private service also rendered its actual
+100-pending-record queue and download controls in Chromium without entering any
+decisions. Its labels remain blank. Earlier public-browser counts below describe
+the prior visual release; the public frontend did not change in this addition.
+
 All four public demonstration tools now include the functional gaps identified
 in the master-plan review: Constellation search/category legend/bounded graph and
 role-comparison heatmap; Readiness source selection/provenance/condition checklist
