@@ -124,13 +124,13 @@ export default function AnalyticalSculpture({ motionEnabled }: { motionEnabled: 
       {[...points].sort((a, b) => a.depth - b.depth).map((point) => {
         const isSelected = selected === point.id;
         const radius = point.id === "sql" ? 23 : 7.5 + 3.5 * point.scale;
-        const colour = point.id === "sql" || isSelected ? `url(#${unique}-node)` : point.orbit === 1 ? "#ddf38b" : "#fbfaf5";
+        const colour = point.id === "sql" || isSelected ? `url(#${unique}-node)` : point.orbit === 1 ? "#ddf38b" : "var(--sculpture-paper)";
         return <g key={point.id} className={`sculpture-skill${isSelected ? " is-selected" : ""}`} role="button" tabIndex={0} aria-label={`Explore ${point.label}`} aria-pressed={isSelected}
           onClick={() => setSelected(point.id)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelected(point.id); } }}>
           <circle className="sculpture-hit" cx={point.x} cy={point.y} r="23" />
           {isSelected && <circle cx={point.x} cy={point.y} r={radius + 7} className="sculpture-selection-ring" />}
           <circle cx={point.x} cy={point.y} r={radius} fill={colour} stroke={isSelected || point.id === "sql" ? "#2146ed" : "#25312b"} strokeWidth={isSelected ? 1.5 : 1} />
-          {point.id === "sql" ? <text x={point.x} y={point.y + 4.5} className="sculpture-centre-label" textAnchor="middle">SQL</text> : labelPositions.has(point.id) && <text x={labelPositions.get(point.id)!.x} y={labelPositions.get(point.id)!.y} className="sculpture-label" textAnchor="middle" paintOrder="stroke" stroke="#fbfaf5" strokeWidth="4" strokeLinejoin="round">{point.label}</text>}
+          {point.id === "sql" ? <text x={point.x} y={point.y + 4.5} className="sculpture-centre-label" textAnchor="middle">SQL</text> : labelPositions.has(point.id) && <text x={labelPositions.get(point.id)!.x} y={labelPositions.get(point.id)!.y} className="sculpture-label" textAnchor="middle" paintOrder="stroke" stroke="var(--sculpture-paper)" strokeWidth="4" strokeLinejoin="round">{point.label}</text>}
         </g>;
       })}
     </svg>

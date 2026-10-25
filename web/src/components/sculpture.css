@@ -1,13 +1,13 @@
 .analytical-sculpture {
   --sculpture-ink: #232921;
-  --sculpture-paper: #fbfaf5;
+  --sculpture-paper: var(--paper, #f7f7ee);
   --sculpture-blue: #2146ed;
   margin: 0;
   width: 100%;
   min-width: 0;
   position: relative;
   color: var(--sculpture-ink);
-  background: var(--sculpture-paper);
+  background: transparent;
   isolation: isolate;
 }
 .sculpture-overline {

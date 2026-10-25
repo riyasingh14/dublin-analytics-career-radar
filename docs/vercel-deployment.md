@@ -29,6 +29,14 @@ The deployment always uses an explicitly generated Skill Constellation fixture a
 synthetic mobility histories. It has no environment-variable switch to expose the
 private 32-job development dataset. No API token or secret is needed for this demo.
 
+Diagnostic and Readiness additionally load a curated public-domain reference
+catalogue at `data/reference/job_description_samples.json`, explicitly included in
+the function bundle. These are complete archived US employer descriptions with
+source/CC0 attribution; they are not live vacancies or analytical market records.
+The legacy API `data_mode: synthetic-demo` describes the analytical fixture, while
+each description reference has its own archive/source metadata. See
+[reference-library research](job-description-reference-library.md).
+
 The private data directories and research interface are excluded from Vercel uploads.
 Source/display permission, human evaluation and a deliberate public-data pipeline
 remain prerequisites for releasing observed vacancies. Do not remove these boundaries

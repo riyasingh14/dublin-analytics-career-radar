@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { Download, ScanText, ArrowRight, RotateCcw } from "lucide-react";
-import { api, Bootstrap, DEMO_TEXT, downloadJSON } from "../lib/api";
+import { api, Bootstrap, DEMO_TEXT, downloadJSON, DescriptionSample } from "../lib/api";
+import DescriptionLibrary, { descriptionProvenance } from "../components/DescriptionLibrary";
 export default function Diagnostic({
   bootstrap,
 }: {
@@ -15,6 +16,8 @@ export default function Diagnostic({
     [edits, setEdits] = useState<Record<string, string>>({}),
     [selected, setSelected] = useState<string | null>(null),
     [category, setCategory] = useState("All categories");
+  const [reference, setReference] = useState<DescriptionSample | null>(null);
+  const [referenceModified, setReferenceModified] = useState(false);
   const request = useRef<AbortController | null>(null);
   const clear = () => {
     request.current?.abort();
@@ -27,6 +30,8 @@ export default function Diagnostic({
     setEdits({});
     setSelected(null);
     setCategory("All categories");
+    setReference(null);
+    setReferenceModified(false);
   };
   async function analyze() {
     request.current?.abort();
@@ -50,9 +55,10 @@ export default function Diagnostic({
   function report() {
     return {
       rule_version: result.rule_version,
-      scope: example
+      scope: reference ? (referenceModified ? "User-modified archived employer description" : "Archived employer description; not a current vacancy") : example
         ? "User-editable synthetic example"
         : "User-supplied description; source unverified",
+      description_source: descriptionProvenance(reference, referenceModified),
       limitations: result.limitations,
       benchmark_status: result.benchmark_status,
       review_summary: { accepted: result.findings.filter((f: any) => reviews[f.finding_id] === "Accepted for clarification").length, dismissed: result.findings.filter((f: any) => reviews[f.finding_id] === "Dismissed").length, uncertain: result.findings.filter((f: any) => reviews[f.finding_id] === "Uncertain").length },
@@ -117,11 +123,17 @@ export default function Diagnostic({
             Clear all
           </button>
         </div>
+        <DescriptionLibrary samples={bootstrap?.description_samples || []} selected={reference}
+          modified={referenceModified} disabled={busy} onSelect={(sample) => {
+            setText(sample.text); setReference(sample); setReferenceModified(false); setExample(false);
+            setResult(null); setError(""); setReviews({}); setEdits({}); setSelected(null); setCategory("All categories");
+          }} />
         {bootstrap?.snapshot?.postings?.length > 0 && <label className="field">Or select a fictional source posting
           <select disabled={busy} value="" onChange={e => {
             const posting = bootstrap?.snapshot?.postings?.find((p: any) => p.source_job_id === e.target.value);
             if (!posting) return;
             setText(`${posting.title}\n${posting.location_text}\n${posting.description_text}`);
+            setReference(null); setReferenceModified(false);
             setExample(true); setResult(null); setError(""); setReviews({}); setEdits({}); setSelected(null);
           }}><option value="">Choose a synthetic example…</option>{bootstrap?.snapshot?.postings?.map((p: any) => <option key={p.source_job_id} value={p.source_job_id}>{p.source_job_id} · {p.title} · {p.location_text}</option>)}</select>
         </label>}
@@ -135,6 +147,7 @@ export default function Diagnostic({
             disabled={busy}
             onChange={(e) => {
               setText(e.target.value);
+              if (reference) setReferenceModified(e.target.value !== reference.text);
               setResult(null);
               setReviews({});
               setEdits({});
@@ -162,6 +175,7 @@ export default function Diagnostic({
             disabled={busy}
             onClick={() => {
               setText(bootstrap?.example_description || DEMO_TEXT);
+              setReference(null); setReferenceModified(false);
               setExample(true);
               setResult(null);
               setError("");

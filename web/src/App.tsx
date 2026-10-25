@@ -18,6 +18,7 @@ import { api, Bootstrap } from "./lib/api";
 import DataCoverage from "./components/DataCoverage";
 import { useStudioMotion } from "./components/StudioMotion";
 import AnalyticalSculpture from "./components/AnalyticalSculpture";
+import BuilderNote from "./components/BuilderNote";
 const Constellation = lazy(() => import("./tools/Constellation"));
 const Readiness = lazy(() => import("./tools/Readiness"));
 const Mobility = lazy(() => import("./tools/Mobility"));
@@ -95,12 +96,19 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
           <p className="hero-note">
             Built for curious candidates, thoughtful recruiters and better
             questions.
+            {" "}<a href="#builder" onClick={(event) => {
+              event.preventDefault();
+              const section = document.getElementById("builder");
+              section?.focus({ preventScroll: true });
+              section?.scrollIntoView({ behavior: motionEnabled ? "smooth" : "auto", block: "center" });
+            }}>Meet Riya <ArrowUpRight size={12} /></a>
           </p>
         </div>
         <div className="hero-art">
           <AnalyticalSculpture motionEnabled={motionEnabled} />
         </div>
       </section>
+      <BuilderNote />
       <section className="intro-strip">
         <div>
           <span className="eyebrow">THE IDEA</span>
@@ -170,7 +178,8 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
             No hidden assumptions.
           </h2>
           <p>
-            The public experience uses generated examples. The private research
+            The analytical views use generated examples. Description tools also
+            offer attributed, archived employer-written examples. The private research
             pipeline stays separate until source permissions and human review
             are complete.
           </p>
@@ -245,6 +254,9 @@ function Methodology() {
             <strong>User-provided:</strong> a pasted description is analysed as
             supplied; source claims are not independently verified.
           </p>
+          <p><strong>Archived employer descriptions:</strong> complete public-domain
+            US examples are attributed in the description tools. They are not
+            current vacancies, Irish-market observations or validated benchmarks.</p>
         </article>
         <article className="panel">
           <h2>Data and privacy</h2>
@@ -390,7 +402,7 @@ export default function App() {
           <span className="status-dot" />
           PUBLIC DEMONSTRATION
           <span>
-            Generated examples. No private job data or hiring predictions.
+            Synthetic analytics and labelled description examples. No hiring predictions.
           </span>
         </div>
         <DataCoverage bootstrap={bootstrap} />

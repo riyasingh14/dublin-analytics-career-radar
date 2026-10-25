@@ -6,7 +6,7 @@
   "functions": {
     "api/index.py": {
       "maxDuration": 30,
-      "includeFiles": "{src/career_radar/**,data/reference/skills.csv}",
+      "includeFiles": "{src/career_radar/**,data/reference/skills.csv,data/reference/job_description_samples.json}",
       "excludeFiles": "{src/career_radar/ui/**,**/__pycache__/**,data/raw/**,data/processed/**,data/validation/**,.venv/**}"
     }
   },

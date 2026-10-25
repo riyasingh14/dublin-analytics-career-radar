@@ -1,8 +1,24 @@
+export type DescriptionSample = {
+  id: string;
+  title: string;
+  organisation: string;
+  geography: string;
+  status: "archived";
+  source_url: string;
+  source_commit: string;
+  retrieved_on: string;
+  license: string;
+  license_url: string;
+  text: string;
+  content_sha256: string;
+  derivation: string;
+};
 export type Bootstrap = {
   snapshot: any;
   taxonomy: any[];
   example_description: string;
   data_mode: string;
+  description_samples?: DescriptionSample[];
 };
 export async function api<T = any>(
   action: string,

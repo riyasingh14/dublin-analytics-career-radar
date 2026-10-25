@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { Compass, Download, ArrowRight, RotateCcw } from "lucide-react";
-import { api, Bootstrap, DEMO_TEXT, downloadJSON, format } from "../lib/api";
+import { api, Bootstrap, DEMO_TEXT, downloadJSON, format, DescriptionSample } from "../lib/api";
+import DescriptionLibrary, { descriptionProvenance } from "../components/DescriptionLibrary";
 import ListingConditions, { ListingCondition } from "../components/ListingConditions";
 import EvidencePlanner, { ActionPlan, EvidenceAction, EvidenceBreakdown } from "../components/EvidencePlanner";
 type Entry = { status: string; note: string; provenance?: string };
@@ -63,6 +64,8 @@ export default function Readiness({
     [conditionResponses, setConditionResponses] = useState<Record<string, string>>({}),
     [extracted, setExtracted] = useState(false);
   const request = useRef<AbortController | null>(null);
+  const [reference, setReference] = useState<DescriptionSample | null>(null);
+  const [referenceModified, setReferenceModified] = useState(false);
   const invalidate = () => {
     setRequirements([]);
     setConditions([]);
@@ -82,6 +85,8 @@ export default function Readiness({
     setBusy(false);
     setError("");
     setText("");
+    setReference(null);
+    setReferenceModified(false);
     setExample(false);
     setSourceId("");
     invalidate();
@@ -119,7 +124,7 @@ export default function Readiness({
         setActionPlan(null);
       } else if (mode === "assess") {
         setResult(data.assessment);
-        setReport({ ...data.report, evidence_provenance: Object.fromEntries(
+        setReport({ ...data.report, description_source: descriptionProvenance(reference, referenceModified), evidence_provenance: Object.fromEntries(
           data.requirements.map((r: any) => [r.requirement_id, entries[r.requirement_id]?.provenance || "self_declared"])
         ), provenance_limitation: "Candidate-supplied categories only; no artefacts or credentials verified." });
         setActionPlan(data.action_plan);
@@ -193,11 +198,17 @@ export default function Readiness({
             Clear all
           </button>
         </div>
+        <DescriptionLibrary samples={bootstrap?.description_samples || []} selected={reference}
+          modified={referenceModified} disabled={busy} onSelect={(sample) => {
+            setText(sample.text); setReference(sample); setReferenceModified(false);
+            setSourceId(""); setExample(false); setError(""); invalidate();
+          }} />
         <label className="field">
           Choose a synthetic source posting (optional)
           <select aria-label="Choose a synthetic source posting (optional)" value={sourceId} disabled={busy || !bootstrap} onChange={(e) => {
             const posting = bootstrap?.snapshot.postings.find((p: any) => p.canonical_url === e.target.value);
             setSourceId(e.target.value);
+            setReference(null); setReferenceModified(false);
             setText(posting?.description_text || "");
             setExample(Boolean(posting));
             invalidate();
@@ -220,6 +231,7 @@ export default function Readiness({
             disabled={busy}
             onChange={(e) => {
               setText(e.target.value);
+              if (reference) setReferenceModified(e.target.value !== reference.text);
               setSourceId("");
               invalidate();
             }}
@@ -246,6 +258,7 @@ export default function Readiness({
             disabled={busy}
             onClick={() => {
               setText(bootstrap?.example_description || DEMO_TEXT);
+              setReference(null); setReferenceModified(false);
               setExample(true);
               setSourceId("");
               invalidate();

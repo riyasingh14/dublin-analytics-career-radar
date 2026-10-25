@@ -5,6 +5,18 @@ or a claim that every future enhancement in the master specification is complete
 
 ## Current release: integrated tools, review and editorial redesign
 
+**25 October homepage/reference update:** the hero sculpture now has a transparent
+background, and a compact Riya Singh builder section near the hero links to her
+supplied LinkedIn profile, source code and methods. Four complete, CC0-licensed
+historical US employer descriptions are selectable in Diagnostic and Readiness,
+with source/region/archive labels, edit provenance and licence links. They are
+reference inputs, not current Irish vacancies or market data. See
+[source research and transformations](job-description-reference-library.md).
+Real-document checks also fixed literal citizenship, wrapped prose, decimal grade
+and explicit location cues. Local validation: 157 Python checks (including four
+actual PostgreSQL checks), production build and 33 browser/interaction checks
+passed. Real-world rule accuracy and hosted deployment remain separately unverified.
+
 **25 October addition:** private `review_app.py` provides manual extraction review,
 checkpoint resume, category progress and private exports. V2 evaluations reject
 duplicate evidence, inconsistent statuses, rounded-below-threshold precision and

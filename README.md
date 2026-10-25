@@ -17,7 +17,10 @@ Job boards list vacancies. Enterprise labour-market platforms are expensive and 
 ## Web app and Vercel deployment
 
 A React/Vite website and lightweight Python API now provide the public-demo version
-of all four tools. It uses generated examples; the private job sample is not exposed.
+of all four tools. Analytical views use generated examples; Diagnostic and Readiness
+also offer [complete, licensed archived employer descriptions](docs/job-description-reference-library.md).
+The private job sample is not exposed. The homepage introduces builder Riya Singh,
+her analytical approach and her LinkedIn profile.
 See **[Vercel deployment](docs/vercel-deployment.md)** for GitHub linking, local setup,
 validation and hosted smoke checks. The owner reports deployment at
 [dublin-analytics-career-radar.vercel.app](https://dublin-analytics-career-radar.vercel.app/).

@@ -20,6 +20,7 @@ from career_radar.listing_conditions import extract_listing_conditions
 from career_radar.normalise import load_taxonomy
 from career_radar.readiness import assess_readiness, export_analysis, hypothetical_readiness
 from career_radar.requirements_model import extract_requirements
+from career_radar.description_samples import load_description_samples
 
 ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE = ('Synthetic demonstration — Junior Data Analyst\nDublin, Ireland. Permanent, hybrid.\n'
@@ -50,6 +51,11 @@ def public_snapshot():
 @lru_cache(maxsize=1)
 def public_comparison_snapshot():
     return comparison_demo(taxonomy())
+
+
+@lru_cache(maxsize=1)
+def description_samples():
+    return load_description_samples()
 
 
 def _object(value, name):
@@ -127,7 +133,8 @@ def dispatch(action, payload=None):
         return {'status': 'ok', 'version': 'web-v1', 'data_mode': 'synthetic-demo'}
     if action == 'bootstrap':
         return {'snapshot': public_snapshot(), 'taxonomy': [asdict(skill) for skill in taxonomy()],
-                'example_description': EXAMPLE, 'data_mode': 'synthetic-demo'}
+                'example_description': EXAMPLE, 'data_mode': 'synthetic-demo',
+                'description_samples': description_samples()}
     if action == 'constellation':
         role, geography = payload.get('role') or None, payload.get('geography') or None
         if role is not None: _text(role, 'role', 100)
