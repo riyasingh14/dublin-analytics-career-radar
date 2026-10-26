@@ -31,10 +31,29 @@ body { background: radial-gradient(ellipse at 92% 8%, #e9eddc70, transparent 42%
 .motion-control:disabled { opacity: 1; cursor: default; color: var(--muted); }
 .demo-banner { font-family: ui-monospace, monospace; color: #4c564d; font-size: .59rem; letter-spacing: .04em; }
 .status-dot { background: var(--electric); width: 6px; height: 6px; }
-.coverage-passport { font-size: .73rem; padding: 13px 0; }
-.coverage-passport > summary:before { content: "+"; color: var(--electric); }
-.coverage-passport[open] > summary:before { content: "−"; }
-.coverage-passport > summary span { font-size: .71rem; }
+.coverage-passport { border: 1px solid #cdd4c3; background: #eff2e7; padding: 0; margin: 6px 0 0; border-radius: 10px; font-size: .78rem; }
+.coverage-passport > summary { display: flex; align-items: center; gap: 15px; padding: 15px 18px; flex-wrap: nowrap; list-style: none; }
+.coverage-passport > summary::-webkit-details-marker { display: none; }
+.coverage-passport > summary::before { content: none; }
+.coverage-passport > summary .passport-symbol { display: grid; place-items: center; width: 39px; height: 39px; flex: 0 0 auto; border: 1px solid #bdc8b0; border-radius: 10px; color: var(--electric); background: var(--paper); }
+.passport-intro { display: grid; gap: 5px; min-width: 0; }
+.coverage-passport > summary .passport-title { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: .88rem; color: var(--ink); font-weight: 600; }
+.coverage-passport > summary .passport-badge { border: 1px solid #b7c79a; border-radius: 4px; padding: 3px 6px; color: #41552d; font: .48rem ui-monospace, monospace; letter-spacing: .06em; }
+.coverage-passport > summary .passport-purpose { font-size: .74rem; color: #4e5a48; line-height: 1.6; }
+.coverage-passport > summary .passport-toggle { display: flex; align-items: center; justify-content: flex-end; gap: 9px; margin-left: auto; flex-shrink: 0; color: var(--electric); }
+.coverage-passport > summary .passport-toggle > span { color: inherit; font-size: .72rem; font-weight: 600; }
+.passport-toggle svg { transition: transform var(--duration-ui) var(--ease-out); }
+.coverage-passport[open] .passport-toggle svg { transform: rotate(180deg); }
+.coverage-passport .passport-open-label, .coverage-passport[open] .passport-closed-label { display: none; }
+.coverage-passport[open] .passport-open-label { display: inline; }
+.passport-content { padding: 6px 20px 20px; border-top: 1px solid #cdd4c3; }
+.passport-explainer { max-width: 85ch; line-height: 1.8; color: var(--muted); margin-top: 14px; }
+@media (max-width: 640px) {
+  .coverage-passport > summary { flex-wrap: wrap; gap: 10px; padding: 13px; }
+  .passport-intro { flex: 1; }
+  .coverage-passport > summary .passport-toggle { flex-basis: 100%; justify-content: space-between; margin: 2px 0 0; border-top: 1px solid #cdd4c3; padding-top: 9px; }
+  .passport-content { padding: 0 13px 16px; }
+}
 .hero { grid-template-columns: 1.05fr 1fr; gap: 30px; padding: 82px 0 72px; min-height: 660px; }
 .hero .eyebrow { margin-bottom: 36px; }
 .eyebrow { font-family: ui-monospace, "Courier New", monospace; color: var(--electric); font-weight: 500; font-size: .64rem; letter-spacing: .13em; }
@@ -169,7 +188,6 @@ footer { border-top: 1px solid var(--ink); padding-top: 34px; }
   .motion-control { font-size: .58rem; padding: 7px 8px; gap: 4px; }
   .motion-control svg { width: 10px; }
   .menu-toggle { padding: 3px; }
-  .coverage-passport > summary span { flex-basis: 100%; }
   .hero { padding: 42px 0 44px; gap: 20px; min-height: 0; }
   .hero .eyebrow { margin-bottom: 27px; }
   .hero h1 { font-size: clamp(2.8rem, 12vw, 4.4rem); margin-bottom: 26px; }

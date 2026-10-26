@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ArrowLeft, ArrowRight, Pause, Play } from "lucide-react";
 import "./sculpture.css";
 
 type Point = { x: number; y: number; z: number };
@@ -36,6 +36,22 @@ export default function AnalyticalSculpture({ motionEnabled }: { motionEnabled: 
   const current = useRef(frame), target = useRef({ x: 0, y: 0 });
   const [selected, setSelected] = useState("sql");
   const [focusWithin, setFocusWithin] = useState(false);
+  const [tourPaused, setTourPaused] = useState(false);
+  const [tourHovered, setTourHovered] = useState(false);
+  const [announcement, setAnnouncement] = useState("");
+  const tourRunning = motionEnabled && onScreen && pageVisible && !focusWithin && !tourPaused && !tourHovered;
+  const selectedIndex = SKILLS.findIndex(skill => skill.id === selected);
+  function chooseSkill(id: string) {
+    setSelected(id);
+    setTourPaused(true);
+    const skill = SKILLS.find(skill => skill.id === id)!;
+    setAnnouncement(`${skill.label}. ${skill.note}`);
+  }
+  useEffect(() => {
+    if (!tourRunning) return;
+    const timer = window.setInterval(() => setSelected(id => SKILLS[(SKILLS.findIndex(skill => skill.id === id) + 1) % SKILLS.length].id), 7000);
+    return () => window.clearInterval(timer);
+  }, [tourRunning]);
   const unique = useId().replace(/:/g, "");
   const active = motionEnabled && onScreen && pageVisible && !focusWithin;
   useEffect(() => {
@@ -79,7 +95,6 @@ export default function AnalyticalSculpture({ motionEnabled }: { motionEnabled: 
   const points = SKILLS.map((skill) => ({ ...skill, ...project(skill.orbit < 0 ? { x: 0, y: 0, z: 0 } : orbitPoint(skill.orbit, skill.phase)) }));
   const byId = Object.fromEntries(points.map((point) => [point.id, point]));
   const edges = SKILLS.slice(1).map((skill, index) => [skill.id, index % 3 === 0 ? "sql" : SKILLS[1 + (index + 1) % (SKILLS.length - 1)].id]);
-  const chosen = SKILLS.find((skill) => skill.id === selected)!;
   // Keep the conceptual labels legible while the projected planes rotate.
   const labelPositions = new Map<string, { x: number; y: number }>();
   const boxes = points.map((point) => {
@@ -126,7 +141,7 @@ export default function AnalyticalSculpture({ motionEnabled }: { motionEnabled: 
         const radius = point.id === "sql" ? 23 : 7.5 + 3.5 * point.scale;
         const colour = point.id === "sql" || isSelected ? `url(#${unique}-node)` : point.orbit === 1 ? "#ddf38b" : "var(--sculpture-paper)";
         return <g key={point.id} className={`sculpture-skill${isSelected ? " is-selected" : ""}`} role="button" tabIndex={0} aria-label={`Explore ${point.label}`} aria-pressed={isSelected}
-          onClick={() => setSelected(point.id)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelected(point.id); } }}>
+          onClick={() => chooseSkill(point.id)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); chooseSkill(point.id); } }}>
           <circle className="sculpture-hit" cx={point.x} cy={point.y} r="23" />
           {isSelected && <circle cx={point.x} cy={point.y} r={radius + 7} className="sculpture-selection-ring" />}
           <circle cx={point.x} cy={point.y} r={radius} fill={colour} stroke={isSelected || point.id === "sql" ? "#2146ed" : "#25312b"} strokeWidth={isSelected ? 1.5 : 1} />
@@ -135,7 +150,24 @@ export default function AnalyticalSculpture({ motionEnabled }: { motionEnabled: 
       })}
     </svg>
     <figcaption className="sculpture-caption">
-      <div className="sculpture-selected" aria-live="polite"><span className="sculpture-index">{String(SKILLS.findIndex((skill) => skill.id === selected) + 1).padStart(2, "0")}</span><div><strong>{chosen.label}</strong><p>{chosen.note}</p></div></div>
+      <div className="skill-tour" role="region" aria-roledescription="carousel" aria-label="Analytical skills and their purpose"
+        onPointerEnter={event => { if (event.pointerType === "mouse") setTourHovered(true); }} onPointerLeave={() => setTourHovered(false)} data-running={tourRunning ? "true" : "false"}>
+        <div className="skill-tour-heading"><span>THE SKILLS BEHIND THE WORK</span><span>{String(selectedIndex + 1).padStart(2, "0")} / {SKILLS.length}</span></div>
+        <div className="skill-tour-window">
+          <div className="skill-tour-track" style={{ transform: `translateX(-${selectedIndex * 100}%)`, transitionDuration: selectedIndex === 0 ? "0ms" : undefined }}>
+            {SKILLS.map((skill, index) => <div className="sculpture-selected" key={skill.id} role="group" aria-roledescription="slide" aria-label={`${index + 1} of ${SKILLS.length}: ${skill.label}`} aria-hidden={index !== selectedIndex}>
+              <span className="sculpture-index">{String(index + 1).padStart(2, "0")}</span><div><strong>{skill.label}</strong><p>{skill.note}</p></div>
+            </div>)}
+          </div>
+        </div>
+        <div className="skill-tour-controls">
+          <span>{!motionEnabled ? "Motion paused. Use the arrows to explore." : tourPaused ? "Tour paused. Use arrows or press play." : "Auto-advances every 7s. Pauses while you read."}</span>
+          <div><button type="button" onClick={() => chooseSkill(SKILLS[(selectedIndex - 1 + SKILLS.length) % SKILLS.length].id)} aria-label="Previous skill"><ArrowLeft size={15} /></button>
+          <button type="button" onClick={() => setTourPaused(value => !value)} disabled={!motionEnabled} aria-label={!motionEnabled ? "Skill tour paused by motion settings" : tourPaused ? "Play skill tour" : "Pause skill tour"} aria-pressed={tourPaused}>{tourPaused || !motionEnabled ? <Play size={14} /> : <Pause size={14} />}</button>
+          <button type="button" onClick={() => chooseSkill(SKILLS[(selectedIndex + 1) % SKILLS.length].id)} aria-label="Next skill"><ArrowRight size={15} /></button></div>
+        </div>
+      </div>
+      <span className="sr-only" role="status">{announcement}</span>
       <a className="sculpture-explore" href="#/constellation">Explore the analytical tool <ArrowUpRight size={17} aria-hidden="true" /></a>
       <p className="sculpture-disclosure">Conceptual illustration. Positions, links and sizes are decorative; no market measurements are shown. Select nodes by pointer or keyboard.</p>
     </figcaption>

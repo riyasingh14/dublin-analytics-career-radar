@@ -16,7 +16,7 @@ test("studio motion can be paused while analytical sculpture remains keyboard us
   await python.focus();
   await page.keyboard.press("Enter");
   await expect(python).toHaveAttribute("aria-pressed", "true");
-  await expect(sculpture.locator("figcaption strong")).toHaveText("Python");
+  await expect(sculpture.locator('.sculpture-selected[aria-hidden="false"] strong')).toHaveText("Python");
 });
 
 test("system reduced motion stops decorative movement and keeps every tool reachable", async ({ page }) => {
