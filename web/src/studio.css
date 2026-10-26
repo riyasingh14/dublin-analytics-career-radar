@@ -301,18 +301,15 @@ button:disabled { cursor: not-allowed; }
   .builder-invitation { padding: 24px; }
 }
 .coverage-passport { margin-top: 20px; }
-.intention-strip { grid-template-columns: .9fr 1.5fr .8fr; align-items: start; padding: 38px; gap: 35px; background: #f0eee8; }
-.intention-strip h2 { font-size: clamp(1.8rem, 2.5vw, 2.7rem); font-weight: 500; letter-spacing: -.05em; line-height: 1.15; margin: 0; }
-.intention-copy p { color: #4f584e; font-size: .87rem; line-height: 1.85; }
-.intention-copy p + p { margin-top: 16px; }
-.intention-signature { display: flex; gap: 12px; border-left: 1px solid #c9cabe; padding-left: 25px; }
-.intention-initials { display: grid; place-items: center; flex: 0 0 auto; width: 40px; height: 44px; background: #d9c3ff; color: #25183f; border-radius: 8px; font: italic 1.25rem Georgia, serif; }
-.intention-signature > span:last-child { display: grid; gap: 8px; }
-.intention-signature strong { font-size: 1rem; }
-.intention-signature span > span { font-size: .66rem; color: var(--muted); line-height: 1.6; }
-.intention-signature .intention-link { display: flex; align-items: center; gap: 5px; color: var(--electric); }
-@media (max-width: 960px) { .intention-strip { grid-template-columns: 1fr 1.4fr; } .intention-signature { grid-column: 2; padding: 0; border: 0; } }
-@media (max-width: 640px) { .intention-strip { display: grid; grid-template-columns: 1fr; gap: 24px; padding: 25px 20px; } .intention-signature { grid-column: 1; border-top: 1px solid #c9cabe; padding-top: 20px; } }
+.intention-strip { grid-template-columns: .8fr 1.6fr; align-items: start; padding: 35px; gap: 28px 40px; background: #f0eee8; }
+.intention-strip h2 { font-size: clamp(1.65rem, 2.8vw, 2.8rem); font-weight: 500; letter-spacing: -.05em; line-height: 1.15; margin: 0; }
+.intention-copy { margin: 0; padding-left: 20px; color: #4f584e; font-size: .9rem; line-height: 1.85; }
+.intention-copy li + li { margin-top: 12px; }
+.intention-copy li::marker { color: #63369b; }
+.intention-signature { display: inline-flex; align-items: center; justify-self: end; grid-column: 2; gap: 7px; font-size: .7rem; color: #4f584e; }
+.intention-signature strong { font-size: .78rem; color: var(--ink); }
+.intention-signature svg { color: var(--electric); }
+@media (max-width: 640px) { .intention-strip { display: grid; grid-template-columns: 1fr; gap: 23px; padding: 25px 20px; } .intention-signature { grid-column: 1; } }
 /* Homepage: four recognisable tools, each with its own colour and a plain-language brief. */
 .tool-grid { gap: 18px; border: 0; }
 .tool-card { display: flex; flex-direction: column; border: 1px solid #20232225; border-radius: 18px; padding: 32px; }

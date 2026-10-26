@@ -10,7 +10,7 @@ test("home sculpture is immersive and Riya’s builder introduction is reachable
   await expect(page.getByRole("link", { name: "Riya’s GitHub profile" })).toHaveAttribute("href", "https://github.com/riyasingh14");
   await expect(page.getByRole("link", { name: "Email Riya at kashyapriya2020@gmail.com" })).toHaveAttribute("href", "mailto:kashyapriya2020@gmail.com");
   await page.screenshot({ path: test.info().outputPath("profile-desktop.png") });
-  await page.getByRole("link", { name: "Meet Riya", exact: true }).click();
+  await page.getByRole("link", { name: "About Riya Singh", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Curiosity in. Clarity out." })).toBeVisible();
   expect(new URL(page.url()).hash).toBe("#/builder");
   await expect(page.getByRole("link", { name: "Connect on LinkedIn" })).toHaveAttribute("href", "https://www.linkedin.com/in/riya-singh-business-analyst/");

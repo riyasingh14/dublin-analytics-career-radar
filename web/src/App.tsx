@@ -111,20 +111,20 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
               How the evidence works <ArrowUpRight size={15} />
             </a>
           </div>
-          <p className="hero-note">
-            Built for curious candidates, thoughtful recruiters and better
-            questions.
-            {" "}<a href="#/builder">Meet Riya <ArrowUpRight size={12} /></a>
-          </p>
         </div>
         <div className="hero-art">
           <AnalyticalSculpture motionEnabled={motionEnabled} />
         </div>
       </section>
       <section className="intro-strip intention-strip" aria-labelledby="project-intention">
-        <div><p className="eyebrow">WHY I BUILT THIS</p><h2 id="project-intention">A portfolio you can put to work.</h2></div>
-        <div className="intention-copy"><p>I’m building a career in business and data analytics, and I wanted a place where you could see how I approach a question: working through the data, checking my assumptions and explaining what I find.</p><p>Career Radar brings that work into tools you can try for yourself. My aim is to help people make sense of job requirements, recognise the skills they can demonstrate and figure out what to work on next.</p></div>
-        <a className="intention-signature" href="#/builder"><span className="intention-initials" aria-hidden="true">RS</span><span><strong>Riya Singh</strong><span>Builder · Business &amp; Data Analytics</span><span className="intention-link">A little more about me <ArrowUpRight size={14} /></span></span></a>
+        <h2 id="project-intention">WHY I BUILT THIS</h2>
+        <ul className="intention-copy">
+          <li>I’m building a career in business and data analytics, and I wanted you to be able to see how I work.</li>
+          <li>Show how I turn a question into a data model, a clear visual and a decision I can explain.</li>
+          <li>Help people understand job requirements, recognise gaps in their evidence and choose a useful next project.</li>
+          <li>Be open about what the data can support and where more evidence is needed.</li>
+        </ul>
+        <a className="intention-signature" href="#/builder"><span>Built by</span><strong>Riya Singh</strong><ArrowUpRight size={14} aria-hidden="true" /></a>
       </section>
       <section className="tools-section">
         <div className="section-heading">

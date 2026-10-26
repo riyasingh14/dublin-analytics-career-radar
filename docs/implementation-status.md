@@ -3,6 +3,15 @@
 Date: 18 October 2026. This records working code and validation, not a public launch
 or a claim that every future enhancement in the master specification is complete.
 
+## Latest review — 26 October 2026
+
+The homepage visual changes and cross-page motion pass are complete for local
+review. The full production build, 157 Python tests (including PostgreSQL) and
+44 browser checks pass. See the [current tool-readiness review](tool-readiness-review-2026-10-26.md)
+for the remaining Irish-data, human-evaluation, user-journey and hosted-release
+gaps. Earlier counts and implementation descriptions below record their original
+iterations; the operations runbook supersedes historical SQL-only limitations.
+
 ## Current release: integrated tools, review and editorial redesign
 
 **25 October homepage/reference update:** the hero sculpture now has a transparent

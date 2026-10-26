@@ -115,7 +115,7 @@ export default function AnalyticalSculpture({ motionEnabled }: { motionEnabled: 
       target.current = { x: ((event.clientX - bounds.left) / bounds.width - .5) * .36,
         y: ((event.clientY - bounds.top) / bounds.height - .5) * .22 };
     }} onPointerLeave={() => { if (active) target.current = { x: 0, y: 0 }; }}>
-    <div className="sculpture-overline"><span>FIG. 01 / A CONNECTED PRACTICE</span><span>ILLUSTRATIVE</span></div>
+    <div className="sculpture-overline"><span>FIG. 01 / A CONNECTED PRACTICE</span></div>
     <svg className="sculpture-canvas" viewBox="0 0 620 490" role="group" aria-label="Illustrative orbital skill sculpture. Select a skill for its analytical perspective. This is not a market graph.">
       <defs><radialGradient id={`${unique}-node`} cx="32%" cy="24%"><stop offset="0" stopColor="#3258d6" /><stop offset="1" stopColor="#2146ed" /></radialGradient></defs>
       <g aria-hidden="true">
@@ -123,8 +123,6 @@ export default function AnalyticalSculpture({ motionEnabled }: { motionEnabled: 
         <circle cx="310" cy="242" r="226" className="sculpture-boundary" />
         {[0, 1, 2].map((orbit) => <path key={orbit} className={`sculpture-orbit sculpture-orbit-${orbit}`} d={Array.from({length: 97}, (_, index) => { const point = project(orbitPoint(orbit, index / 96 * TAU)); return `${index === 0 ? "M" : "L"}${point.x.toFixed(2)},${point.y.toFixed(2)}`; }).join(" ")} />)}
         {edges.map(([a, b]) => <line key={`${a}-${b}`} x1={byId[a].x} y1={byId[a].y} x2={byId[b].x} y2={byId[b].y} className={selected === a || selected === b ? "sculpture-link is-selected" : "sculpture-link"} />)}
-        <text x="45" y="49" className="sculpture-coordinate">METHOD / EVIDENCE</text>
-        <text x="449" y="451" className="sculpture-coordinate">CONTEXT / DECISION</text>
       </g>
       {[...points].sort((a, b) => a.depth - b.depth).map((point) => {
         const isSelected = selected === point.id;

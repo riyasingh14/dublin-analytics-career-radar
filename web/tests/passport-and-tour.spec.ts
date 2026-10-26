@@ -67,7 +67,7 @@ test("passport animates both directions, stays home-only, and the intention is p
   await summary.click();
   await expect(passport).not.toHaveAttribute("open", "");
   expect((await passport.boundingBox())!.height).toBeCloseTo(closedHeight, 0);
-  await expect(page.getByRole("heading", { name: "A portfolio you can put to work." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "WHY I BUILT THIS" })).toBeVisible();
   await expect(page.locator(".intention-copy")).toContainText("building a career in business and data analytics");
   await expect(page.getByText("PUBLIC DEMONSTRATION", { exact: true })).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Explore the analytical tool", exact: true })).toHaveCount(0);
