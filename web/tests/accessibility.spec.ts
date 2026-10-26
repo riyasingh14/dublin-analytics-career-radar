@@ -4,7 +4,7 @@ import AxeBuilder from "@axe-core/playwright";
 test("all analytical routes pass automated WCAG A/AA checks", async ({ page }) => {
   test.setTimeout(120000);
   const issues: unknown[] = [];
-  for (const route of ["", "constellation", "readiness", "diagnostic", "mobility", "methodology"]) {
+  for (const route of ["", "constellation", "readiness", "diagnostic", "mobility", "methodology", "builder"]) {
     await page.goto("/#/" + route);
     await expect(page.locator("main h1")).toBeVisible();
     if (route === "constellation") await expect(page.locator(".graph-layout")).toBeVisible();

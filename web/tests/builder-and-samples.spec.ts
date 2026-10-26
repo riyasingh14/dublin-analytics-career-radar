@@ -11,8 +11,8 @@ test("home sculpture is immersive and Riya’s builder introduction is reachable
   await expect(page.getByRole("link", { name: "Email Riya at kashyapriya2020@gmail.com" })).toHaveAttribute("href", "mailto:kashyapriya2020@gmail.com");
   await page.screenshot({ path: test.info().outputPath("profile-desktop.png") });
   await page.getByRole("link", { name: "Meet Riya", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Riya Singh." })).toBeInViewport();
-  expect(new URL(page.url()).hash).not.toBe("#builder");
+  await expect(page.getByRole("heading", { name: "Curiosity in. Clarity out." })).toBeVisible();
+  expect(new URL(page.url()).hash).toBe("#/builder");
   await expect(page.getByRole("link", { name: "Connect on LinkedIn" })).toHaveAttribute("href", "https://www.linkedin.com/in/riya-singh-business-analyst/");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
@@ -59,4 +59,26 @@ test("Readiness exposes real listing conditions without assuming candidate eligi
   await page.getByRole("button", { name: "Clear all", exact: true }).click();
   await expect(page.getByLabel("Job description", { exact: true })).toHaveValue("");
   await expect(page.getByRole("note", { name: "Description source and status" })).toHaveCount(0);
+});
+
+
+test("builder page is linked in navigation and the favicon is served", async ({ page, request }) => {
+  await page.goto("/");
+  const favicon = await page.locator('link[rel="icon"]').getAttribute("href");
+  expect(favicon).toBe("/favicon.svg");
+  const response = await request.get(favicon!);
+  expect(response.status()).toBe(200);
+  expect(await response.text()).toContain('<svg');
+  const card = await page.locator(".builder-note").boundingBox();
+  const graph = await page.getByTestId("analytical-sculpture").boundingBox();
+  expect(card!.height).toBeLessThan(180);
+  expect(graph!.width).toBeGreaterThan(card!.width);
+  await page.getByRole("navigation").getByRole("link", { name: "Builder", exact: true }).click();
+  await expect(page.getByRole("navigation").getByRole("link", { name: "Builder", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("heading", { name: "A portfolio you can actually explore." })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Say hello to Riya" })).toHaveAttribute("href", "mailto:kashyapriya2020@gmail.com");
+  await page.screenshot({ path: test.info().outputPath("builder-page-desktop.png"), fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: test.info().outputPath("builder-page-mobile.png"), fullPage: true });
 });

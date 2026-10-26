@@ -19,6 +19,7 @@ import DataCoverage from "./components/DataCoverage";
 import { useStudioMotion } from "./components/StudioMotion";
 import AnalyticalSculpture from "./components/AnalyticalSculpture";
 import BuilderNote from "./components/BuilderNote";
+import Builder from "./pages/Builder";
 const Constellation = lazy(() => import("./tools/Constellation"));
 const Readiness = lazy(() => import("./tools/Readiness"));
 const Mobility = lazy(() => import("./tools/Mobility"));
@@ -72,6 +73,7 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
     <>
       <section className="hero">
         <div className="hero-copy">
+          <BuilderNote />
           <p className="eyebrow">
             <span className="status-dot" />
             DUBLIN ROOTS. IRELAND-WIDE QUESTIONS.
@@ -96,15 +98,9 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
           <p className="hero-note">
             Built for curious candidates, thoughtful recruiters and better
             questions.
-            {" "}<a href="#builder" onClick={(event) => {
-              event.preventDefault();
-              const section = document.getElementById("builder");
-              section?.focus({ preventScroll: true });
-              section?.scrollIntoView({ behavior: motionEnabled && document.documentElement.dataset.input !== "keyboard" ? "smooth" : "auto", block: "center" });
-            }}>Meet Riya <ArrowUpRight size={12} /></a>
+            {" "}<a href="#/builder">Meet Riya <ArrowUpRight size={12} /></a>
           </p>
         </div>
-        <BuilderNote />
         <div className="hero-art">
           <AnalyticalSculpture motionEnabled={motionEnabled} />
         </div>
@@ -393,6 +389,7 @@ export default function App() {
               {t.name}
             </a>
           ))}
+          <a href="#/builder" aria-current={route === "builder" ? "page" : undefined}>Builder</a>
           <a
             href="#/methodology"
             aria-current={route === "methodology" ? "page" : undefined}
@@ -427,6 +424,8 @@ export default function App() {
         )}
         {route === "home" ? (
           <Home bootstrap={bootstrap} motionEnabled={motion.enabled} />
+        ) : route === "builder" ? (
+          <Builder />
         ) : route === "methodology" ? (
           <Methodology />
         ) : active ? (
