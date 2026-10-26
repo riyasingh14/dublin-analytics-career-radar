@@ -1,5 +1,4 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
 import "./sculpture.css";
 
 type Point = { x: number; y: number; z: number };
@@ -154,8 +153,6 @@ export default function AnalyticalSculpture({ motionEnabled }: { motionEnabled: 
         </div>
       </div>
       <span className="sr-only" role="status">{announcement}</span>
-      <a className="sculpture-explore" href="#/constellation">Explore the analytical tool <ArrowUpRight size={17} aria-hidden="true" /></a>
-      <p className="sculpture-disclosure">Conceptual illustration. Positions, links and sizes are decorative; no market measurements are shown. Select nodes by pointer or keyboard.</p>
     </figcaption>
   </figure>;
 }

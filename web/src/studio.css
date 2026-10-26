@@ -307,3 +307,16 @@ button:disabled { cursor: not-allowed; }
   .portrait-initials { font-size: 8rem; }
   .builder-invitation { padding: 24px; }
 }
+.coverage-passport { margin-top: 20px; }
+.intention-strip { grid-template-columns: .9fr 1.5fr .8fr; align-items: start; padding: 38px; gap: 35px; background: #f0eee8; }
+.intention-strip h2 { font-size: clamp(1.8rem, 2.5vw, 2.7rem); font-weight: 500; letter-spacing: -.05em; line-height: 1.15; margin: 0; }
+.intention-copy p { color: #4f584e; font-size: .87rem; line-height: 1.85; }
+.intention-copy p + p { margin-top: 16px; }
+.intention-signature { display: flex; gap: 12px; border-left: 1px solid #c9cabe; padding-left: 25px; }
+.intention-initials { display: grid; place-items: center; flex: 0 0 auto; width: 40px; height: 44px; background: #d9c3ff; color: #25183f; border-radius: 8px; font: italic 1.25rem Georgia, serif; }
+.intention-signature > span:last-child { display: grid; gap: 8px; }
+.intention-signature strong { font-size: 1rem; }
+.intention-signature span > span { font-size: .66rem; color: var(--muted); line-height: 1.6; }
+.intention-signature .intention-link { display: flex; align-items: center; gap: 5px; color: var(--electric); }
+@media (max-width: 960px) { .intention-strip { grid-template-columns: 1fr 1.4fr; } .intention-signature { grid-column: 2; padding: 0; border: 0; } }
+@media (max-width: 640px) { .intention-strip { display: grid; grid-template-columns: 1fr; gap: 24px; padding: 25px 20px; } .intention-signature { grid-column: 1; border-top: 1px solid #c9cabe; padding-top: 20px; } }

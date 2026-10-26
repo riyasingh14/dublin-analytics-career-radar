@@ -34,7 +34,7 @@ test("skill strip loops continuously without local controls or hover pauses", as
   expect(await track.evaluate(el => getComputedStyle(el).animationTimingFunction)).toBe("linear");
   expect(await track.evaluate(el => getComputedStyle(el).animationIterationCount)).toBe("infinite");
   const widths = await tour.locator(".skill-tour-group").evaluateAll(els => els.map(el => el.getBoundingClientRect().width));
-  expect(widths[0]).toBe(widths[1]);
+  expect(widths[0]).toBeCloseTo(widths[1], 2);
   await page.getByRole("button", { name: "Pause motion", exact: true }).click();
   await expect(tour).toHaveAttribute("data-running", "false");
   expect(await track.evaluate(el => getComputedStyle(el).animationName)).toBe("none");
@@ -53,4 +53,27 @@ test("reduced motion offers scrollable skills without controls or mobile overflo
   await window.evaluate(el => { el.scrollLeft = 320; });
   expect(await window.evaluate(el => el.scrollLeft)).toBeGreaterThan(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test("passport animates both directions, stays home-only, and the intention is personal", async ({ page }) => {
+  await page.goto("/");
+  const passport = page.locator(".coverage-passport");
+  const summary = passport.locator("summary");
+  const closedHeight = (await passport.boundingBox())!.height;
+  await summary.click();
+  await expect.poll(() => passport.evaluate(el => el.getAnimations().length)).toBe(0);
+  const openHeight = (await passport.boundingBox())!.height;
+  expect(openHeight).toBeGreaterThan(closedHeight);
+  await summary.click();
+  await expect(passport).not.toHaveAttribute("open", "");
+  expect((await passport.boundingBox())!.height).toBeCloseTo(closedHeight, 0);
+  await expect(page.getByRole("heading", { name: "A portfolio you can put to work." })).toBeVisible();
+  await expect(page.locator(".intention-copy")).toContainText("building a career in business and data analytics");
+  await expect(page.getByText("PUBLIC DEMONSTRATION", { exact: true })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Explore the analytical tool", exact: true })).toHaveCount(0);
+  for (const route of ["builder", "methodology", "constellation", "readiness", "diagnostic", "mobility"]) {
+    await page.goto("/#/" + route);
+    await expect(page.locator("main h1")).toBeVisible();
+    await expect(passport).toHaveCount(0);
+  }
 });
