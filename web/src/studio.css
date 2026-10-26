@@ -374,3 +374,23 @@ button:disabled { cursor: not-allowed; }
 .intention-signature strong { color: #fff3ff; }
 .intention-signature svg { color: #d0ff68; }
 @media (max-width: 640px) { .intention-strip { padding: 25px 20px; } .intention-strip h2 { max-width: none; } .intention-title { gap: 18px; } .intention-copy li { gap: 11px; font-size: .85rem; } .tool-card { box-shadow: 3px 4px 0 #25143b; } }
+/* Viewport-centred tool introduction; the actual tool prepares underneath it. */
+.site-header { position: relative; z-index: 50; }
+.tool-loader { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 24px; background: var(--paper); opacity: 1; transition: opacity 200ms var(--ease-out); }
+.tool-loader.is-leaving { opacity: 0; pointer-events: none; }
+.tool-loader-centre { width: min(100%, 420px); text-align: center; }
+.tool-loader-mark { width: 108px; height: 108px; position: relative; display: grid; place-items: center; margin: 0 auto 30px; color: #63369b; }
+.tool-loader-orbit { position: absolute; inset: 0; border: 2px solid #dbcaed; border-top-color: #9c39ec; border-right-color: #9c39ec; border-radius: 50%; animation: tool-orbit 1.2s linear infinite; }
+.tool-loader-orbit::after { content: ""; position: absolute; top: 9px; right: 9px; width: 12px; height: 12px; background: #c8ff3f; border: 1px solid #647c22; border-radius: 50%; }
+.tool-loader-inner { position: absolute; inset: 13px; border: 1px dashed #af95c8; border-radius: 50%; animation: tool-orbit 2.4s linear infinite reverse; }
+.tool-loader-centre .tool-loader-kicker { font: .6rem ui-monospace, monospace; letter-spacing: .13em; color: #63369b; margin-bottom: 15px; }
+.tool-loader-centre > strong { display: block; color: var(--ink); font-weight: 500; font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -.045em; line-height: 1.15; }
+.tool-loader-centre > p:last-child { color: var(--muted); font-size: .85rem; margin-top: 15px; }
+@keyframes tool-orbit { to { transform: rotate(360deg); } }
+.tool-entrance-content { visibility: hidden; opacity: 0; transform: translateY(8px); }
+.tool-entrance[data-state="ready"] > .tool-entrance-content { visibility: visible; opacity: 1; transform: none; transition: opacity 200ms var(--ease-out), transform 220ms var(--ease-out); }
+[data-motion="paused"] .tool-loader-orbit, [data-motion="paused"] .tool-loader-inner,
+[data-motion="reduced"] .tool-loader-orbit, [data-motion="reduced"] .tool-loader-inner,
+[data-input="keyboard"] .tool-loader-orbit, [data-input="keyboard"] .tool-loader-inner { animation: none; }
+[data-motion="reduced"] .tool-entrance-content, [data-motion="paused"] .tool-entrance-content, [data-input="keyboard"] .tool-entrance-content { transform: none; }
+@media (prefers-reduced-motion: reduce) { .tool-loader-orbit, .tool-loader-inner { animation: none; } .tool-entrance-content { transform: none; } }

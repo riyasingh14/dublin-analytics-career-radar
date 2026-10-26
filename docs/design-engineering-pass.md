@@ -114,3 +114,20 @@ only, and cleared on leave, keyboard input, blur and global motion pause.
 now in a dark-purple build-note panel with a subtle grid, numbered lime markers
 and a question → evidence → decision line. Text contrast and mobile overflow are
 checked alongside the graph and pointer interaction checks.
+
+## Tool-opening introduction — 26 October 2026
+
+At the owner's request, each entry to one of the four tools now includes an
+intentional minimum 2,000ms introduction, including cached tools. `ToolEntrance`
+mounts the lazy tool behind the introduction so imports and analytical requests
+can proceed concurrently. Content becomes available after both the timer and
+component readiness; slower imports retain the loading screen. This presentation
+minimum is not an API latency measurement.
+
+The viewport-centred purple/lime orbital loader fades over 200ms into a 220ms
+content reveal. Pending content is inert and hidden from assistive technology.
+Header navigation remains available, and route keys plus effect cleanup prevent
+old timers from revealing a previous tool. Reduced-motion and keyboard use keep
+the status static and bypass positional transitions while retaining the requested
+minimum duration. Timing, centring, cached revisits, rapid route changes and
+reduced-motion usability have dedicated browser checks.

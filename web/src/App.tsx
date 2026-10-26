@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, useEffect, useState } from "react";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -19,6 +19,7 @@ import { useStudioMotion } from "./components/StudioMotion";
 import AnalyticalSculpture from "./components/AnalyticalSculpture";
 import BuilderNote from "./components/BuilderNote";
 import Builder from "./pages/Builder";
+import ToolEntrance from "./components/ToolEntrance";
 import { usePagePolish } from "./components/PagePolish";
 const Constellation = lazy(() => import("./tools/Constellation"));
 const Readiness = lazy(() => import("./tools/Readiness"));
@@ -432,13 +433,7 @@ export default function App() {
               <span>/</span>
               {active.name}
             </div>
-            <Suspense
-              fallback={
-                <p className="notice" role="status">
-                  Opening analytical tool…
-                </p>
-              }
-            >
+            <ToolEntrance key={route} name={active.name} motionEnabled={motion.enabled}>
               {route === "constellation" ? (
                 <Constellation bootstrap={bootstrap} />
               ) : route === "readiness" ? (
@@ -448,7 +443,7 @@ export default function App() {
               ) : (
                 <Diagnostic bootstrap={bootstrap} />
               )}
-            </Suspense>
+            </ToolEntrance>
           </>
         ) : (
           <section className="tool-page">
