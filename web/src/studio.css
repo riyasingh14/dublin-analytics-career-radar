@@ -394,3 +394,23 @@ button:disabled { cursor: not-allowed; }
 [data-input="keyboard"] .tool-loader-orbit, [data-input="keyboard"] .tool-loader-inner { animation: none; }
 [data-motion="reduced"] .tool-entrance-content, [data-motion="paused"] .tool-entrance-content, [data-input="keyboard"] .tool-entrance-content { transform: none; }
 @media (prefers-reduced-motion: reduce) { .tool-loader-orbit, .tool-loader-inner { animation: none; } .tool-entrance-content { transform: none; } }
+/* Passport explorer: category navigation and contextual definitions. */
+.passport-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.passport-filters button { display: inline-flex; align-items: center; gap: 8px; min-height: 39px; padding: 8px 12px; background: #f9faf4; border: 1px solid #bdc7b2; border-radius: 8px; color: #35402e; font-size: .73rem; }
+.passport-filters button[aria-pressed="true"] { color: #faf4ff; background: #35204d; border-color: #35204d; }
+.passport-filters button > span { display: grid; place-items: center; min-width: 18px; height: 18px; padding: 1px 4px; border-radius: 4px; background: #e4ecd6; color: #35402e; font: .55rem ui-monospace, monospace; }
+.passport-filters button[aria-pressed="true"] > span { background: #c8ff3f; color: #203009; }
+.passport-result-count { font: .6rem ui-monospace, monospace; color: #526148; margin: 15px 0 0; }
+.coverage-grid { gap: 12px; grid-template-columns: repeat(auto-fit,minmax(min(100%,250px),1fr)); }
+.passport-fact { padding: 17px; border: 1px solid #c9d0bd; border-radius: 10px; background: #fafbf5; min-width: 0; }
+.passport-fact dt { display: flex; align-items: center; gap: 10px; font-weight: 500; color: #293627; }
+.passport-fact-icon { display: grid; place-items: center; width: 35px; height: 35px; flex-shrink: 0; border-radius: 9px; background: #e0d0f5; color: #4c2877; }
+.passport-fact-method .passport-fact-icon { background: #e1efa8; color: #405315; }
+.passport-fact-inputs .passport-fact-icon { background: #d5e4fc; color: #284793; }
+.passport-fact dd { line-height: 1.75; color: #48513e; font-size: .77rem; }
+.passport-fact dd:not(.passport-why) { margin-top: 13px; }
+.passport-why { margin-top: 13px !important; padding-top: 10px; border-top: 1px solid #d7ddcd; }
+.passport-why summary { display: flex; align-items: center; justify-content: space-between; color: #593289; font-size: .68rem; gap: 10px; list-style: none; }
+.passport-why summary::-webkit-details-marker { display: none; }
+.passport-why details[open] summary svg { transform: rotate(180deg); }
+.passport-why p { font-size: .73rem; line-height: 1.8; margin: 12px 0 0; color: #48513e; }

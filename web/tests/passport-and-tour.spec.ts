@@ -4,7 +4,7 @@ import AxeBuilder from "@axe-core/playwright";
 test("data passport explains its purpose and expands by keyboard", async ({ page }) => {
   await page.goto("/");
   const passport = page.locator(".coverage-passport");
-  const summary = passport.locator("summary");
+  const summary = passport.locator(":scope > summary");
   await expect(summary).toContainText("sources, sample sizes and limits");
   await expect(summary.getByText("View data details", { exact: true })).toBeVisible();
   await expect(passport.locator(".passport-content")).not.toBeVisible();
@@ -58,7 +58,7 @@ test("reduced motion offers scrollable skills without controls or mobile overflo
 test("passport animates both directions, stays home-only, and the intention is personal", async ({ page }) => {
   await page.goto("/");
   const passport = page.locator(".coverage-passport");
-  const summary = passport.locator("summary");
+  const summary = passport.locator(":scope > summary");
   const closedHeight = (await passport.boundingBox())!.height;
   await summary.click();
   await expect.poll(() => passport.evaluate(el => el.getAnimations().length)).toBe(0);
@@ -76,4 +76,23 @@ test("passport animates both directions, stays home-only, and the intention is p
     await expect(page.locator("main h1")).toBeVisible();
     await expect(passport).toHaveCount(0);
   }
+});
+
+test("passport filters icon-led details and explains the chosen parameter", async ({ page }) => {
+  await page.goto("/");
+  const passport = page.locator(".coverage-passport");
+  await passport.locator(":scope > summary").click();
+  await expect(passport.locator(".passport-fact")).toHaveCount(9);
+  await expect(passport.locator(".passport-fact-icon svg")).toHaveCount(9);
+  await passport.getByRole("button", { name: /^Methods & review/ }).click();
+  await expect(passport.locator(".passport-fact")).toHaveCount(2);
+  const review = passport.locator(".passport-fact").filter({ has: page.getByText("Review status", { exact: true }) });
+  await review.locator("summary").click();
+  await expect(review.getByText("Passing software tests does not measure extraction accuracy", { exact: false })).toBeVisible();
+  expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
+  await passport.getByRole("button", { name: /^Other inputs/ }).click();
+  await expect(passport.locator(".passport-fact")).toHaveCount(2);
+  await expect(passport.getByText("Description examples", { exact: true })).toBeVisible();
+  await passport.getByRole("button", { name: /^All details/ }).click();
+  await expect(passport.locator(".passport-fact")).toHaveCount(9);
 });

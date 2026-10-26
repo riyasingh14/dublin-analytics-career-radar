@@ -40,3 +40,19 @@ test("fictional role comparison reconciles denominator changes and exposes exact
   await expect(page.getByText("Choose two different roles to compare their shares.")).toBeVisible();
   await expect(table.getByRole("columnheader")).toHaveCount(2);
 });
+
+test("constellation recovers from a temporary sample failure without reloading the page", async ({ page }) => {
+  let available = false;
+  await page.route("**/api/index", async route => {
+    if (route.request().postDataJSON()?.action === "constellation" && !available) {
+      await route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ error: "Sample temporarily unavailable" }) });
+    } else await route.continue();
+  });
+  await page.goto("/#/constellation");
+  await expect(page.getByRole("alert")).toContainText("Sample temporarily unavailable");
+  available = true;
+  await page.getByRole("button", { name: "Retry sample", exact: true }).click();
+  await expect(page.locator(".graph-layout")).toBeVisible();
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(page.getByText("Unique postings · N", { exact: true }).locator("..")).toContainText("30");
+});

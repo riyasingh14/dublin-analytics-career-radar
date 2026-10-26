@@ -11,6 +11,7 @@ export default function Constellation({
 }: {
   bootstrap: Bootstrap | null;
 }) {
+  const [attempt, setAttempt] = useState(0);
   const [role, setRole] = useState(""),
     [geography, setGeography] = useState(""),
     [minimum, setMinimum] = useState(5),
@@ -39,7 +40,7 @@ export default function Constellation({
         if (!c.signal.aborted) setBusy(false);
       });
     return () => c.abort();
-  }, [bootstrap, role, geography, minimum]);
+  }, [bootstrap, role, geography, minimum, attempt]);
   const nodes: any[] = result?.nodes || [],
     pairs: any[] = result?.pairs || [],
     eligible: any[] = result?.eligible_pairs || [];
@@ -186,9 +187,10 @@ export default function Constellation({
         </label>
       </div>
       {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
+        <div className="error" role="alert">
+          <p>{error}</p>
+          <button className="button-secondary" disabled={busy} onClick={() => setAttempt(value => value + 1)}>Retry sample</button>
+        </div>
       )}
       <ToolStatus busy={busy}>Recalculating the selected sample…</ToolStatus>
       {result && (
