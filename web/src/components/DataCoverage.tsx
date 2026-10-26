@@ -1,48 +1,11 @@
-import { useEffect, useRef } from "react";
 import { ChevronDown, ShieldCheck } from "lucide-react";
 import { Bootstrap } from "../lib/api";
 
 export default function DataCoverage({ bootstrap }: { bootstrap: Bootstrap | null }) {
   const snapshot = bootstrap?.snapshot;
-  const disclosure = useRef<HTMLDetailsElement>(null);
-  const animation = useRef<Animation | null>(null);
-  const targetOpen = useRef(false);
-  useEffect(() => () => { animation.current?.cancel(); }, []);
-  function toggle(event: React.MouseEvent<HTMLElement>) {
-    const element = disclosure.current;
-    if (!element) return;
-    // Native keyboard toggles remain immediate; pointer toggles animate both ways.
-    const animate = event.detail > 0 && document.documentElement.dataset.motion === "active" && !matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!animate) {
-      animation.current?.cancel();
-      animation.current = null;
-      element.style.overflow = "";
-      return;
-    }
-    event.preventDefault();
-    const next = !(animation.current ? targetOpen.current : element.open);
-    const startHeight = element.getBoundingClientRect().height;
-    animation.current?.cancel();
-    targetOpen.current = next;
-    element.open = next;
-    const endHeight = element.getBoundingClientRect().height;
-    // Keep the content rendered through a closing transition.
-    element.open = true;
-    element.style.overflow = "hidden";
-    const current = element.animate([{ height: `${startHeight}px` }, { height: `${endHeight}px` }], {
-      duration: 240, easing: "cubic-bezier(0.23, 1, 0.32, 1)",
-    });
-    animation.current = current;
-    current.onfinish = () => {
-      element.open = next;
-      element.style.overflow = "";
-      animation.current = null;
-      current.cancel();
-    };
-  }
   return (
-    <details className="coverage-passport" ref={disclosure}>
-      <summary onClick={toggle}>
+    <details className="coverage-passport">
+      <summary>
         <span className="passport-symbol" aria-hidden="true"><ShieldCheck size={24} /></span>
         <span className="passport-intro"><span className="passport-title">Data passport <span className="passport-badge">DEMO DATA</span></span><span className="passport-purpose">Know what’s behind the numbers: sources, sample sizes and limits.</span></span>
         <span className="passport-toggle"><span className="passport-closed-label">View data details</span><span className="passport-open-label">Hide data details</span><ChevronDown size={17} aria-hidden="true" /></span>

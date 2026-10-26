@@ -62,3 +62,36 @@ when Playwright's bundled browser is installed.
 Desktop/mobile screenshots and browser emulation check layout and interaction.
 Physical-phone Safari behaviour and subjective timing still benefit from a manual
 feel check; browser emulation is not a device performance benchmark.
+
+## Homepage guide and shared motion pass — 26 October 2026
+
+The homepage now says “BASED IN DUBLIN, IRELAND”. Each tool card answers a plain
+question and names its audience, useful output, analytical method and scope.
+Blue identifies Constellation, lilac Readiness, peach Mobility and lime Diagnostic.
+These colours also identify the corresponding page's header symbol; charts retain
+neutral surfaces and their existing analytical colour encodings.
+
+| Before | After | Why |
+| --- | --- | --- |
+| Generic tool slogans with similar panels | A question, intended user, output and method on four coloured cards | Explain practical value and expose the analytical work behind it |
+| Data Passport had its own motion implementation | One native-details handler shared across all seven pages | Consistent opening, closing and reversal, including dynamically loaded findings and evidence checklists |
+| Immediate page content with isolated profile motion | One-time 220ms text/card entrances, up to 120ms stagger; diagram surfaces fade without changing coordinates | Introduce hierarchy while keeping analytical values stable |
+| No shared cancellation for keyboard input | Keyboard input settles current animations and toggles details immediately | Keep keyboard navigation responsive |
+
+`web/src/components/PagePolish.ts` uses IntersectionObserver and WAAPI without a new
+runtime dependency. It never hides content in base CSS. Each element is introduced
+once, and only when visible; a MutationObserver registers newly mounted panels
+without scanning the page on every SVG projection frame. Entry effects animate
+transform/opacity; touch devices use opacity-only entrances to keep content in place. Native disclosures use a 240ms height transition, the explicit
+accordion exception where actual document space must open/close. Rapid reversals
+start at the current displayed height. Nested links and buttons keep their native
+actions. Cleanup settles disclosure state and cancels animations on navigation,
+pause or reduced-motion changes.
+
+Coverage: home text/cards/hero diagram; Constellation header, metrics, graph panels
+and source disclosures; Readiness header, input/results and evidence checklists;
+Diagnostic header, results and finding disclosures; Mobility header, metrics,
+scenario/cohort controls; Builder introduction/story/practice cards; Methods panels.
+Continuous hero art and the horizontal skill strip retain their existing global
+motion controls. This pass does not add chart sweeps, animated numerical counters,
+or a claim of physical-device frame-rate validation.

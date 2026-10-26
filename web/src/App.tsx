@@ -19,6 +19,7 @@ import { useStudioMotion } from "./components/StudioMotion";
 import AnalyticalSculpture from "./components/AnalyticalSculpture";
 import BuilderNote from "./components/BuilderNote";
 import Builder from "./pages/Builder";
+import { usePagePolish } from "./components/PagePolish";
 const Constellation = lazy(() => import("./tools/Constellation"));
 const Readiness = lazy(() => import("./tools/Readiness"));
 const Mobility = lazy(() => import("./tools/Mobility"));
@@ -29,8 +30,12 @@ const tools = [
     id: "constellation",
     number: "01",
     name: "Skill Constellation",
-    title: "Find the connections.",
-    text: "See which skills travel together. Follow a connection all the way back to its evidence.",
+    title: "Which skills should I learn together?",
+    audience: "Job seekers & learning teams",
+    takeaway: "A shortlist of skill combinations to explore.",
+    method: "Co-mention counts · Jaccard similarity · lift",
+    scope: "Explore a clearly labelled fictional sample.",
+    text: "See which skills appear together in job descriptions, then trace each connection to the exact words behind it.",
     tag: "SKILL RELATIONSHIPS",
     icon: Network,
   },
@@ -38,8 +43,12 @@ const tools = [
     id: "readiness",
     number: "02",
     name: "Readiness Studio",
-    title: "Know what you can show.",
-    text: "Turn a job description into an evidence checklist. See strengths, gaps and what remains unknown.",
+    title: "Am I ready for this role?",
+    audience: "Candidates & career changers",
+    takeaway: "A prioritised skills checklist and a portfolio project brief.",
+    method: "Weighted requirements · evidence tracking · what-if analysis",
+    scope: "Preparation guidance, not interview odds.",
+    text: "Compare a job description with what you can demonstrate. Find your strengths, evidence gaps and useful next steps.",
     tag: "SELF-REPORTED EVIDENCE",
     icon: Compass,
   },
@@ -47,8 +56,12 @@ const tools = [
     id: "mobility",
     number: "03",
     name: "Career Mobility Lab",
-    title: "Explore a different path.",
-    text: "Investigate simulated career moves, salary trajectories and the assumptions behind them.",
+    title: "What could a career move change?",
+    audience: "Career explorers & analytical reviewers",
+    takeaway: "A comparison of career moves and their trade-offs.",
+    method: "Seeded simulation · cohort analysis · salary distributions",
+    scope: "Synthetic scenarios, not observed salary outcomes.",
+    text: "Explore simulated career paths and salary changes. Adjust the assumptions and inspect the events behind each result.",
     tag: "SYNTHETIC SCENARIOS",
     icon: Route,
   },
@@ -56,8 +69,12 @@ const tools = [
     id: "diagnostic",
     number: "04",
     name: "JD Diagnostic",
-    title: "Read beyond the title.",
-    text: "Find unclear requirements and missing information in a job description, with the source text in view.",
+    title: "What is this job description really asking?",
+    audience: "Applicants, recruiters & hiring managers",
+    takeaway: "An annotated description and better questions to ask.",
+    method: "Rule-based extraction · exact source spans · human review",
+    scope: "Checks the wording; does not rate the employer.",
+    text: "Paste a job description to find unclear requirements, missing information and wording that needs a second look.",
     tag: "DESCRIPTION ANALYSIS",
     icon: ScanText,
   },
@@ -75,7 +92,7 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
           <BuilderNote />
           <p className="eyebrow">
             <span className="status-dot" />
-            DUBLIN ROOTS. IRELAND-WIDE QUESTIONS.
+            BASED IN DUBLIN, IRELAND
           </p>
           <h1>
             Evidence for your
@@ -114,15 +131,14 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
           <div>
             <p className="eyebrow">YOUR ANALYTICAL WORKSPACE</p>
             <h2>
-              Choose a question.
+              Find the tool for
               <br />
-              Follow the evidence.
+              your next question.
             </h2>
           </div>
           <p>
-            Start with the question that matters to you.
-            <br />
-            Each tool offers a different way to investigate.
+            Start with what you need to figure out. Each tool shows how it
+            reaches an answer, so you can check the reasoning yourself.
           </p>
         </div>
         <div className="tool-grid">
@@ -138,10 +154,14 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
                 </span>
                 <tool.icon size={26} strokeWidth={1.3} />
               </div>
+              <p className="tool-audience"><span>FOR</span> {tool.audience}</p>
               <h3>{tool.title}</h3>
               <p>{tool.text}</p>
+              <div className="tool-takeaway"><span>WHAT YOU GET</span><p>{tool.takeaway}</p></div>
+              <div className="tool-craft"><span>HOW IT WORKS</span><p>{tool.method}</p></div>
+              <p className="tool-scope">{tool.scope}</p>
               <div className="card-bottom">
-                <span className="badge">{tool.tag}</span>
+                <span>Open {tool.name}</span>
                 <ArrowUpRight size={22} />
               </div>
             </a>
@@ -317,6 +337,7 @@ export default function App() {
       });
     return () => controller.abort();
   }, [attempt]);
+  usePagePolish(route, motion.enabled);
   const active = tools.find((t) => t.id === route);
   return (
     <>
@@ -385,7 +406,7 @@ export default function App() {
           {motion.reduced ? "Reduced motion" : motion.enabled ? "Pause motion" : "Enable motion"}
         </button>
       </header>
-      <main id="main" tabIndex={-1}>
+      <main id="main" tabIndex={-1} data-page={route}>
         {route === "home" && <DataCoverage bootstrap={bootstrap} />}
         {error && (
           <div className="error" role="alert">

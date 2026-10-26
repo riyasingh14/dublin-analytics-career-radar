@@ -237,13 +237,6 @@ button:disabled { cursor: not-allowed; }
 .work-indicator { width: 13px; height: 13px; border: 2px solid #c6cde5; border-top-color: var(--electric); border-radius: 50%; flex: 0 0 auto; }
 [data-motion="active"] .work-indicator { animation: working .65s linear infinite; }
 @keyframes working { to { transform: rotate(360deg); } }
-/* Rare identity introduction: no layout animation, controls remain interactive. */
-[data-motion="active"]:not([data-input="keyboard"]) .builder-note {
-  transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
-}
-@starting-style {
-  [data-motion="active"]:not([data-input="keyboard"]) .builder-note { opacity: 0; transform: translateY(8px) scale(.98); }
-}
 /* Touch taps and keyboard actions never inherit decorative hover movement. */
 @media (hover: none), (pointer: coarse) {
   .tool-card:hover { transform: none; box-shadow: none; }
@@ -320,3 +313,35 @@ button:disabled { cursor: not-allowed; }
 .intention-signature .intention-link { display: flex; align-items: center; gap: 5px; color: var(--electric); }
 @media (max-width: 960px) { .intention-strip { grid-template-columns: 1fr 1.4fr; } .intention-signature { grid-column: 2; padding: 0; border: 0; } }
 @media (max-width: 640px) { .intention-strip { display: grid; grid-template-columns: 1fr; gap: 24px; padding: 25px 20px; } .intention-signature { grid-column: 1; border-top: 1px solid #c9cabe; padding-top: 20px; } }
+/* Homepage: four recognisable tools, each with its own colour and a plain-language brief. */
+.tool-grid { gap: 18px; border: 0; }
+.tool-card { display: flex; flex-direction: column; border: 1px solid #20232225; border-radius: 18px; padding: 32px; }
+.tool-card-constellation { background: #d5e4fc; --card-accent: #2646c9; }
+.tool-card-readiness { background: #e0d0f5; --card-accent: #63369b; }
+.tool-card-mobility { background: #fbcbb3; --card-accent: #934020; }
+.tool-card-diagnostic { background: #e3ed9e; --card-accent: #495719; }
+.card-top { margin-bottom: 22px; align-items: center; }
+.card-top svg { color: var(--card-accent); width: 46px; height: 46px; border-radius: 13px; padding: 9px; background: #ffffff60; }
+.tool-card .tool-audience { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-bottom: 15px; font-size: .72rem; color: #343a35; }
+.tool-audience > span, .tool-takeaway > span, .tool-craft > span { font: .54rem ui-monospace, monospace; letter-spacing: .07em; color: #394238; }
+.tool-card h3 { font-size: clamp(1.75rem, 2.7vw, 2.5rem); line-height: 1.12; margin-bottom: 18px; }
+.tool-card > p { color: #384137; max-width: 52ch; line-height: 1.8; }
+.tool-takeaway { padding: 16px 0; border-top: 1px solid #20232225; margin-top: 9px; }
+.tool-takeaway p { margin: 7px 0 0; font-size: .9rem; line-height: 1.65; color: var(--ink); }
+.tool-craft { background: #ffffff45; border: 1px solid #ffffff55; border-radius: 10px; padding: 12px 14px; }
+.tool-craft p { font-size: .72rem; line-height: 1.7; margin: 7px 0 0; color: #343a35; }
+.tool-card > .tool-scope { font-size: .65rem; line-height: 1.6; margin: 13px 0 22px; }
+.card-bottom { margin-top: auto; padding-top: 14px; gap: 15px; border-top: 1px solid #20232225; font-size: .78rem; font-weight: 500; }
+.card-bottom > svg { background: #ffffff60; border-color: #20232240; }
+.intention-strip { border-radius: 16px; border-color: #d8c9b4; background: #f2dfc5; }
+.evidence-facts > div { border-left: 3px solid #b9a1de; padding-left: 18px; }
+/* Carry each tool's identity into its page without colouring the analytical canvas. */
+[data-page="constellation"] { --page-accent: #d5e4fc; }
+[data-page="readiness"] { --page-accent: #e0d0f5; }
+[data-page="mobility"] { --page-accent: #fbcbb3; }
+[data-page="diagnostic"] { --page-accent: #e3ed9e; }
+.tool-symbol { background: var(--page-accent, var(--citrus)); border: 1px solid #20232225; border-radius: 16px; }
+[data-page] details > summary { cursor: pointer; }
+[data-page] details > summary:focus-visible { outline: 2px solid var(--electric); outline-offset: 4px; }
+@media (max-width: 640px) { .tool-card { padding: 24px; } .tool-card h3 { font-size: 1.9rem; } .tool-grid { gap: 14px; } .card-top { gap: 15px; } }
+.tools-section > .section-heading > p { max-width: 44ch; font-size: .9rem; line-height: 1.8; }
