@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 from flask import Flask, jsonify, request
 from werkzeug.exceptions import BadRequest, RequestEntityTooLarge, UnsupportedMediaType
 from career_radar.web_api import dispatch
+from career_radar.public_data import PublicDataUnavailable
 from career_radar.requirements_model import AnalysisLimitError
 
 app = Flask(__name__)
@@ -35,6 +36,8 @@ def endpoint():
                 raise ValueError('Expected a JSON object.')
             action = payload.get('action')
         return jsonify(dispatch(action, payload))
+    except PublicDataUnavailable:
+        return jsonify(error="The market dataset is temporarily unavailable. Please retry later."), 503
     except RequestEntityTooLarge:
         return jsonify(error='Request exceeds the 64 KB limit.'), 413
     except AnalysisLimitError as error:

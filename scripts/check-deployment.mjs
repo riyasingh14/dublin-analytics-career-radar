@@ -11,8 +11,10 @@ try {
   process.exit(2);
 }
 console.log(`Checking hosted release: ${target.origin}`);
+// The default contract supports both demo and reviewed releases. Explicit file filters can broaden it.
+const selectedTests = process.argv.slice(3);
 const check = spawnSync(process.execPath,
-  ["node_modules/@playwright/test/cli.js", "test", ...process.argv.slice(3)], {
+  ["node_modules/@playwright/test/cli.js", "test", ...(selectedTests.length ? selectedTests : ["web/tests/hosted-contract.spec.ts"])], {
     stdio: "inherit",
     env: { ...process.env, CAREER_RADAR_BASE_URL: target.origin },
   });

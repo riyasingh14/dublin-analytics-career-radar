@@ -22,8 +22,8 @@ also offer [complete, licensed archived employer descriptions](docs/job-descript
 The private job sample is not exposed. The homepage introduces builder Riya Singh,
 her analytical approach and her LinkedIn profile.
 See **[Vercel deployment](docs/vercel-deployment.md)** for GitHub linking, local setup,
-validation and hosted smoke checks. The owner reports deployment at
-[dublin-analytics-career-radar.vercel.app](https://dublin-analytics-career-radar.vercel.app/).
+validation and hosted smoke checks. The owner selected the shorter production address
+[ireland-career-radar.vercel.app](https://ireland-career-radar.vercel.app/).
 Workspace network restrictions currently prevent independent hosted verification.
 
 ```bash
@@ -41,8 +41,10 @@ Playwright Chromium; see the deployment guide). The Vercel project root must be 
 repository root; framework Vite, output `dist`. No API keys are needed for the demo.
 
 Run the browser/API release suite against the actual website with
-`npm run test:deployed -- https://dublin-analytics-career-radar.vercel.app/`.
-GitHub Actions checks builds, Python and browser regressions on pushes/PRs. A
+`npm run test:deployed -- https://ireland-career-radar.vercel.app/`.
+The default hosted check validates the current data mode and opens all four tools;
+it supports both synthetic and reviewed releases. Pass an explicit test file to
+run a broader suite. GitHub Actions checks builds, Python and browser regressions on pushes/PRs. A
 separate hosted workflow runs when Vercel emits a successful production deployment
 event, or manually from Actions. Its results must be inspected before claiming a
 hosted release is verified.

@@ -16,7 +16,7 @@ class WebAPITests(unittest.TestCase):
     def post(self,action,**payload):
         return self.client.post('/api/index',json={'action':action,**payload})
 
-    def test_bootstrap_is_always_public_demo_not_private_snapshot(self):
+    def test_bootstrap_defaults_to_public_demo_not_private_snapshot(self):
         response=self.client.get('/api/index?action=bootstrap')
         self.assertEqual(response.status_code,200)
         data=response.get_json()

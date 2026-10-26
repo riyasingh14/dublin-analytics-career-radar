@@ -1,5 +1,6 @@
+import type { DescriptionTransfer } from "../lib/descriptionJourney";
 import ToolStatus from "../components/ToolStatus";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Compass, Download, ArrowRight, RotateCcw } from "lucide-react";
 import { api, Bootstrap, DEMO_TEXT, downloadJSON, format, DescriptionSample } from "../lib/api";
 import DescriptionLibrary, { descriptionProvenance } from "../components/DescriptionLibrary";
@@ -43,11 +44,13 @@ function Summary({ result }: { result: any }) {
   );
 }
 export default function Readiness({
-  bootstrap,
+  bootstrap, incoming, onConsume,
 }: {
   bootstrap: Bootstrap | null;
+  incoming: DescriptionTransfer | null;
+  onConsume: (id: string) => void;
 }) {
-  const [text, setText] = useState(""),
+  const [text, setText] = useState(incoming?.text || ""),
     [requirements, setRequirements] = useState<any[]>([]),
     [entries, setEntries] = useState<Record<string, Entry>>({}),
     [kinds, setKinds] = useState<Record<string, string>>({}),
@@ -59,14 +62,17 @@ export default function Readiness({
     [error, setError] = useState(""),
     [gap, setGap] = useState(""),
     [plan, setPlan] = useState(""),
-    [example, setExample] = useState(false),
+    [example, setExample] = useState(incoming?.example || false),
     [sourceId, setSourceId] = useState(""),
     [conditions, setConditions] = useState<ListingCondition[]>([]),
     [conditionResponses, setConditionResponses] = useState<Record<string, string>>({}),
     [extracted, setExtracted] = useState(false);
   const request = useRef<AbortController | null>(null);
-  const [reference, setReference] = useState<DescriptionSample | null>(null);
-  const [referenceModified, setReferenceModified] = useState(false);
+  useEffect(() => () => request.current?.abort(), []);
+  const [reference, setReference] = useState<DescriptionSample | null>(incoming?.reference || null);
+  const [referenceModified, setReferenceModified] = useState(incoming?.referenceModified || false);
+  const [fromDiagnostic, setFromDiagnostic] = useState(Boolean(incoming));
+  useEffect(() => { if (incoming) onConsume(incoming.id); }, [incoming, onConsume]);
   const invalidate = () => {
     setRequirements([]);
     setConditions([]);
@@ -86,6 +92,7 @@ export default function Readiness({
     setBusy(false);
     setError("");
     setText("");
+    setFromDiagnostic(false);
     setReference(null);
     setReferenceModified(false);
     setExample(false);
@@ -125,7 +132,7 @@ export default function Readiness({
         setActionPlan(null);
       } else if (mode === "assess") {
         setResult(data.assessment);
-        setReport({ ...data.report, description_source: descriptionProvenance(reference, referenceModified), evidence_provenance: Object.fromEntries(
+        setReport({ ...data.report, input_journey: fromDiagnostic ? "JD Diagnostic → Readiness Studio" : null, description_source: descriptionProvenance(reference, referenceModified), evidence_provenance: Object.fromEntries(
           data.requirements.map((r: any) => [r.requirement_id, entries[r.requirement_id]?.provenance || "self_declared"])
         ), provenance_limitation: "Candidate-supplied categories only; no artefacts or credentials verified." });
         setActionPlan(data.action_plan);
@@ -188,6 +195,7 @@ export default function Readiness({
         location and work eligibility are outside this skill index. Check
         explicit conditions in the original listing.
       </div>
+      {fromDiagnostic && <div className="journey-received" role="note" aria-label="Description carried from Diagnostic"><div><strong>Continue your role assessment</strong><p>Started from JD Diagnostic. Review the current text, then extract its requirements. Your findings and candidate evidence have not been pre-filled.</p></div><button className="button-small" onClick={clear}>Discard carried description</button></div>}
       <ToolStatus busy={busy}>Checking requirements and your submitted evidence…</ToolStatus>
       <article className="panel">
         <div className="panel-heading">
@@ -202,12 +210,13 @@ export default function Readiness({
         </div>
         <DescriptionLibrary samples={bootstrap?.description_samples || []} selected={reference}
           modified={referenceModified} disabled={busy} onSelect={(sample) => {
-            setText(sample.text); setReference(sample); setReferenceModified(false);
+            setFromDiagnostic(false); setText(sample.text); setReference(sample); setReferenceModified(false);
             setSourceId(""); setExample(false); setError(""); invalidate();
           }} />
-        <label className="field">
+        {bootstrap?.data_mode !== "reviewed-sample" && <label className="field">
           Choose a synthetic source posting (optional)
           <select aria-label="Choose a synthetic source posting (optional)" value={sourceId} disabled={busy || !bootstrap} onChange={(e) => {
+            setFromDiagnostic(false);
             const posting = bootstrap?.snapshot.postings.find((p: any) => p.canonical_url === e.target.value);
             setSourceId(e.target.value);
             setReference(null); setReferenceModified(false);
@@ -220,7 +229,7 @@ export default function Readiness({
               Fictional #{index + 1} · {p.employer_name} · {p.location_text}
             </option>)}
           </select>
-        </label>
+        </label>}
         {sourceId && <p className="caption">Selected fixture: {sourceId}. All 30 fixtures are fictional Data Analyst examples,
           not a representative role sample. Mere skill mentions may remain uncertain until you review their context.</p>}
         <label className="field">
@@ -260,6 +269,7 @@ export default function Readiness({
             className="button-secondary"
             disabled={busy}
             onClick={() => {
+              setFromDiagnostic(false);
               setText(bootstrap?.example_description || DEMO_TEXT);
               setReference(null); setReferenceModified(false);
               setExample(true);

@@ -414,3 +414,8 @@ button:disabled { cursor: not-allowed; }
 .passport-why summary::-webkit-details-marker { display: none; }
 .passport-why details[open] summary svg { transform: rotate(180deg); }
 .passport-why p { font-size: .73rem; line-height: 1.8; margin: 12px 0 0; color: #48513e; }
+.journey-next-step, .journey-received { display: flex; align-items: center; justify-content: space-between; gap: 26px; padding: 26px; margin: 22px 0; border: 1px solid #baa0d5; border-radius: 12px; background: #e7d8f7; }
+.journey-next-step h2 { font-size: 1.65rem; letter-spacing: -.04em; margin-bottom: 10px; }
+.journey-next-step p:not(.eyebrow), .journey-received p { font-size: .82rem; line-height: 1.8; max-width: 70ch; color: #493759; margin: 8px 0 0; }
+.journey-next-step .button, .journey-received button { flex-shrink: 0; }
+@media (max-width: 640px) { .journey-next-step, .journey-received { flex-direction: column; align-items: flex-start; padding: 21px; } }

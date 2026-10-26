@@ -1,3 +1,8 @@
+export type PublicRelease = {
+  release_id: string; dataset_label: string; published_at: string;
+  collected_from: string; collected_through: string; expires_at: string; snapshot_sha256: string;
+  sources: { source_name: string; homepage_url: string; terms_url: string; terms_reviewed_on: string }[];
+};
 export type DescriptionSample = {
   id: string;
   title: string;
@@ -18,6 +23,7 @@ export type Bootstrap = {
   taxonomy: any[];
   example_description: string;
   data_mode: string;
+  release?: PublicRelease | null;
   description_samples?: DescriptionSample[];
 };
 export async function api<T = any>(

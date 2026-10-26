@@ -21,6 +21,7 @@ from career_radar.normalise import load_taxonomy
 from career_radar.readiness import assess_readiness, export_analysis, hypothetical_readiness
 from career_radar.requirements_model import extract_requirements
 from career_radar.description_samples import load_description_samples
+from career_radar.public_data import public_dataset
 
 ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE = ('Synthetic demonstration — Junior Data Analyst\nDublin, Ireland. Permanent, hybrid.\n'
@@ -42,15 +43,12 @@ def proof_recommendations():
     return load_proof_recommendations(ROOT / 'data/reference/skills.csv')
 
 
-@lru_cache(maxsize=1)
 def public_snapshot():
-    # Deliberately no environment-variable path to private development data.
-    return constellation_demo(taxonomy())
+    return public_dataset()['snapshot']
 
 
-@lru_cache(maxsize=1)
 def public_comparison_snapshot():
-    return comparison_demo(taxonomy())
+    return public_dataset()['comparison']
 
 
 @lru_cache(maxsize=1)
@@ -130,10 +128,12 @@ def _mobility(payload):
 def dispatch(action, payload=None):
     payload = _object({} if payload is None else payload, 'Request')
     if action == 'health':
-        return {'status': 'ok', 'version': 'web-v1', 'data_mode': 'synthetic-demo'}
+        dataset = public_dataset()
+        return {'status': 'ok', 'version': 'web-v1', 'data_mode': dataset['data_mode'], 'release_id': (dataset['release'] or {}).get('release_id')}
     if action == 'bootstrap':
-        return {'snapshot': public_snapshot(), 'taxonomy': [asdict(skill) for skill in taxonomy()],
-                'example_description': EXAMPLE, 'data_mode': 'synthetic-demo',
+        dataset = public_dataset()
+        return {'snapshot': dataset['snapshot'], 'taxonomy': [asdict(skill) for skill in taxonomy()],
+                'example_description': EXAMPLE, 'data_mode': dataset['data_mode'], 'release': dataset['release'],
                 'description_samples': description_samples()}
     if action == 'constellation':
         role, geography = payload.get('role') or None, payload.get('geography') or None
@@ -141,9 +141,10 @@ def dispatch(action, payload=None):
         if geography is not None: _text(geography, 'geography', 100)
         count = _number(payload.get('min_pair_count', 5), 'min_pair_count', 1, 100, True)
         sample = _number(payload.get('min_sample_size', 20), 'min_sample_size', 1, 1000, True)
-        return {**build_constellation(public_snapshot(), role=role, geography=geography,
+        dataset = public_dataset()
+        return {'data_mode': dataset['data_mode'], 'release': dataset['release'], **build_constellation(dataset['snapshot'], role=role, geography=geography,
                                      min_pair_count=count, min_sample_size=sample),
-                'role_comparison': build_role_comparison(public_comparison_snapshot(), taxonomy(), geography=geography)}
+                'role_comparison': build_role_comparison(dataset['comparison'], taxonomy(), geography=geography)}
     if action in ('diagnostic', 'readiness'):
         text = _text(payload.get('text'), 'Description', required=True)
         if action == 'diagnostic':

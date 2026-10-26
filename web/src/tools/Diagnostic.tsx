@@ -1,12 +1,14 @@
+import type { DescriptionTransfer } from "../lib/descriptionJourney";
 import ToolStatus from "../components/ToolStatus";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Download, ScanText, ArrowRight, RotateCcw } from "lucide-react";
 import { api, Bootstrap, DEMO_TEXT, downloadJSON, DescriptionSample } from "../lib/api";
 import DescriptionLibrary, { descriptionProvenance } from "../components/DescriptionLibrary";
 export default function Diagnostic({
-  bootstrap,
+  bootstrap, onAssessRole,
 }: {
   bootstrap: Bootstrap | null;
+  onAssessRole: (input: DescriptionTransfer) => void;
 }) {
   const [text, setText] = useState(""),
     [result, setResult] = useState<any>(null),
@@ -20,6 +22,7 @@ export default function Diagnostic({
   const [reference, setReference] = useState<DescriptionSample | null>(null);
   const [referenceModified, setReferenceModified] = useState(false);
   const request = useRef<AbortController | null>(null);
+  useEffect(() => () => request.current?.abort(), []);
   const clear = () => {
     request.current?.abort();
     setText("");
@@ -130,7 +133,7 @@ export default function Diagnostic({
             setText(sample.text); setReference(sample); setReferenceModified(false); setExample(false);
             setResult(null); setError(""); setReviews({}); setEdits({}); setSelected(null); setCategory("All categories");
           }} />
-        {bootstrap?.snapshot?.postings?.length > 0 && <label className="field">Or select a fictional source posting
+        {bootstrap?.data_mode !== "reviewed-sample" && bootstrap?.snapshot?.postings?.length > 0 && <label className="field">Or select a fictional source posting
           <select disabled={busy} value="" onChange={e => {
             const posting = bootstrap?.snapshot?.postings?.find((p: any) => p.source_job_id === e.target.value);
             if (!posting) return;
@@ -198,6 +201,10 @@ export default function Diagnostic({
       </article>
       {result && (
         <>
+          <section className="journey-next-step" aria-labelledby="assess-this-role-title">
+            <div><p className="eyebrow">NEXT / YOUR EVIDENCE</p><h2 id="assess-this-role-title">What can you demonstrate for this role?</h2><p>Carry this description into Readiness Studio and build your evidence checklist. Your proposed clarifications stay here; the description itself is carried over.</p></div>
+            <button className="button" disabled={busy || !text.trim()} onClick={() => onAssessRole({ id: crypto.randomUUID(), text, reference, referenceModified, example })}>Assess this role <ArrowRight size={17} /></button>
+          </section>
           <div className="section-heading compact-heading">
             <div>
               <p className="eyebrow">THE DOCUMENT, EXAMINED</p>

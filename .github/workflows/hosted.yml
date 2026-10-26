@@ -7,7 +7,7 @@ on:
       deployment_url:
         description: Public HTTPS deployment origin
         required: true
-        default: https://dublin-analytics-career-radar.vercel.app/
+        default: https://ireland-career-radar.vercel.app/
 
 permissions:
   contents: read

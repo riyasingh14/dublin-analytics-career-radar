@@ -1,4 +1,4 @@
-import { lazy, useEffect, useState } from "react";
+import { lazy, useCallback, useEffect, useState } from "react";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -14,6 +14,7 @@ import {
   Play,
 } from "lucide-react";
 import { api, Bootstrap } from "./lib/api";
+import type { DescriptionTransfer } from "./lib/descriptionJourney";
 import DataCoverage from "./components/DataCoverage";
 import { useStudioMotion } from "./components/StudioMotion";
 import AnalyticalSculpture from "./components/AnalyticalSculpture";
@@ -86,6 +87,7 @@ function currentRoute() {
     : "home";
 }
 function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motionEnabled: boolean }) {
+  const reviewed = bootstrap?.data_mode === "reviewed-sample";
   return (
     <>
       <section className="hero">
@@ -160,7 +162,7 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
               <p>{tool.text}</p>
               <div className="tool-takeaway"><span>WHAT YOU GET</span><p>{tool.takeaway}</p></div>
               <div className="tool-craft"><span>HOW IT WORKS</span><p>{tool.method}</p></div>
-              <p className="tool-scope">{tool.scope}</p>
+              <p className="tool-scope">{reviewed && tool.id === "constellation" ? "Explore the reviewed release and its documented coverage." : tool.scope}</p>
               <div className="card-bottom">
                 <span>Open {tool.name}</span>
                 <ArrowUpRight size={22} />
@@ -173,15 +175,12 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
         <div>
           <p className="eyebrow">WHAT YOU’RE LOOKING AT</p>
           <h2>
-            A working demo.
+            {reviewed ? "A reviewed sample." : "A working demo."}
             <br />
-            No hidden assumptions.
+            Sources in view.
           </h2>
           <p>
-            The analytical views use generated examples. Description tools also
-            offer attributed, archived employer-written examples. The private research
-            pipeline stays separate until source permissions and human review
-            are complete.
+            {reviewed ? `The skill views use the reviewed release ${bootstrap?.release?.dataset_label}, limited to its documented sources and dates. Career histories remain simulated, and candidate evidence is self-reported.` : "The analytical views use generated examples. Description tools also offer attributed, archived employer-written examples. The private research pipeline stays separate until source permissions and human review are complete."}
           </p>
           <a href="#/methodology" className="text-link">
             Inspect the methodology <ArrowUpRight size={16} />
@@ -192,7 +191,7 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
             <span>Skill sample</span>
             <strong>
               {bootstrap
-                ? bootstrap.snapshot.market.sample_size + " fictional postings"
+                ? bootstrap.snapshot.market.sample_size + (reviewed ? " reviewed sample postings" : " fictional postings")
                 : "Loading demonstration…"}
             </strong>
           </div>
@@ -213,7 +212,7 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
     </>
   );
 }
-function Methodology() {
+function Methodology({ bootstrap }: { bootstrap: Bootstrap | null }) {
   return (
     <section className="tool-page">
       <p className="eyebrow">METHODS / LIMITATIONS</p>
@@ -242,9 +241,7 @@ function Methodology() {
         <article className="panel">
           <h2>Keep the data types distinct</h2>
           <p>
-            <strong>Synthetic:</strong> the constellation examples and career
-            histories are generated, not real vacancies or observed salary
-            outcomes.
+            <strong>Skill sample:</strong> {bootstrap?.data_mode === "reviewed-sample" ? `reviewed release ${bootstrap.release?.release_id}, limited to its listed sources and dates.` : "the constellation examples are generated, not real vacancies."} Career histories remain synthetic, not observed salary outcomes.
           </p>
           <p>
             <strong>Self-reported:</strong> readiness evidence is supplied by
@@ -312,6 +309,12 @@ function Methodology() {
 }
 export default function App() {
   const motion = useStudioMotion();
+  const [descriptionTransfer, setDescriptionTransfer] = useState<DescriptionTransfer | null>(null);
+  const consumeTransfer = useCallback((id: string) => setDescriptionTransfer(current => current?.id === id ? null : current), []);
+  const assessDescription = (input: DescriptionTransfer) => {
+    setDescriptionTransfer(input);
+    location.hash = "/readiness";
+  };
   const [route, setRoute] = useState(currentRoute),
     [menu, setMenu] = useState(false),
     [bootstrap, setBootstrap] = useState<Bootstrap | null>(null),
@@ -319,7 +322,9 @@ export default function App() {
     [attempt, setAttempt] = useState(0);
   useEffect(() => {
     const change = () => {
-      setRoute(currentRoute());
+      const next = currentRoute();
+      setRoute(next);
+      if (next !== "readiness") setDescriptionTransfer(null);
       setMenu(false);
       window.scrollTo(0, 0);
       // A mobile route change hides navigation: move focus back into visible content.
@@ -425,7 +430,7 @@ export default function App() {
         ) : route === "builder" ? (
           <Builder />
         ) : route === "methodology" ? (
-          <Methodology />
+          <Methodology bootstrap={bootstrap} />
         ) : active ? (
           <>
             <div className="breadcrumb">
@@ -437,11 +442,11 @@ export default function App() {
               {route === "constellation" ? (
                 <Constellation bootstrap={bootstrap} />
               ) : route === "readiness" ? (
-                <Readiness bootstrap={bootstrap} />
+                <Readiness bootstrap={bootstrap} incoming={descriptionTransfer} onConsume={consumeTransfer} />
               ) : route === "mobility" ? (
                 <Mobility bootstrap={bootstrap} />
               ) : (
-                <Diagnostic bootstrap={bootstrap} />
+                <Diagnostic bootstrap={bootstrap} onAssessRole={assessDescription} />
               )}
             </ToolEntrance>
           </>

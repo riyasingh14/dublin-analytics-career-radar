@@ -11,6 +11,10 @@ export default function Constellation({
 }: {
   bootstrap: Bootstrap | null;
 }) {
+  const reviewed = bootstrap?.data_mode === "reviewed-sample";
+  const release = bootstrap?.release;
+  const postingLabel = reviewed ? "reviewed postings" : "fictional postings";
+  const geographies = reviewed ? Array.from(new Set<string>((bootstrap?.snapshot.postings || []).map((posting: any) => posting.geography))).sort() : ["Dublin", "Rest of Ireland"];
   const [attempt, setAttempt] = useState(0);
   const [role, setRole] = useState(""),
     [geography, setGeography] = useState(""),
@@ -29,7 +33,12 @@ export default function Constellation({
     setError("");
     setResult(null);
     api("constellation", { role, geography, min_pair_count: minimum }, c.signal)
-      .then(setResult)
+      .then((data) => {
+        if ((data.data_mode || "synthetic-demo") !== bootstrap.data_mode || data.release?.release_id !== bootstrap.release?.release_id) {
+          throw new Error("The dataset changed. Reload this page to use the current release.");
+        }
+        setResult(data);
+      })
       .catch((e) => {
         if (e.name !== "AbortError") {
           setError(e.message);
@@ -108,9 +117,7 @@ export default function Constellation({
         </div>
       </div>
       <div className="notice">
-        Synthetic demonstration: all postings, employers and skill combinations
-        in this public sample are fictional. They illustrate the method, not
-        Irish market demand.
+        {reviewed ? `Reviewed posting sample: ${release?.dataset_label}. This is limited to its documented sources and collection window; it is not complete Irish-market coverage.` : "Synthetic demonstration: all postings, employers and skill combinations in this public sample are fictional. They illustrate the method, not Irish market demand."}
       </div>
       <div className="filter-bar">
         <label className="field">
@@ -146,8 +153,7 @@ export default function Constellation({
             }}
           >
             <option value="">All locations</option>
-            <option>Dublin</option>
-            <option>Rest of Ireland</option>
+            {geographies.map(value => <option key={value}>{value}</option>)}
           </select>
         </label>
         <label className="field">
@@ -155,10 +161,10 @@ export default function Constellation({
           <input
             type="number"
             min={1}
-            max={30}
+            max={reviewed ? 100 : 30}
             value={minimum}
             onChange={(e) =>
-              setMinimum(Math.min(30, Math.max(1, Number(e.target.value) || 1)))
+              setMinimum(Math.min(reviewed ? 100 : 30, Math.max(1, Number(e.target.value) || 1)))
             }
           />
         </label>
@@ -189,7 +195,7 @@ export default function Constellation({
       {error && (
         <div className="error" role="alert">
           <p>{error}</p>
-          <button className="button-secondary" disabled={busy} onClick={() => setAttempt(value => value + 1)}>Retry sample</button>
+          <button className="button-secondary" disabled={busy} onClick={() => error.startsWith("The dataset changed.") ? location.reload() : setAttempt(value => value + 1)}>{error.startsWith("The dataset changed.") ? "Reload current dataset" : "Retry sample"}</button>
         </div>
       )}
       <ToolStatus busy={busy}>Recalculating the selected sample…</ToolStatus>
@@ -220,14 +226,14 @@ export default function Constellation({
           <article className="panel constellation-coverage">
             <p className="eyebrow">SAMPLE COVERAGE & LIMITS</p><h2>Know what this view can support.</h2>
             <dl>
-              <div><dt>Data source</dt><dd>Generated fictional fixture; no live feed</dd></div>
+              <div><dt>Data source</dt><dd>{reviewed ? release?.sources.map(source => source.source_name).join(", ") : "Generated fictional fixture; no live feed"}</dd></div>
               <div><dt>Evidence coverage</dt><dd>{result.jobs_with_skills} / {result.sample_size} selected postings{result.sample_size ? ` · ${format(100 * result.jobs_with_skills / result.sample_size, 1, "%")}` : " · unavailable"}</dd></div>
-              <div><dt>Collection date</dt><dd>Not applicable: no vacancies collected</dd></div>
+              <div><dt>Collection date</dt><dd>{reviewed ? `${release?.collected_from} to ${release?.collected_through}` : "Not applicable: no vacancies collected"}</dd></div>
               <div><dt>Extraction method</dt><dd>Controlled phrase rules · {[...new Set<string>((result.evidence || []).map((row: any) => row.extraction_version))].join(", ") || "No extracted evidence"}</dd></div>
-              <div><dt>Observation window</dt><dd>Single fictional fixture; no historical trend available</dd></div>
+              <div><dt>Observation window</dt><dd>{reviewed ? `Release ${release?.release_id} · valid until ${release?.expires_at}` : "Single fictional fixture; no historical trend available"}</dd></div>
               <div><dt>Unprovided filters</dt><dd>Industry and seniority are unavailable in this sample</dd></div>
             </dl>
-            <p className="caption">No observed market coverage or extraction precision is claimed. A fixture is not a human-reviewed live dataset. Postings without an extracted match still count in N. Source mix, collection bias and human validation must be assessed before real-data publication.</p>
+            <p className="caption">{reviewed ? "This release passed the configured extraction review and source-display checks. That does not establish market representativeness. Postings without a skill match still count in N; counts describe this sample and not all Irish vacancies." : "No observed market coverage or extraction precision is claimed. A fixture is not a human-reviewed live dataset. Postings without an extracted match still count in N. Source mix, collection bias and human validation must be assessed before real-data publication."}</p>
           </article>
           <div className="graph-layout">
             <article className="panel">
@@ -304,7 +310,7 @@ export default function Constellation({
                         className="graph-edge"
                         role="button"
                         tabIndex={0}
-                        aria-label={`Inspect ${labels[p.skill_a]} and ${labels[p.skill_b]}: ${p.pair_count} fictional postings`}
+                        aria-label={`Inspect ${labels[p.skill_a]} and ${labels[p.skill_b]}: ${p.pair_count} ${postingLabel}`}
                         aria-pressed={key === selectedKey}
                         onClick={() => setPairKey(key)}
                         onKeyDown={(e) => {
@@ -356,7 +362,7 @@ export default function Constellation({
                             {n.skill_name}
                           </text>
                           <title>
-                            {n.skill_name} · {categoryById[n.skill_id] || "Uncategorised"}: {n.job_count} fictional postings
+                            {n.skill_name} · {categoryById[n.skill_id] || "Uncategorised"}: {n.job_count} {postingLabel}
                           </title>
                         </g>
                       );
@@ -405,7 +411,7 @@ export default function Constellation({
                   <div className="pair-stat">
                     <strong>{selected.pair_count}</strong>
                     <span>
-                      of {result.sample_size} fictional postings
+                      of {result.sample_size} {postingLabel}
                       <br />
                       mention both skills
                     </span>
@@ -434,7 +440,7 @@ export default function Constellation({
               )}
             </aside>
           </div>
-          <ConstellationComparison comparison={result.role_comparison} />
+          <ConstellationComparison comparison={result.role_comparison} reviewed={reviewed} />
           <details className="panel">
             <summary>Calculation definitions and complete pair table</summary>
             <p>
@@ -474,12 +480,13 @@ export default function Constellation({
             <button
               className="button-secondary"
               onClick={() =>
-                downloadJSON("synthetic-skill-pairs.json", {
-                  data_label: "Synthetic demonstration",
+                downloadJSON(reviewed ? "reviewed-skill-pairs.json" : "synthetic-skill-pairs.json", {
+                  data_label: reviewed ? release?.dataset_label : "Synthetic demonstration",
+                  release: release || null,
                   sample_size: result.sample_size,
                   filters: { role, geography },
                   definitions: { support: "n(A,B)/N", jaccard: "n(A,B)/(n(A)+n(B)-n(A,B))", lift: "n(A,B)*N/(n(A)*n(B))" },
-                  interpretation: "Fictional sample; co-mention is association, not causation; display guards are heuristics.",
+                  interpretation: `${reviewed ? "Reviewed source sample" : "Fictional sample"}; co-mention is association, not causation; display guards are heuristics.`,
                   pairs,
                 })
               }
@@ -494,8 +501,8 @@ export default function Constellation({
               Inspect the supporting examples <ArrowRight size={20} />
             </h2>
             <p>
-              {supportJobs.length} fictional postings support the selected pair.
-              These examples have no external job URLs.
+              {supportJobs.length} {postingLabel} support the selected pair.
+              {reviewed ? "Open a record for its source text and original URL." : "These examples have no external job URLs."}
             </p>
             {supportJobs.slice(0, showAllEvidence ? supportJobs.length : 8).map((job: any) => (
               <details key={job.canonical_url} className="source-row">
@@ -514,10 +521,11 @@ export default function Constellation({
                       </div>
                     ))}
                 </dl>
-                <p className="eyebrow">COMPLETE SYNTHETIC DESCRIPTION</p>
+                <p className="eyebrow">{reviewed ? "RELEASED SOURCE DESCRIPTION" : "COMPLETE SYNTHETIC DESCRIPTION"}</p>
                 <p>{job.description_text}</p>
+                {reviewed && /^https:\/\//.test(job.canonical_url) && <a className="text-link" href={job.canonical_url} target="_blank" rel="noreferrer">Open original posting</a>}
                 <p className="caption">
-                  Generated example · {job.source_job_id} · not a real vacancy
+                  {reviewed ? `Released record · ${job.source_job_id} · availability may have changed since collection` : `Generated example · ${job.source_job_id} · not a real vacancy`}
                 </p>
               </details>
             ))}
