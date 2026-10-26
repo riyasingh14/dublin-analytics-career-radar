@@ -47,7 +47,7 @@ body { background: radial-gradient(ellipse at 92% 8%, #e9eddc70, transparent 42%
 .hero-note a { display: inline-flex; align-items: center; gap: 3px; color: var(--electric); border-bottom: 1px solid #8b9bd9; margin-top: 8px; }
 /* Compact builder cell leaves the analytical sculpture as the hero focal point. */
 .hero { padding-top: 32px; padding-bottom: 42px; }
-.hero-copy { grid-column: 1; grid-row: 1; align-self: center; }
+.hero-copy { grid-column: 1; grid-row: 1; align-self: start; }
 .hero-art { grid-column: 2; grid-row: 1; max-width: 680px; width: 100%; justify-self: center; }
 .builder-note { position: relative; width: 100%; max-width: 400px; color: #fff8ff; background: #25183f; border: 1px solid #534267; border-radius: 10px; padding: 13px 15px; margin-bottom: 30px; box-shadow: 4px 4px 0 #e6d9f3; }
 .builder-note:focus-visible { outline: 3px solid #b58add; outline-offset: 7px; }
