@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { ArrowUpRight, ArrowLeft, ArrowRight, Pause, Play } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import "./sculpture.css";
 
 type Point = { x: number; y: number; z: number };
@@ -36,22 +36,13 @@ export default function AnalyticalSculpture({ motionEnabled }: { motionEnabled: 
   const current = useRef(frame), target = useRef({ x: 0, y: 0 });
   const [selected, setSelected] = useState("sql");
   const [focusWithin, setFocusWithin] = useState(false);
-  const [tourPaused, setTourPaused] = useState(false);
-  const [tourHovered, setTourHovered] = useState(false);
   const [announcement, setAnnouncement] = useState("");
-  const tourRunning = motionEnabled && onScreen && pageVisible && !focusWithin && !tourPaused && !tourHovered;
-  const selectedIndex = SKILLS.findIndex(skill => skill.id === selected);
+  const tourRunning = motionEnabled && onScreen && pageVisible;
   function chooseSkill(id: string) {
     setSelected(id);
-    setTourPaused(true);
     const skill = SKILLS.find(skill => skill.id === id)!;
     setAnnouncement(`${skill.label}. ${skill.note}`);
   }
-  useEffect(() => {
-    if (!tourRunning) return;
-    const timer = window.setInterval(() => setSelected(id => SKILLS[(SKILLS.findIndex(skill => skill.id === id) + 1) % SKILLS.length].id), 7000);
-    return () => window.clearInterval(timer);
-  }, [tourRunning]);
   const unique = useId().replace(/:/g, "");
   const active = motionEnabled && onScreen && pageVisible && !focusWithin;
   useEffect(() => {
@@ -150,21 +141,16 @@ export default function AnalyticalSculpture({ motionEnabled }: { motionEnabled: 
       })}
     </svg>
     <figcaption className="sculpture-caption">
-      <div className="skill-tour" role="region" aria-roledescription="carousel" aria-label="Analytical skills and their purpose"
-        onPointerEnter={event => { if (event.pointerType === "mouse") setTourHovered(true); }} onPointerLeave={() => setTourHovered(false)} data-running={tourRunning ? "true" : "false"}>
-        <div className="skill-tour-heading"><span>THE SKILLS BEHIND THE WORK</span><span>{String(selectedIndex + 1).padStart(2, "0")} / {SKILLS.length}</span></div>
-        <div className="skill-tour-window">
-          <div className="skill-tour-track" style={{ transform: `translateX(-${selectedIndex * 100}%)`, transitionDuration: selectedIndex === 0 ? "0ms" : undefined }}>
-            {SKILLS.map((skill, index) => <div className="sculpture-selected" key={skill.id} role="group" aria-roledescription="slide" aria-label={`${index + 1} of ${SKILLS.length}: ${skill.label}`} aria-hidden={index !== selectedIndex}>
-              <span className="sculpture-index">{String(index + 1).padStart(2, "0")}</span><div><strong>{skill.label}</strong><p>{skill.note}</p></div>
+      <div className="skill-tour" role="region" aria-label="Analytical skills and their purpose" data-running={tourRunning ? "true" : "false"}>
+        <div className="skill-tour-heading">THE SKILLS BEHIND THE WORK</div>
+        <div className="skill-tour-window" tabIndex={0} aria-label="Skills and descriptions; scroll to browse when motion is off">
+          <div className="skill-tour-track">
+            {[false, true].map(copy => <div className={`skill-tour-group${copy ? " skill-tour-copy" : ""}`} key={String(copy)} aria-hidden={copy ? true : undefined}>
+              {SKILLS.map((skill, index) => <div className="sculpture-selected" key={skill.id}>
+                <span className="sculpture-index">{String(index + 1).padStart(2, "0")}</span><div><strong>{skill.label}</strong><p>{skill.note}</p></div>
+              </div>)}
             </div>)}
           </div>
-        </div>
-        <div className="skill-tour-controls">
-          <span>{!motionEnabled ? "Motion paused. Use the arrows to explore." : tourPaused ? "Tour paused. Use arrows or press play." : "Auto-advances every 7s. Pauses while you read."}</span>
-          <div><button type="button" onClick={() => chooseSkill(SKILLS[(selectedIndex - 1 + SKILLS.length) % SKILLS.length].id)} aria-label="Previous skill"><ArrowLeft size={15} /></button>
-          <button type="button" onClick={() => setTourPaused(value => !value)} disabled={!motionEnabled} aria-label={!motionEnabled ? "Skill tour paused by motion settings" : tourPaused ? "Play skill tour" : "Pause skill tour"} aria-pressed={tourPaused}>{tourPaused || !motionEnabled ? <Play size={14} /> : <Pause size={14} />}</button>
-          <button type="button" onClick={() => chooseSkill(SKILLS[(selectedIndex + 1) % SKILLS.length].id)} aria-label="Next skill"><ArrowRight size={15} /></button></div>
         </div>
       </div>
       <span className="sr-only" role="status">{announcement}</span>

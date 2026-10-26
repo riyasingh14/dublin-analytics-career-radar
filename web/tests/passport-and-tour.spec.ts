@@ -19,42 +19,38 @@ test("data passport explains its purpose and expands by keyboard", async ({ page
   await expect(passport.locator(".passport-content")).not.toBeVisible();
 });
 
-test("skill tour advances horizontally, pauses for reading, and follows node selection", async ({ page }) => {
-  await page.clock.install();
+test("skill strip loops continuously without local controls or hover pauses", async ({ page }) => {
   await page.goto("/");
   const tour = page.getByRole("region", { name: "Analytical skills and their purpose" });
   await tour.scrollIntoViewIfNeeded();
-  await page.mouse.move(0, 0);
   await expect(tour).toHaveAttribute("data-running", "true");
-  const current = tour.locator('.sculpture-selected[aria-hidden="false"] strong');
-  await expect(current).toHaveText("SQL");
-  await page.clock.fastForward(7100);
-  await expect(current).toHaveText("Python");
-  expect(await tour.locator(".skill-tour-track").evaluate(el => el.getAttribute("style"))).toContain("translateX(-100%)");
+  await expect(tour.getByRole("button")).toHaveCount(0);
+  await expect(tour.locator(".skill-tour-group").first().locator("strong")).toHaveCount(13);
+  const track = tour.locator(".skill-tour-track");
+  const before = await track.evaluate(el => getComputedStyle(el).transform);
+  await expect.poll(() => track.evaluate(el => getComputedStyle(el).transform)).not.toBe(before);
   await tour.hover();
+  await expect(tour).toHaveAttribute("data-running", "true");
+  expect(await track.evaluate(el => getComputedStyle(el).animationTimingFunction)).toBe("linear");
+  expect(await track.evaluate(el => getComputedStyle(el).animationIterationCount)).toBe("infinite");
+  const widths = await tour.locator(".skill-tour-group").evaluateAll(els => els.map(el => el.getBoundingClientRect().width));
+  expect(widths[0]).toBe(widths[1]);
+  await page.getByRole("button", { name: "Pause motion", exact: true }).click();
   await expect(tour).toHaveAttribute("data-running", "false");
-  await page.clock.fastForward(14000);
-  await expect(current).toHaveText("Python");
-  await tour.getByRole("button", { name: "Next skill", exact: true }).click();
-  await expect(current).toHaveText("Excel");
-  await page.getByRole("button", { name: "Explore Git", exact: true }).focus();
-  await page.keyboard.press("Enter");
-  await expect(current).toHaveText("Git");
-  await expect(tour.getByRole("button", { name: "Play skill tour", exact: true })).toBeVisible();
+  expect(await track.evaluate(el => getComputedStyle(el).animationName)).toBe("none");
 });
 
-test("reduced motion keeps the skill tour manual and the passport fits mobile", async ({ page }) => {
+test("reduced motion offers scrollable skills without controls or mobile overflow", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   const tour = page.getByRole("region", { name: "Analytical skills and their purpose" });
   await tour.scrollIntoViewIfNeeded();
   await expect(tour).toHaveAttribute("data-running", "false");
-  await expect(tour.getByText("Motion paused. Use the arrows to explore.")).toBeVisible();
-  await tour.getByRole("button", { name: "Next skill", exact: true }).click();
-  await expect(tour.locator('.sculpture-selected[aria-hidden="false"] strong')).toHaveText("Python");
-  expect(await tour.locator(".skill-tour-track").evaluate(el => getComputedStyle(el).transitionDuration)).toBe("0s");
-  await page.locator(".coverage-passport summary").click();
-  await expect(page.locator(".passport-content")).toBeVisible();
+  await expect(tour.getByRole("button")).toHaveCount(0);
+  expect(await tour.locator(".skill-tour-track").evaluate(el => getComputedStyle(el).animationName)).toBe("none");
+  const window = tour.locator(".skill-tour-window");
+  await window.evaluate(el => { el.scrollLeft = 320; });
+  expect(await window.evaluate(el => el.scrollLeft)).toBeGreaterThan(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
