@@ -26,9 +26,13 @@ export function useStudioMotion() {
     if (!enabled) return;
     let frame = 0;
     let card: HTMLElement | null = null;
+    let light: HTMLElement | null = null;
     let pending: PointerEvent | null = null;
     const reset = () => {
       card?.style.removeProperty("transform");
+      light?.style.removeProperty("transform");
+      light?.style.removeProperty("opacity");
+      light = null;
       card = null;
     };
     const move = (event: PointerEvent) => {
@@ -40,13 +44,17 @@ export function useStudioMotion() {
         frame = 0;
         const e = pending!;
         const next = e.target instanceof Element ? e.target.closest<HTMLElement>(".tool-card") : null;
-        if (next !== card) { reset(); card = next; }
+        if (next !== card) { reset(); card = next; light = card?.querySelector<HTMLElement>(".card-spotlight") || null; }
         if (!card) return;
         const box = card.getBoundingClientRect();
         const x = (e.clientX - box.left) / box.width;
         const y = (e.clientY - box.top) / box.height;
         // Write to the animated element; inherited variables would restyle its children.
         card.style.transform = `perspective(900px) rotateX(${(y - .5) * -5}deg) rotateY(${(x - .5) * 5}deg) translateY(-2px)`;
+        if (light) {
+          light.style.transform = `translate3d(${x * box.width - 160}px, ${y * box.height - 160}px, 0)`;
+          light.style.opacity = "1";
+        }
       });
     };
     const keyboard = () => { pending = null; cancelAnimationFrame(frame); frame = 0; reset(); };

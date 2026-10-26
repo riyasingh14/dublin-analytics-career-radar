@@ -117,7 +117,7 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
         </div>
       </section>
       <section className="intro-strip intention-strip" aria-labelledby="project-intention">
-        <h2 id="project-intention">WHY I BUILT THIS</h2>
+        <div className="intention-title"><span className="intention-kicker"><Network size={18} aria-hidden="true" /> BUILD NOTE / 001</span><h2 id="project-intention">WHY I BUILT THIS</h2><span className="intention-equation">Question <ArrowRight size={13} aria-hidden="true" /> Evidence <ArrowRight size={13} aria-hidden="true" /> Decision</span></div>
         <ul className="intention-copy">
           <li>I’m building a career in business and data analytics, and I wanted you to be able to see how I work.</li>
           <li>Show how I turn a question into a data model, a clear visual and a decision I can explain.</li>
@@ -131,9 +131,7 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
           <div>
             <p className="eyebrow">YOUR ANALYTICAL WORKSPACE</p>
             <h2>
-              Find the tool for
-              <br />
-              your next question.
+              Our four tools.
             </h2>
           </div>
           <p>
@@ -147,7 +145,9 @@ function Home({ bootstrap, motionEnabled }: { bootstrap: Bootstrap | null; motio
               href={`#/${tool.id}`}
               className={`tool-card tool-card-${tool.id}`}
               key={tool.id}
+              data-number={tool.number}
             >
+              <span className="card-spotlight" aria-hidden="true" />
               <div className="card-top">
                 <span>
                   {tool.number} / {tool.name.toUpperCase()}

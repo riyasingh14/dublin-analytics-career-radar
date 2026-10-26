@@ -49,3 +49,34 @@ test("page entrances are brief and reduced motion has no entrance animations", a
   await expect(page.locator("main h1")).toBeVisible();
   expect(await page.locator("main").evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === "running").length)).toBe(0);
 });
+
+test("hero mesh has equal peer connections and cards track cursor light", async ({ page }) => {
+  await page.goto("/");
+  const sculpture = page.getByTestId("analytical-sculpture");
+  const mesh = await sculpture.locator("line[data-skill-a]").evaluateAll(lines => {
+    const degrees: Record<string, number> = {};
+    for (const line of lines) for (const key of ["data-skill-a", "data-skill-b"]) {
+      const id = line.getAttribute(key)!;
+      degrees[id] = (degrees[id] || 0) + 1;
+    }
+    return degrees;
+  });
+  expect(Object.keys(mesh)).toHaveLength(13);
+  expect(new Set(Object.values(mesh))).toEqual(new Set([4]));
+  await expect(sculpture.locator('[aria-pressed="true"]')).toHaveCount(0);
+  const sql = sculpture.locator('.sculpture-node[data-skill-id="sql"]');
+  const cx = Number(await sql.getAttribute("cx")), cy = Number(await sql.getAttribute("cy"));
+  expect(Math.hypot(cx - 310, cy - 242)).toBeGreaterThan(40);
+  await expect(page.getByRole("heading", { name: "Our four tools.", exact: true })).toBeVisible();
+  const card = page.locator(".tool-card").first();
+  await card.scrollIntoViewIfNeeded();
+  const box = (await card.boundingBox())!;
+  await page.mouse.move(box.x + box.width * .3, box.y + box.height * .4);
+  const light = card.locator(".card-spotlight");
+  await expect.poll(() => light.evaluate(element => element.style.opacity)).toBe("1");
+  const initial = await light.evaluate(element => element.style.transform);
+  await page.mouse.move(box.x + box.width * .7, box.y + box.height * .6);
+  await expect.poll(() => light.evaluate(element => element.style.transform)).not.toBe(initial);
+  await page.getByRole("button", { name: "Pause motion", exact: true }).click();
+  expect(await light.evaluate(element => element.style.opacity)).toBe("");
+});

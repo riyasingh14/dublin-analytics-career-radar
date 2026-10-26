@@ -71,3 +71,6 @@
 .skill-tour[data-running="false"] .skill-tour-window { overflow-x: auto; }
 @media (max-width: 640px) { .skill-tour-track .sculpture-selected { min-height: 9rem; } }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.sculpture-link { stroke: #7642ac; opacity: .2; }
+.sculpture-link.is-selected { stroke: #6732c4; opacity: .65; }
+.sculpture-orbit-1 { stroke: #8b49db; }

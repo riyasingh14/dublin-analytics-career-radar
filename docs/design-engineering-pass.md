@@ -95,3 +95,22 @@ scenario/cohort controls; Builder introduction/story/practice cards; Methods pan
 Continuous hero art and the horizontal skill strip retain their existing global
 motion controls. This pass does not add chart sweeps, animated numerical counters,
 or a claim of physical-device frame-rate validation.
+
+## Fluorescent homepage refinement — 26 October 2026
+
+The hero now presents 13 equal peers on a rotating spherical mesh. A Fibonacci
+sphere distributes their positions; a regular four-neighbour topology creates
+26 connections. Every skill has the same base node sizing and degree. Initial
+selection is empty; a chosen skill receives a ring and connected-edge highlight.
+The graph remains an illustration of connected analytical practices.
+
+The tools heading is “Our four tools.” Purple, acid lime, cyan and hot pink cards
+use ink text, offset shadows and a numbered watermark. A separate radial light
+layer follows the pointer through direct transform/opacity writes alongside the
+existing bounded card tilt. Pointer motion is frame-batched, mouse/fine-pointer
+only, and cleared on leave, keyboard input, blur and global motion pause.
+
+“Why I built this” retains the four intentions and small bottom-right byline,
+now in a dark-purple build-note panel with a subtle grid, numbered lime markers
+and a question → evidence → decision line. Text contrast and mobile overflow are
+checked alongside the graph and pointer interaction checks.

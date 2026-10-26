@@ -342,3 +342,35 @@ button:disabled { cursor: not-allowed; }
 [data-page] details > summary:focus-visible { outline: 2px solid var(--electric); outline-offset: 4px; }
 @media (max-width: 640px) { .tool-card { padding: 24px; } .tool-card h3 { font-size: 1.9rem; } .tool-grid { gap: 14px; } .card-top { gap: 15px; } }
 .tools-section > .section-heading > p { max-width: 44ch; font-size: .9rem; line-height: 1.8; }
+/* Fluorescent studio: saturated surfaces, ink typography, cursor-driven light. */
+.tool-card { --card-ink: #1c102c; border: 1px solid #24123880; border-radius: 20px; box-shadow: 5px 6px 0 #25143b; color: var(--card-ink); }
+.tool-card-constellation { background: #bd6aff; --card-accent: #30104b; }
+.tool-card-readiness { background: #c8ff3f; --card-accent: #243409; }
+.tool-card-mobility { background: #61e5eb; --card-accent: #123e46; }
+.tool-card-diagnostic { background: #ff8cc7; --card-accent: #551039; }
+.tool-card::before { content: none; }
+.tool-card::after { content: attr(data-number); position: absolute; right: 20px; bottom: 25px; font-size: 150px; font-weight: 700; letter-spacing: -.08em; line-height: 1; opacity: .045; pointer-events: none; z-index: -1; }
+.card-spotlight { position: absolute; top: 0; left: 0; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, #ffffffa0, #ffffff30 42%, transparent 70%); opacity: 0; pointer-events: none; z-index: -1; transition: opacity 180ms var(--ease-out); }
+.tool-card h3, .tool-card > p, .tool-card .tool-audience, .tool-card .tool-takeaway p, .tool-card .tool-craft p, .tool-card :is(.tool-audience, .tool-takeaway, .tool-craft) > span { color: var(--card-ink); }
+.tool-card .card-top svg { color: var(--card-accent); background: #ffffff40; border: 1px solid #24123830; }
+.tool-card .tool-craft { border-color: #24123825; background: #ffffff30; }
+.tool-card .card-bottom { border-color: #24123850; }
+.tool-card .card-bottom > svg { background: #241238; color: #f6f3ff; border-color: #241238; }
+@media (hover: hover) and (pointer: fine) {
+  .tool-card:hover { box-shadow: 5px 6px 0 #25143b; border-color: #24123880; }
+  .tool-card:hover .card-bottom > svg { background: #241238; }
+}
+.intention-strip { position: relative; isolation: isolate; overflow: hidden; color: #faf3ff; background: #241337; border: 1px solid #5b397a; border-radius: 18px; box-shadow: 5px 6px 0 #d4b4f3; padding: 38px; }
+.intention-strip::before { content: ""; position: absolute; inset: 0; z-index: -1; opacity: .25; pointer-events: none; background: linear-gradient(#aa77d820 1px, transparent 1px), linear-gradient(90deg, #aa77d820 1px, transparent 1px), radial-gradient(ellipse at 0 0, #8c39b977, transparent 60%); background-size: 32px 32px, 32px 32px, 100% 100%; }
+.intention-title { display: grid; gap: 24px; }
+.intention-strip h2 { color: #fbf6ff; font-size: clamp(2rem, 3.5vw, 3.6rem); max-width: 9ch; }
+.intention-kicker { display: flex; align-items: center; gap: 10px; color: #d0ff68; font: .6rem ui-monospace, monospace; letter-spacing: .09em; }
+.intention-equation { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: #d5b4f3; font: .6rem ui-monospace, monospace; }
+.intention-copy { list-style: none; padding: 0; counter-reset: motive; color: #f1e4ff; }
+.intention-copy li { counter-increment: motive; display: grid; grid-template-columns: 30px minmax(0,1fr); gap: 14px; padding: 12px 0; border-bottom: 1px solid #67487e; align-items: start; }
+.intention-copy li::before { content: counter(motive, decimal-leading-zero); display: grid; place-items: center; width: 29px; height: 29px; background: #d0ff68; border: 1px solid #d0ff68; border-radius: 6px; color: #241337; font: .6rem ui-monospace, monospace; margin-top: 2px; }
+.intention-copy li + li { margin-top: 0; }
+.intention-signature { color: #dfc3f4; }
+.intention-signature strong { color: #fff3ff; }
+.intention-signature svg { color: #d0ff68; }
+@media (max-width: 640px) { .intention-strip { padding: 25px 20px; } .intention-strip h2 { max-width: none; } .intention-title { gap: 18px; } .intention-copy li { gap: 11px; font-size: .85rem; } .tool-card { box-shadow: 3px 4px 0 #25143b; } }
